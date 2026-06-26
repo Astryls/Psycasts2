@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Psycaster Stats - Psycasts² Codex</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<script>try{var t=localStorage.getItem("ps2-theme");if(!t&&window.matchMedia&&matchMedia("(prefers-color-scheme:dark)").matches)t="dark";if(t)document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
+</head>
+<body>
+<nav id="site-nav"></nav>
+<div class="wiki">
+<aside class="wikiside" id="wikiside"></aside>
+<article class="doc">
+  <div class="breadcrumb"><a href="../index.html">Home</a> &rsaquo; <a href="index.html">Wiki</a> &rsaquo; Psycaster Stats</div>
+  <h1>Psycaster Stats</h1>
+  <p class="sub">Vanilla makes you spend points to upgrade neural heat, recovery and sensitivity. Psycasts² grows those three automatically every level - freeing your points for skill levels - and scales the growth with your enlightenment tier. Psyfocus cost is left untouched.</p>
+
+  <h2>Base growth per level</h2>
+  <table class="t">
+    <tr><th>Stat</th><th class="num">Per level (base)</th><th>Shown as</th></tr>
+    <tr><td>Neural heat limit</td><td class="num">+15</td><td><code>+15/lvl</code></td></tr>
+    <tr><td>Neural heat recovery</td><td class="num">+0.0625/s</td><td><code>+0.06/lvl</code></td></tr>
+    <tr><td>Psychic sensitivity</td><td class="num">+5%</td><td><code>+5%/lvl</code></td></tr>
+    <tr><td>Psyfocus cost factor</td><td class="num">unchanged</td><td>&mdash;</td></tr>
+  </table>
+  <p>Each stat row in Modern Psycasts UI's left panel shows its live per-level gain as a right-aligned
+  <code>(+N/lvl)</code>, and the manual "Upgrade - Psycaster Stats" button is replaced by a note explaining the
+  automation.</p>
+
+  <h2>Tier scaling - non-retroactive</h2>
+  <p>The growth rate climbs 15% per <a class="xref" href="enlightenment.html">enlightenment tier</a>. Each level is
+  banked at the rate of the tier you held <em>when you earned it</em> - reaching a higher tier never rewrites past
+  levels, it only speeds up future ones.</p>
+  <div class="math"><div class="mh">Accumulator (once, on each new level)</div><div class="eq">stat += base <span class="op">&middot;</span> RateMult(tier<sub>now</sub>)
+RateMult(tier) = <span class="num">1</span> <span class="op">+</span> <span class="num">0.15</span> <span class="op">&middot;</span> tier</div></div>
+  <div class="vardef">
+    <div class="row"><span class="k">base</span><span class="d">the stat's tier-0 per-level amount (15 / 0.0625 / 0.05)</span></div>
+    <div class="row"><span class="k">tier<sub>now</sub></span><span class="d">the pawn's enlightenment tier when the level is gained</span></div>
+  </div>
+
+  <h2>Worked example</h2>
+  <p>A pawn reaches level 10 while unawakened (Tier 0), Awakens (Tier I), then earns levels 11-15. Neural-heat-limit
+  offset:</p>
+  <div class="math"><div class="mh">Non-retroactive accumulation</div><div class="eq">levels 1-10 at &times;1.00:  <span class="num">10</span> <span class="op">&middot;</span> <span class="num">15</span> <span class="op">&middot;</span> <span class="num">1.00</span> = <span class="num">150</span>
+levels 11-15 at &times;1.15:  <span class="num">5</span> <span class="op">&middot;</span> <span class="num">15</span> <span class="op">&middot;</span> <span class="num">1.15</span> = <span class="num">86.25</span>
+&rArr; total offset = <span class="num">236.25</span>   <span class="cmt"># vs 258.75 if it were retroactive</span></div></div>
+  <div class="callout"><b>The difference is the point.</b> 236.25 vs 258.75 is exactly the early levels declining to be
+  re-valued at the new tier - that is the non-retroactive rule, so points earned at higher tiers are permanently
+  worth more.</div>
+
+  <h2>Who it applies to</h2>
+  <ul>
+    <li><strong>Tracked pawns</strong> (your awakened colonists) use the accumulator. The first time it runs it seeds
+    existing levels at the Tier-0 rate, so loading a save never shifts your current stats.</li>
+    <li><strong>Untracked psycasters</strong> (enemies, colonists before Awakening) use the flat Tier-0 rate -
+    identical to a simple <code>level &times; base</code>, with no per-pawn bookkeeping stored.</li>
+  </ul>
+  <p>The whole feature is one toggle (<code>Auto psycaster stats</code>); turning it off restores vanilla manual
+  stat upgrades.</p>
+
+  <div class="pagenav" id="pagenav"></div>
+</article>
+</div>
+<footer id="site-footer"></footer>
+<script src="../assets/app.js"></script>
+</body>
+</html>

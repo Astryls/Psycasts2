@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Settings Reference - Psycasts² Codex</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<script>try{var t=localStorage.getItem("ps2-theme");if(!t&&window.matchMedia&&matchMedia("(prefers-color-scheme:dark)").matches)t="dark";if(t)document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
+</head>
+<body>
+<nav id="site-nav"></nav>
+<div class="wiki">
+<aside class="wikiside" id="wikiside"></aside>
+<article class="doc">
+  <div class="breadcrumb"><a href="../index.html">Home</a> &rsaquo; <a href="index.html">Wiki</a> &rsaquo; Settings Reference</div>
+  <h1>Settings Reference</h1>
+  <p class="sub">Everything is tunable. The settings panel is organized into five tabs; every control has a mouseover explanation in-game. This is the quick map of what each knob changes, with defaults.</p>
+
+  <h2>Skills</h2>
+  <table class="t">
+    <tr><th>Setting</th><th class="num">Default</th><th>Effect</th></tr>
+    <tr><td>Maximum level per ability</td><td class="num">10</td><td>The per-ability ceiling (before Ascendance's +5).</td></tr>
+    <tr><td>Psycaster levels per skill level</td><td class="num">3</td><td>The <code>per</code> term in the <a class="xref" href="skill-levels.html">requirement curve</a>; higher = slower leveling.</td></tr>
+    <tr><td>Per-level scaling</td><td class="num">-</td><td>Global growth knob for each skill's primary stat.</td></tr>
+    <tr><td>Auto psycaster stats</td><td class="num">on</td><td>Heat / recovery / sensitivity grow per level; manual upgrades off. See <a class="xref" href="auto-stats.html">Stats</a>.</td></tr>
+    <tr><td>Remove psyfocus decay</td><td class="num">on</td><td>Psyfocus no longer drains over time.</td></tr>
+  </table>
+
+  <h2>Specializations</h2>
+  <table class="t">
+    <tr><th>Setting</th><th>Effect</th></tr>
+    <tr><td>Path access lock</td><td>Optionally gate which paths a player pawn can take by enlightenment tier.</td></tr>
+    <tr><td>Tier II / III spec points</td><td>Bonus specialization points granted at each pilgrimage tier.</td></tr>
+    <tr><td>Synergy graph</td><td>Inspect / reset the frozen <a class="xref" href="synergies.html">synergy graph</a>.</td></tr>
+  </table>
+
+  <h2>Meditation</h2>
+  <table class="t">
+    <tr><th>Setting</th><th class="num">Default</th><th>Effect</th></tr>
+    <tr><td>Enable breakthroughs</td><td class="num">on</td><td>Allow "a flow of ancient knowledge" events.</td></tr>
+    <tr><td>Breakthrough size</td><td class="num">100%</td><td>How much of a level one breakthrough grants.</td></tr>
+    <tr><td>Daily-meditation falloff</td><td class="num">&times;0.50</td><td>Anti-farming saturation strength.</td></tr>
+    <tr><td>Awakening guaranteed after</td><td class="num">36 h</td><td>Cumulative hours that force a non-psycaster Awakening.</td></tr>
+    <tr><td>Safe meditation window</td><td class="num">6 h/day</td><td>Hours per day with no <a class="xref" href="meditation.html">coma</a> risk.</td></tr>
+    <tr><td>Coma risk per excess hour</td><td class="num">5%</td><td>Added risk for each hour past the window.</td></tr>
+    <tr><td>Enable Transcendent tiers</td><td class="num">on</td><td>Allow the endless climb past Ascended.</td></tr>
+    <tr><td>First Transcendent tier after</td><td class="num">48 h</td><td>Meditation hours for Tier IV (the <code>base</code>).</td></tr>
+    <tr><td>Per-tier cost growth</td><td class="num">&times;1.6</td><td>Geometric <a class="xref" href="enlightenment.html">Transcendence</a> cost multiplier.</td></tr>
+  </table>
+
+  <h2>Pilgrimage</h2>
+  <table class="t">
+    <tr><th>Setting</th><th>Effect</th></tr>
+    <tr><td>Trial of the Altar</td><td>Toggle and tune the combat (altar-wave) <a class="xref" href="pilgrimages.html">route</a>.</td></tr>
+    <tr><td>Way of the Anima</td><td>Toggle and tune the pacifist (multi-site) route.</td></tr>
+    <tr><td>Pilgrimage daily cap</td><td>Maximum meditation hours per pilgrimage day.</td></tr>
+  </table>
+
+  <h2>Enemies</h2>
+  <table class="t">
+    <tr><th>Setting</th><th>Effect</th></tr>
+    <tr><td>Enlightened enemies</td><td>Enable / cap the <a class="xref" href="enemies.html">tier</a> of hostile psycasters and the rarity weights.</td></tr>
+    <tr><td>Empire psylink awakens</td><td>Gaining a psylink from outside meditation (the Empire, anima, ritual) triggers the Awakening.</td></tr>
+    <tr><td>Enemy ascension</td><td>Allow the rare Tier III enemy to roll an <a class="xref" href="ascensions.html">ascension</a>.</td></tr>
+  </table>
+
+  <div class="callout">Most balance passes are also reachable through the in-game <b>Balance Editor</b> and the
+  always-on manual-balance overlay, so you can hand-tune individual abilities without touching the generated graph.</div>
+
+  <div class="pagenav" id="pagenav"></div>
+</article>
+</div>
+<footer id="site-footer"></footer>
+<script src="../assets/app.js"></script>
+</body>
+</html>

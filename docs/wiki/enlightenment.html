@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Enlightenment &amp; Transcendence - Psycasts² Codex</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<script>try{var t=localStorage.getItem("ps2-theme");if(!t&&window.matchMedia&&matchMedia("(prefers-color-scheme:dark)").matches)t="dark";if(t)document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
+</head>
+<body>
+<nav id="site-nav"></nav>
+<div class="wiki">
+<aside class="wikiside" id="wikiside"></aside>
+<article class="doc">
+  <div class="breadcrumb"><a href="../index.html">Home</a> &rsaquo; <a href="index.html">Wiki</a> &rsaquo; Enlightenment &amp; Transcendence</div>
+  <h1>Enlightenment &amp; Transcendence</h1>
+  <p class="sub">A psycaster's depth of enlightenment is a tier, carried as a hediff whose severity is the tier number. The first three tiers are a guided journey; beyond them lies an endless Transcendent climb with a geometric cost curve. Every tier makes future levels worth more.</p>
+
+  <h2>The tiers</h2>
+  <table class="t">
+    <tr><th>Tier</th><th>Name</th><th>Reached by</th><th>Grants</th></tr>
+    <tr><td class="num">I</td><td>Awakened</td><td>Meditation (the Awakening)</td><td>+10% psychic sensitivity, a path pick</td></tr>
+    <tr><td class="num">II</td><td>Enlightened</td><td><a href="pilgrimages.html">Pilgrimage</a> Tier II</td><td>+20% sensitivity, spec points, a path pick</td></tr>
+    <tr><td class="num">III</td><td>Ascended</td><td><a href="pilgrimages.html">Pilgrimage</a> Tier III</td><td>+35% sensitivity, spec points, a path pick</td></tr>
+    <tr><td class="num">IV+</td><td>Transcendent I, II, &hellip;</td><td>Continued meditation past Ascended</td><td>+3 spec points &amp; an animated psycast-card pick, each tier</td></tr>
+  </table>
+  <p>The tier shows as a blue hediff on the Health tab and a small Roman-numeral badge beside the
+  specialization-point star. It is read on <em>any</em> humanlike, so <a class="xref" href="enemies.html">enemy
+  psycasters</a> can be Enlightened too.</p>
+
+  <h2>Growth scaling: +15% per tier</h2>
+  <p>Higher tiers make each <em>new</em> level you earn worth more. The per-level
+  <a class="xref" href="auto-stats.html">stat gains</a> are multiplied by a rate that climbs 15% per tier.</p>
+  <div class="math"><div class="mh">Rate multiplier</div><div class="eq">RateMult(tier) = <span class="num">1</span> <span class="op">+</span> <span class="num">0.15</span> <span class="op">&middot;</span> tier</div></div>
+  <table class="t">
+    <tr><th>Tier</th><th class="num">0</th><th class="num">1</th><th class="num">2</th><th class="num">3</th><th class="num">4</th><th class="num">5</th><th class="num">8</th></tr>
+    <tr><td>&times; rate</td><td class="num">1.00</td><td class="num">1.15</td><td class="num">1.30</td><td class="num">1.45</td><td class="num">1.60</td><td class="num">1.75</td><td class="num">2.20</td></tr>
+  </table>
+  <div class="callout gold"><b>Non-retroactive.</b> A level is banked at the rate of the tier you were at when you
+  earned it. Reaching a higher tier speeds up only your future levels - past levels keep their old value, so each
+  point you gain in a new tier is permanently worth more than the ones before it.</div>
+
+  <h2>Transcendence: the endless climb</h2>
+  <p>An Ascended (Tier III) psycaster who keeps meditating accumulates progress toward the next Transcendent tier.
+  The cost is <strong>geometric</strong>: each tier demands a fixed multiple of the previous one's meditation, so the
+  journey slows dramatically - diminishing returns by design.</p>
+  <div class="math"><div class="mh">Cost to next tier (meditation hours)</div><div class="eq">Hours(tier) = base <span class="op">&middot;</span> growth <sup>(tier <span class="op">&minus;</span> <span class="num">4</span>)</sup></div></div>
+  <div class="vardef">
+    <div class="row"><span class="k">tier</span><span class="d">the Transcendent tier being pursued (&ge; 4)</span></div>
+    <div class="row"><span class="k">base</span><span class="d">hours of meditation for Tier IV - setting, default 48</span></div>
+    <div class="row"><span class="k">growth</span><span class="d">per-tier cost multiplier - setting, default 1.6</span></div>
+  </div>
+  <p>Only meditation past Ascended counts, and only while the pawn is actively meditating. At the defaults:</p>
+  <table class="t">
+    <tr><th>Reaching</th><th class="num">IV</th><th class="num">V</th><th class="num">VI</th><th class="num">VII</th><th class="num">VIII</th></tr>
+    <tr><td>meditation hours</td><td class="num">48</td><td class="num">77</td><td class="num">123</td><td class="num">197</td><td class="num">315</td></tr>
+  </table>
+
+  <h2>What a Transcendent tier grants</h2>
+  <ul>
+    <li><strong>+3 specialization points</strong>, bankable in the <a class="xref" href="specializations.html">constellation tree</a>.</li>
+    <li><strong>An animated psycast-card pick</strong> - the same tarot-flip ceremony as the Awakening, drawing three
+    cards from every path you have not yet claimed. Embrace one to unlock that whole path for free.</li>
+    <li>The <strong>+15% rate</strong> keeps compounding, so deep Transcendents earn outsized levels - earned slowly,
+    never runaway, because the climb above is geometric.</li>
+  </ul>
+  <div class="callout"><b>Three similar words, three systems:</b> "Ascended" is enlightenment Tier III (this page),
+  "Ascension" is a <a class="xref" href="ascensions.html">constellation identity</a>, and "Ascendance / Synthesis"
+  is the level-cap <a class="xref" href="specializations.html">specialization</a>.</div>
+
+  <div class="pagenav" id="pagenav"></div>
+</article>
+</div>
+<footer id="site-footer"></footer>
+<script src="../assets/app.js"></script>
+</body>
+</html>
