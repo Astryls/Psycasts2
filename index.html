@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Psycasts² - A Psychic RPG for RimWorld</title>
+<meta name="description" content="Psycasts² turns every Vanilla Psycasts Expanded ability into an RPG skill: levels, directed synergies, a constellation tree, seven ascensions, and an endless path of enlightenment.">
+<link rel="stylesheet" href="assets/styles.css">
+<script>try{var t=localStorage.getItem("ps2-theme");if(!t&&window.matchMedia&&matchMedia("(prefers-color-scheme:dark)").matches)t="dark";if(t)document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
+</head>
+<body>
+<nav id="site-nav"></nav>
+
+<header class="hero" id="top">
+  <div class="crownwrap"><svg viewBox="0 0 100 100" aria-hidden="true"><path fill="var(--text)" d="M50 5 L58 42 L95 50 L58 58 L50 95 L42 58 L5 50 L42 42 Z"/><circle cx="50" cy="50" r="6.5" fill="var(--panel2)"/></svg></div>
+  <h1>Psycasts<span class="amp">²</span></h1>
+  <p>Every psycast you own becomes an RPG skill that levels, empowers its neighbours, and deepens through meditation, pilgrimage, and an endless path of enlightenment. A living psionic system woven over Vanilla Psycasts Expanded.</p>
+  <div class="btns">
+    <a href="#lab" class="btn primary">Try the synergy lab</a>
+    <a href="wiki/index.html" class="btn">Read the wiki</a>
+  </div>
+  <div class="ribbon">
+    <div class="track"><div class="needle"></div></div>
+    <div class="ends"><span>Novice 1</span><span>Master 10 · Transcendent 15</span></div>
+  </div>
+</header>
+
+<section id="intro">
+  <div class="inner">
+    <div class="reveal"><div class="eyebrow">The Idea</div>
+    <h2>Learning a psycast is just the <span class="grad">first level</span>.</h2>
+    <p class="lead">Vanilla psycasters learn an ability and that is the end of its growth. Psycasts² reads whatever paths you have installed - vanilla, every add-on, third-party - and layers an RPG on top: levels, directed synergies, a constellation tree, seven lore ascensions, and infinite enlightenment. No per-mod patches.</p></div>
+    <div class="pillars">
+      <div class="pill reveal d1"><div class="ic">&#9883;</div><h3>Diablo-style levels</h3><p>Every cast levels 1-10 (15 with Synthesis). Each level raises one primary stat by a fixed raw amount.</p></div>
+      <div class="pill reveal d2"><div class="ic">&#8596;</div><h3>Directed synergies</h3><p>Path-mates empower one another. Leveling a skill's neighbours feeds its damage, area, cost, or cooldown.</p></div>
+      <div class="pill reveal d3"><div class="ic">&#10024;</div><h3>Endless enlightenment</h3><p>Awakened to Ascended through pilgrimage, then an endless Transcendent climb that keeps paying off.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="levels" class="alt">
+  <div class="inner">
+    <div class="reveal"><div class="eyebrow">01 - Skill Levels</div>
+    <h2>One number, growing power.</h2>
+    <p class="lead">Drag a skill from Novice to Transcendent and watch its scaling - the raw per-level gain, the total bonus, and the psycaster level it demands. <a class="xref" href="wiki/skill-levels.html">Full detail and the requirement curve in the wiki</a>.</p></div>
+    <div class="panel reveal d1" style="margin-top:34px">
+      <div class="meterhead"><div class="tier" id="mTier">Adept</div><div class="val" id="mVal">5 / 15</div></div>
+      <input type="range" id="mRange" min="1" max="15" step="1" value="5">
+      <div class="ends"><span>1</span><span>10</span><span>15</span></div>
+      <div class="effrow">
+        <div class="e"><span>Per level</span><b id="mGain">+1.6 Damage</b></div>
+        <div class="e"><span>Total bonus</span><b id="mTotal">+8.0 Damage</b></div>
+        <div class="e"><span>Requires</span><b id="mReq">Psycaster level 18</b></div>
+      </div>
+    </div>
+    <div class="ladder reveal d2">
+      <div class="rung" style="border-left-color:var(--t1)"><h4 style="color:var(--t1)">Novice</h4><div class="r">levels 1-3</div><p>The freshly learned skill finds its feet.</p></div>
+      <div class="rung" style="border-left-color:var(--t2)"><h4 style="color:var(--t2)">Adept · Expert</h4><div class="r">levels 4-9</div><p>Each point demands a higher psycaster level.</p></div>
+      <div class="rung" style="border-left-color:var(--t4)"><h4 style="color:var(--t4)">Master</h4><div class="r">level 10</div><p>The vanilla ceiling - a real investment.</p></div>
+      <div class="rung" style="border-left-color:var(--t4)"><h4 style="color:var(--t4)">Transcendent</h4><div class="r">levels 11-15</div><p>Unlocked by the Synthesis specialization.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="lab">
+  <div class="inner">
+    <div class="reveal"><div class="eyebrow">Try It</div>
+    <h2>Level a path-mate. <span class="grad">Watch it empower.</span></h2>
+    <p class="lead">This is the synergy system, live. <b>Firestorm</b> receives bonuses from three neighbours. Raise their levels and watch Firestorm's damage, area, and cooldown shift - each link feeds a stat that actually matters to it. <a class="xref" href="wiki/synergies.html">How synergies are built</a>.</p></div>
+    <div class="sim reveal d1" style="margin-top:34px">
+      <div class="panel simstage">
+        <div class="tgt"><div class="nm">Firestorm</div><div class="lv" id="labLv">Lv 3</div></div>
+        <div class="simmotes" id="labMotes"></div>
+        <div style="margin-top:14px">
+          <div class="statline"><span>Damage</span><span class="v" id="sDmg">28.8</span></div>
+          <div class="statline"><span>Area</span><span class="v" id="sArea">3.5 tiles</span></div>
+          <div class="statline"><span>Cooldown</span><span class="v" id="sCd">30.0s</span></div>
+        </div>
+        <div style="margin-top:16px">
+          <div class="ends"><span style="text-transform:uppercase;letter-spacing:1px;font-size:10.5px;color:var(--faint)">Firestorm's own level</span><span id="labLvNum" style="display:none"></span></div>
+          <input type="range" id="labLvRange" min="1" max="10" step="1" value="3">
+        </div>
+        <div class="mates">
+          <p class="lab" style="margin-top:14px">Receives bonuses from</p>
+          <div id="labMates"></div>
+        </div>
+      </div>
+      <div class="panel feedwrap">
+        <div class="fh"><span class="lab">What empowers Firestorm</span><button class="reset" id="labReset">Reset</button></div>
+        <ul class="feed" id="labFeed"><li class="empty">Level a path-mate to empower Firestorm.</li></ul>
+      </div>
+    </div>
+    <div class="note reveal">Synergy types are <b>skill-aware</b>: a stat is only ever fed to a skill that can use it - so a twelve-hour buff never receives a few seconds of duration, and a whole-map cast never receives range. <a class="xref" href="wiki/synergies.html">Read the rule</a>.</div>
+  </div>
+</section>
+
+<section id="systems" class="alt">
+  <div class="inner">
+    <div class="reveal"><div class="eyebrow">02 - The Systems</div>
+    <h2>Twelve articles, every mechanic.</h2>
+    <p class="lead">Each system has its own wiki page with in-depth explanations, the underlying math, and worked examples.</p></div>
+    <div class="fgrid reveal d1">
+      <div class="fcard"><div class="ic">&#9883;</div><h4><a href="wiki/skill-levels.html">Skill Levels</a></h4><p>The level model, the requirement curve, and per-level scaling.</p></div>
+      <div class="fcard"><div class="ic">&#8596;</div><h4><a href="wiki/synergies.html">Synergies</a></h4><p>Directed receives / empowers links, the rate math, skill-aware assignment.</p></div>
+      <div class="fcard"><div class="ic">&#10022;</div><h4><a href="wiki/specializations.html">Specializations</a></h4><p>The constellation tree and the seven ascension paths above Synthesis.</p></div>
+      <div class="fcard"><div class="ic">&#8546;</div><h4><a href="wiki/enlightenment.html">Enlightenment &amp; Transcendence</a></h4><p>Awakened to Ascended, then the endless +15%-per-tier climb.</p></div>
+      <div class="fcard"><div class="ic">&#9775;</div><h4><a href="wiki/meditation.html">Meditation &amp; Awakening</a></h4><p>The awakening ramp, breakthroughs, and the coma math.</p></div>
+      <div class="fcard"><div class="ic">&#9707;</div><h4><a href="wiki/auto-stats.html">Psycaster Stats</a></h4><p>Heat, recovery, and sensitivity grow automatically, scaled by tier.</p></div>
+      <div class="fcard"><div class="ic">&#9968;</div><h4><a href="wiki/pilgrimages.html">Pilgrimages</a></h4><p>The combat altar trial and the pacifist anima journey.</p></div>
+      <div class="fcard"><div class="ic">&#10031;</div><h4><a href="wiki/ascensions.html">Ascension Constellations</a></h4><p>Seven mutually-exclusive identities, each with a rendered aura.</p></div>
+      <div class="fcard"><div class="ic">&#9760;</div><h4><a href="wiki/enemies.html">Enemy Psycasters</a></h4><p>Hostile casters spawn Enlightened - tiered, with extra schools.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="ascend">
+  <div class="inner">
+    <div class="reveal"><div class="eyebrow">03 - The Crown</div>
+    <h2>Seven ascensions <span class="grad">above Synthesis</span>.</h2>
+    <p class="lead">The constellation tree rises to the Synthesis apex - and above it drift seven mutually-exclusive ascension paths, each a color-themed star-sign that crowns a psycaster's identity. <a class="xref" href="wiki/specializations.html">Walk the tree</a> &middot; <a class="xref" href="wiki/ascensions.html">meet the seven</a>.</p></div>
+    <img class="starmap reveal d1" src="assets/spectree.png" alt="The Psycasts² specialization constellation with its seven ascension paths">
+  </div>
+</section>
+
+<section id="get" class="closing alt">
+  <div class="inner">
+    <div class="panel reveal">
+      <div class="eyebrow">Requirements</div>
+      <h2>Begin the ascent.</h2>
+      <p class="lead" style="margin:18px auto 0">Requires Vanilla Psycasts Expanded and the Vanilla Expanded Framework. Built for RimWorld 1.6. Pairs with Modern Psycasts UI and every VPE add-on; the whole RPG layer is built from your installed paths automatically.</p>
+      <div class="chips" style="justify-content:center;margin-top:26px">
+        <div class="chip"><div class="nm">Vanilla Psycasts Expanded</div><div class="pid">required</div></div>
+        <div class="chip"><div class="nm">Vanilla Expanded Framework</div><div class="pid">required</div></div>
+        <div class="chip"><div class="nm">Psycasts²</div><div class="pid">astryl.Psycasts</div></div>
+      </div>
+      <div class="btns" style="justify-content:center;margin-top:30px">
+        <a href="wiki/index.html" class="btn primary">Open the wiki</a>
+        <a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3749096772" target="_blank" rel="noopener" class="btn">Steam Workshop</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer id="site-footer"></footer>
+<script src="assets/app.js"></script>
+</body>
+</html>

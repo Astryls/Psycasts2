@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Casting &amp; Charges - Psycasts² Codex</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<script>try{var t=localStorage.getItem("ps2-theme");if(!t&&window.matchMedia&&matchMedia("(prefers-color-scheme:dark)").matches)t="dark";if(t)document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
+</head>
+<body>
+<nav id="site-nav"></nav>
+<div class="wiki">
+<aside class="wikiside" id="wikiside"></aside>
+<article class="doc">
+  <div class="breadcrumb"><a href="../index.html">Home</a> &rsaquo; <a href="index.html">Wiki</a> &rsaquo; Casting &amp; Charges</div>
+  <h1>Casting &amp; Charges</h1>
+  <p class="sub">Two synergy types change how a psycast fires rather than how hard it hits: multi-target casting and ability charges. This page also covers how per-add-on scaling is applied.</p>
+
+  <h2>Multi-target &amp; area</h2>
+  <p>A skill whose synergy type is <strong>Targets</strong> can be made to strike additional targets - as its feeding
+  mates level, the target count rises, turning a single strike into a small volley. Area abilities likewise gain blast
+  radius from the <strong>Area</strong> type.</p>
+  <div class="math"><div class="mh">Target count</div><div class="eq">targets = baseTargets <span class="op">+</span> &lfloor; &Sigma; L<sub>src</sub> <span class="op">&middot;</span> rate &rfloor;</div></div>
+  <div class="callout warn"><b>AI limitation:</b> the enemy/automatic AI only auto-casts single-target psycasts, so
+  AI casters never fire the multi-target version on their own. Player-directed casts use the full count.</div>
+
+  <h2>Charges</h2>
+  <p>The <strong>Charges</strong> synergy type is special - synergy-only, never a primary. A charged ability banks
+  extra casts before it must cool down, so feeding mates let a psycaster chain a burst. Charges are counted directly
+  from source levels, so the tooltip shows a real count:</p>
+  <div class="math"><div class="mh">Charges per feeding mate</div><div class="eq">charges = &lfloor; <span class="num">0.5</span> <span class="op">&middot;</span> L<sub>src</sub> <span class="op">&middot;</span> strength &rfloor;</div></div>
+
+  <h2>Per-add-on scaling</h2>
+  <p>Psycasts² reads whatever psycast mods you have and applies its scaling generically. For add-ons with bespoke
+  ability shapes (custom projectiles, summons, beams, orbital effects) it carries targeted compatibility so their
+  unique mechanics scale sensibly too. A handful of exotic effects (certain summon counts, shield geometry, beam
+  fire-radius) are noted as in-progress in the Field Manual.</p>
+
+  <h2>Cost &amp; cooldown</h2>
+  <p>Every cast carries a psyfocus cost and a cooldown, which is why <strong>Cost</strong> and <strong>Cooldown</strong>
+  are the universal synergy fallbacks - any skill can receive them. Note that leveling a skill never reduces its
+  psyfocus cost (cost is intentionally unaffected by levels); cost relief comes only from synergies, specializations,
+  and the unaffected base. See <a class="xref" href="auto-stats.html">Psycaster Stats</a> for the cost-factor rule.</p>
+
+  <div class="pagenav" id="pagenav"></div>
+</article>
+</div>
+<footer id="site-footer"></footer>
+<script src="../assets/app.js"></script>
+</body>
+</html>

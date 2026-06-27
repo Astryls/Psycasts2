@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Meditation &amp; Awakening - Psycasts² Codex</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<script>try{var t=localStorage.getItem("ps2-theme");if(!t&&window.matchMedia&&matchMedia("(prefers-color-scheme:dark)").matches)t="dark";if(t)document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
+</head>
+<body>
+<nav id="site-nav"></nav>
+<div class="wiki">
+<aside class="wikiside" id="wikiside"></aside>
+<article class="doc">
+  <div class="breadcrumb"><a href="../index.html">Home</a> &rsaquo; <a href="index.html">Wiki</a> &rsaquo; Meditation &amp; Awakening</div>
+  <h1>Meditation &amp; Awakening</h1>
+  <p class="sub">Meditation is the engine of the mod. A dedicated colonist meditates to the Awakening; a psycaster meditates for breakthroughs and, beyond Ascended, for Transcendence. But meditating around the clock courts the psychic coma - the system rewards rhythm, not grinding.</p>
+
+  <div class="callout"><b>Clock primer:</b> <code>2500 ticks = 1 in-game hour</code>, <code>60000 ticks = 1 day</code>.
+  Progress only accrues while a pawn is actually meditating, not while walking to the spot.</div>
+
+  <h2>The Awakening (non-psycasters)</h2>
+  <p>A non-psycaster who meditates builds cumulative hours. Each hour rolls a chance to Awaken that ramps with total
+  dedication and is <strong>guaranteed</strong> once they pass the guarantee threshold - so a committed colonist
+  always reaches Tier I within about a week.</p>
+  <div class="math"><div class="mh">Hourly awakening chance</div><div class="eq">P = min( <span class="num">0.08</span> <span class="op">+</span> <span class="num">0.02</span> <span class="op">&middot;</span> cumHours,  <span class="num">0.60</span> )
+<span class="cmt"># forced once cumHours &ge; awakenGuaranteeHours (default 36)</span></div></div>
+  <div class="vardef">
+    <div class="row"><span class="k">cumHours</span><span class="d">lifetime meditation hours (never resets)</span></div>
+    <div class="row"><span class="k">awakenGuaranteeHours</span><span class="d">hard guarantee - setting, default 36 (~a week of 6-hour days)</span></div>
+  </div>
+  <p>At the Awakening the colonist becomes a psycaster and opens the
+  <a class="xref" href="enlightenment.html">card pick</a> to choose their first path.</p>
+
+  <h2>Breakthroughs: a flow of ancient knowledge</h2>
+  <p>An existing psycaster's meditation can trigger <strong>&ldquo;a flow of ancient knowledge&rdquo;</strong> - a full
+  level in one burst. Its chance is streak-based and scaled down by <em>saturation</em>, so habitual all-day meditators
+  get rarer breakthroughs than someone who meditates in measured sessions. Here is the whole mechanic at a glance:</p>
+  <div class="flowgram">
+    <div class="fstep"><div class="ft">Sustained meditation</div><div class="fd">Any colonist, at any focus</div></div>
+    <div class="farrow">&rarr;</div>
+    <div class="fstep"><div class="ft">A streak builds</div><div class="fd">+1.5% chance per consecutive hour</div></div>
+    <div class="farrow">&rarr;</div>
+    <div class="fstep fhi"><div class="ft">A flow of ancient knowledge</div><div class="fd">Hourly roll - a psychic breakthrough</div></div>
+    <div class="farrow">&rarr;</div>
+    <div class="fbranch">
+      <div class="fstep"><div class="ft">Psycaster &rarr; +1 full level</div><div class="fd">Worth ever more as leveling slows</div></div>
+      <div class="fstep"><div class="ft">Non-psycaster &rarr; Awakening</div><div class="fd">Becomes a psycaster (guaranteed ~1 week)</div></div>
+    </div>
+  </div>
+  <div class="chips">
+    <span class="chip up">Longer streak: +1.5%/hr</span>
+    <span class="chip up">Higher tier: &times;1.15 to &times;2.05</span>
+    <span class="chip down">Saturation: anti-farming</span>
+    <span class="chip cap">Hard cap: 60%</span>
+    <span class="chip warn">Over-meditation: coma risk</span>
+  </div>
+  <div class="math"><div class="mh">Anti-farming &amp; the Transcendent curve</div><div class="eq">satMult  = <span class="num">1</span> <span class="op">/</span> (<span class="num">1</span> <span class="op">+</span> saturation <span class="op">&middot;</span> falloff)
+tierMult = (tier &gt; <span class="num">3</span>) ? <span class="num">1</span> <span class="op">+</span> (tier <span class="op">&minus;</span> <span class="num">3</span>) <span class="op">&middot;</span> curve : <span class="num">1</span>
+chance   = min( base <span class="op">&middot;</span> satMult <span class="op">&middot;</span> tierMult,  <span class="num">0.60</span> )</div></div>
+  <div class="vardef">
+    <div class="row"><span class="k">saturation</span><span class="d">+1 each day you meditate past the safe window (cap 6); sheds 1.5 on lighter days</span></div>
+    <div class="row"><span class="k">falloff</span><span class="d">penalty strength - setting, default 0.5</span></div>
+    <div class="row"><span class="k">curve</span><span class="d">Transcendent breakthrough curve - setting, default 0.15 (each Transcendent tier multiplies the chance by +15%)</span></div>
+  </div>
+  <div class="callout"><b>Past Ascended, breakthroughs speed up - but never become certain.</b> Each Transcendent tier raises the
+  multiplier (Transcendent&nbsp;I &times;1.15 &hellip; Transcendent&nbsp;VII &times;2.05), so deep Transcendents reach the
+  ceiling with about half the streak (~15h vs ~39h) as leveling slows. The <code>0.60</code> hard cap always holds.</div>
+  <figure class="chartfig"><div class="chart" data-chart="breakthrough"></div><figcaption>Hourly breakthrough chance vs streak length, by tier (anti-farming saturation aside). Higher tiers reach the 60% ceiling with far less streak - but never exceed it.</figcaption></figure>
+
+  <h3>How the chance grows per tier</h3>
+  <p>Tiers 0 through III (Ascended) all roll at the same base chance - the per-tier boost is a <strong>Transcendence</strong>
+  reward. From Transcendent&nbsp;I (tier&nbsp;IV) the <code>tierMult</code> climbs +15% each tier, so the same streak
+  converts to a breakthrough far more often. It still cannot pass the 60% ceiling; deeper tiers simply reach it sooner.</p>
+  <figure class="chartfig"><div class="chart" data-chart="btier"></div><figcaption>Hourly breakthrough chance by enlightenment tier, at two streak lengths. Flat through Ascended, then rising through Transcendence - a long (25h) streak hits the 60% cap by Transcendent IV (tier 7), while shorter sessions keep climbing toward it.</figcaption></figure>
+
+  <h2>Over-meditation &amp; the psychic coma</h2>
+  <p>Up to the <strong>safe window</strong> each day there is no risk. Past it, every additional hour adds coma risk,
+  rolled hourly. A long unbroken streak adds a little more, and each deferred card re-roll adds a flat amount.</p>
+  <div class="math"><div class="mh">Coma risk per hour</div><div class="eq">risk = max(<span class="num">0</span>, (todayH<span class="op">&minus;</span>safe)<span class="op">&middot;</span>r) <span class="op">+</span> max(<span class="num">0</span>, (streakH<span class="op">&minus;</span>safe)<span class="op">&middot;</span>r<span class="op">&middot;</span><span class="num">0.5</span>) <span class="op">+</span> rerolls<span class="op">&middot;</span><span class="num">0.06</span>
+<span class="cmt"># clamped to a maximum of 0.75 per roll</span></div></div>
+  <div class="vardef">
+    <div class="row"><span class="k">todayH / streakH</span><span class="d">hours meditated today / consecutively</span></div>
+    <div class="row"><span class="k">safe</span><span class="d">the safe window - setting, default 6 hours/day</span></div>
+    <div class="row"><span class="k">r</span><span class="d">coma risk per excess hour - setting, default 5%</span></div>
+  </div>
+  <p>When a coma strikes, its <strong>length</strong> scales with level, how far past the window the pawn pushed, and
+  accumulated saturation - so repeated abuse yields ever-longer comas.</p>
+  <div class="math"><div class="mh">Coma length (ticks)</div><div class="eq">len = <span class="num">10000</span> <span class="op">+</span> level<span class="op">&middot;</span><span class="num">2500</span> <span class="op">+</span> excessH<span class="op">&middot;</span><span class="num">2500</span> <span class="op">+</span> saturation<span class="op">&middot;</span><span class="num">30000</span>
+<span class="cmt"># clamped between 4 hours and 8 days</span></div></div>
+  <div class="callout warn"><b>Pilgrimage meditation is coma-exempt.</b> The quests demand long days, and a coma there
+  would sabotage the journey - so keep regular daily meditation at or under the safe window, but meditate freely on a
+  pilgrimage map.</div>
+
+  <h2>Foci &amp; focus types</h2>
+  <p>The meditation focus a pawn uses - a brazier's flame, a throne, an anima tree, a personal default - selects an
+  exclusive bucket that biases their Awakening and tier card picks toward thematically-matching paths. Tier III draws
+  and Transcendent picks ignore the bias and draw from every path. Thrones are usable without a royal title, and anima
+  trees and pilgrim foci are always meditatable. See <a class="xref" href="card-selection.html">Path Cards &amp; Foci</a>
+  for the full focus-to-school map and an interactive spread.</p>
+
+  <div class="pagenav" id="pagenav"></div>
+</article>
+</div>
+<footer id="site-footer"></footer>
+<script src="../assets/app.js"></script>
+</body>
+</html>

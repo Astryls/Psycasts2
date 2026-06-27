@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Skill Levels - Psycasts² Codex</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<script>try{var t=localStorage.getItem("ps2-theme");if(!t&&window.matchMedia&&matchMedia("(prefers-color-scheme:dark)").matches)t="dark";if(t)document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
+</head>
+<body>
+<nav id="site-nav"></nav>
+<div class="wiki">
+<aside class="wikiside" id="wikiside"></aside>
+<article class="doc">
+  <div class="breadcrumb"><a href="../index.html">Home</a> &rsaquo; <a href="index.html">Wiki</a> &rsaquo; Skill Levels</div>
+  <h1>Skill Levels</h1>
+  <p class="sub">Every psycast is an RPG skill that levels from 1 to 10 - up to 15 with the Ascendance specialization. Learning a psycast is its first level; each further level costs a point and demands a higher psycaster level.</p>
+
+  <h2>The level model</h2>
+  <p>A psycast is always in one of three states:</p>
+  <ul>
+    <li><strong>Unlearned</strong> - shown as <code>0 / 10</code>, disabled. A node in the tree you have not unlocked.</li>
+    <li><strong>Learned</strong> - <code>1 / 10</code>, castable. The single point you spend to unlock a psycast both learns it <em>and</em> moves it 0&nbsp;&rarr;&nbsp;1. Learning is the first level.</li>
+    <li><strong>Leveled</strong> - <code>2 / 10</code> and up. Each click spends one more point, gated by the curve below.</li>
+  </ul>
+  <div class="callout"><b>Denominator = the cap.</b> Normally 10, or 15 once the pawn owns the
+  <a class="xref" href="specializations.html">Ascendance</a> specialization. The numerator is how far you have invested.</div>
+
+  <h2>The requirement curve</h2>
+  <p>To raise a skill to level <code>n</code>, the pawn's psycaster level must meet a threshold. Level 1 is free
+  (it comes with learning); the requirement ramps from level 2 with a linear term plus a triangular term, so the
+  last few levels are a genuine end-game investment.</p>
+  <div class="math"><div class="mh">Level requirement</div><div class="eq">LevelReq(n) = TierBase <span class="op">+</span> (n<span class="op">&minus;</span><span class="num">1</span>)<span class="op">&middot;</span>per <span class="op">+</span> (n<span class="op">&minus;</span><span class="num">1</span>)(n<span class="op">&minus;</span><span class="num">2</span>) <span class="op">/</span> <span class="num">2</span></div></div>
+  <div class="vardef">
+    <div class="row"><span class="k">n</span><span class="d">target skill level (1 = free, ramp begins at 2)</span></div>
+    <div class="row"><span class="k">per</span><span class="d">Psycaster levels per skill level - setting, default 3</span></div>
+    <div class="row"><span class="k">TierBase</span><span class="d">(VPE tier &minus; 1) &times; per; deeper psycasts (higher VPE tier, 1-6) floor higher</span></div>
+  </div>
+
+  <figure class="chartfig"><div class="chart" data-chart="levelreq"></div><figcaption>Psycaster level required to reach each skill level. The triangular term makes the last levels a real end-game investment, and deeper (higher VPE-tier) abilities start higher.</figcaption></figure>
+
+  <h2>Maximum reachable level</h2>
+  <div class="math"><div class="mh">Cap</div><div class="eq">MaxLevel = max { n : LevelReq(n) &le; psyLevel },  clamped to maxSkillLevel <span class="op">+</span> capBonus</div></div>
+  <div class="vardef">
+    <div class="row"><span class="k">psyLevel</span><span class="d">the pawn's current VPE psycaster level</span></div>
+    <div class="row"><span class="k">maxSkillLevel</span><span class="d">per-ability ceiling - setting, default 10</span></div>
+    <div class="row"><span class="k">capBonus</span><span class="d">+5 if the pawn owns the Ascendance (Synthesis) specialization, else 0</span></div>
+  </div>
+
+  <h2>Worked example</h2>
+  <p>Required psycaster level for each skill level, by the ability's VPE tier, at the default <code>per = 3</code>.
+  Level 1 is always free (learning):</p>
+  <table class="t">
+    <tr><th>Skill level</th><th class="num">Tier 1</th><th class="num">Tier 3</th><th class="num">Tier 6</th></tr>
+    <tr><td>1 - learned</td><td class="num">0</td><td class="num">6</td><td class="num">15</td></tr>
+    <tr><td>2</td><td class="num">3</td><td class="num">9</td><td class="num">18</td></tr>
+    <tr><td>3</td><td class="num">7</td><td class="num">13</td><td class="num">22</td></tr>
+    <tr><td>5</td><td class="num">18</td><td class="num">24</td><td class="num">33</td></tr>
+    <tr><td>10</td><td class="num">63</td><td class="num">69</td><td class="num">78</td></tr>
+  </table>
+  <p>So a tier-1 skill reaches level 2 at psycaster level 3 and level 10 at 63; a deep tier-6 capstone needs
+  level 15 just to take its first invested level past learning.</p>
+
+  <h2>What a level does</h2>
+  <p>A skill scales exactly <strong>one primary stat</strong> - its damage, area, duration, range, cost, cooldown
+  or a count - chosen <a class="xref" href="synergies.html">skill-aware</a> from what the ability actually uses.
+  Each level adds a fixed <em>raw</em> amount, shown on the tooltip's <code>Each level: +N ...</code> line.</p>
+  <div class="math"><div class="mh">Per-level gain</div><div class="eq">gain = baseStat <span class="op">&middot;</span> perLevelPct <span class="op">&middot;</span> primaryStrength <span class="op">&middot;</span> specBonus</div></div>
+  <div class="vardef">
+    <div class="row"><span class="k">baseStat</span><span class="d">the ability's own value for its primary stat</span></div>
+    <div class="row"><span class="k">perLevelPct</span><span class="d">the global per-level scaling knob (setting)</span></div>
+    <div class="row"><span class="k">primaryStrength</span><span class="d">a small rarity weight so capstones scale a touch harder</span></div>
+    <div class="row"><span class="k">specBonus</span><span class="d">multipliers from Potency / Catalyst / path specializations</span></div>
+  </div>
+  <div class="callout gold"><b>Level your neighbours.</b> A skill's own levels scale only its own primary stat. To
+  empower its <em>other</em> stats you level its path-mates - that is what <a class="xref" href="synergies.html">synergies</a>
+  are for. Multi-skilling a whole path always beats dumping every point into one ability.</div>
+
+  <h2>Investing - the interface</h2>
+  <p>Click a learned, below-cap icon in VPE's native tab or in Modern Psycasts UI to invest one level. A plain
+  click opens a styled confirm; <code>Shift</code>-click skips it. A green <code>+</code> marks any skill you can
+  afford to raise, and a Roman-numeral chip shows the current level. Costs come from the same psycaster point pool
+  VPE already uses.</p>
+
+  <div class="pagenav" id="pagenav"></div>
+</article>
+</div>
+<footer id="site-footer"></footer>
+<script src="../assets/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Synergies - Psycasts² Codex</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<script>try{var t=localStorage.getItem("ps2-theme");if(!t&&window.matchMedia&&matchMedia("(prefers-color-scheme:dark)").matches)t="dark";if(t)document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
+</head>
+<body>
+<nav id="site-nav"></nav>
+<div class="wiki">
+<aside class="wikiside" id="wikiside"></aside>
+<article class="doc">
+  <div class="breadcrumb"><a href="../index.html">Home</a> &rsaquo; <a href="index.html">Wiki</a> &rsaquo; Synergies</div>
+  <h1>Synergies</h1>
+  <p class="sub">Path-mates empower one another. Every psycast both receives bonuses from a fixed set of neighbours and empowers others in turn - Diablo-2-style directed links, generated from your installed paths and made skill-aware so the bonus always matters.</p>
+
+  <div class="callout"><b>See it live.</b> The <a class="xref" href="../index.html#lab">synergy lab</a> on the home page lets
+  you level Firestorm's three neighbours and watch its damage, area, and cooldown move.</div>
+
+  <h2>Two directions</h2>
+  <p>Each skill tooltip splits its synergies into two named blocks:</p>
+  <ul>
+    <li><strong>&lt;Skill&gt; receives bonuses from:</strong> the 3-5 path-mates that feed this skill. Each row reads
+    <code>+X Stat per level</code> - the amount that source contributes per <em>its</em> level. Hold <code>Alt</code>
+    to add the live total at the source's current level.</li>
+    <li><strong>&lt;Skill&gt; also empowers:</strong> a single line listing the mates this skill feeds; each is fully
+    detailed on its own card, so there is no duplicated math.</li>
+  </ul>
+
+  <h2>The rate</h2>
+  <p>A synergy link carries a <strong>type</strong> (the stat it boosts) and a <strong>rate</strong>. The total a
+  source contributes scales with the source's level.</p>
+  <div class="math"><div class="mh">Link rate &amp; contribution</div><div class="eq">rate         = SynergyRate(type) <span class="op">&middot;</span> EdgeStrength(src &rarr; dst)
+bonus(L)     = L <span class="op">&middot;</span> rate            <span class="cmt"># total at source level L</span>
+rawPerLevel  = baseStat(dst) <span class="op">&middot;</span> rate  <span class="cmt"># what the tooltip prints</span></div></div>
+  <div class="vardef">
+    <div class="row"><span class="k">type</span><span class="d">the boosted stat (Damage, Area, Duration, Cooldown, Cost, Charges...)</span></div>
+    <div class="row"><span class="k">SynergyRate</span><span class="d">the base per-level rate for that type</span></div>
+    <div class="row"><span class="k">EdgeStrength</span><span class="d">a per-link weight (0.6-1.4) so some neighbours matter more</span></div>
+    <div class="row"><span class="k">L</span><span class="d">the source skill's current level</span></div>
+    <div class="row"><span class="k">baseStat(dst)</span><span class="d">the receiving skill's own value for the boosted stat</span></div>
+  </div>
+  <p>Because the printed number is <code>baseStat &times; rate</code>, the bonus is shown as a real amount -
+  <code>+1.6 Damage per level</code>, <code>+0.4 Area per level</code>, <code>+11 minutes per level</code> - not an
+  abstract percentage.</p>
+
+  <h2>Skill-aware stat assignment</h2>
+  <p>A synergy type is only ever assigned to a skill that can <em>meaningfully</em> use it. A few percent of duration
+  on a twelve-hour buff, or extra range on a whole-map cast, is noise - so the graph skips those types for those
+  skills entirely and reshuffles the link onto something that matters.</p>
+  <table class="t">
+    <tr><th>Type</th><th>Offered only when&hellip;</th></tr>
+    <tr><td>Damage</td><td>the ability deals damage (direct or explosive)</td></tr>
+    <tr><td>Area</td><td>the ability has a blast radius, or is a beam</td></tr>
+    <tr><td>Duration</td><td><code>0 &lt; durationTime &le; 10000</code> ticks (~4 in-game hours) - long buffs excluded</td></tr>
+    <tr><td>Range</td><td><code>0 &lt; range &le; 60</code> tiles - self / global casts excluded</td></tr>
+    <tr><td>Targets</td><td>the ability hits multiple targets or is a single decisive strike</td></tr>
+    <tr><td>Cooldown &middot; Cost</td><td>always - every cast has both (the universal fallbacks)</td></tr>
+  </table>
+  <div class="callout"><b>Why Psychic guidance never gets +seconds Duration:</b> it lasts twelve hours, so duration
+  is filtered out for it and its incoming links land on cost, cooldown or effect strength instead.</div>
+
+  <h2>How the graph is built</h2>
+  <ul>
+    <li>Each ability's <strong>primary</strong> stat and each <strong>link</strong>'s type are drawn from a
+    rarity-weighted pool, seeded by an FNV-1a hash of the ability's <code>defName</code> (links seed on the
+    <code>source|target</code> pair, so each link rolls its own useful type).</li>
+    <li>Role bias nudges the roll - offensive skills lean Damage, control leans Area, boons lean effect Strength -
+    while the universal types keep two mates from one path rarely sharing a type.</li>
+    <li>The graph is <strong>frozen</strong> the first time it is built and stored in settings, so your build never
+    reshuffles across sessions. It only regenerates when the graph version changes (for example, when the
+    skill-aware rules above were tightened).</li>
+  </ul>
+
+  <div class="pagenav" id="pagenav"></div>
+</article>
+</div>
+<footer id="site-footer"></footer>
+<script src="../assets/app.js"></script>
+</body>
+</html>
