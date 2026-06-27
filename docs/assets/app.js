@@ -3,6 +3,8 @@
   var inWiki = /\/wiki\//.test(location.pathname);
   var home = inWiki ? '../index.html' : 'index.html';
   var wikiHome = inWiki ? 'index.html' : 'wiki/index.html';
+  var planner = inWiki ? 'calculator.html' : 'wiki/calculator.html';
+  var onPlanner = /calculator\.html/.test(location.pathname);
   var demo = inWiki ? '../index.html#lab' : '#lab';
   var STEAM = 'https://steamcommunity.com/sharedfiles/filedetails/?id=3749096772';
   var SIGIL = '<svg viewBox="0 0 100 100" aria-hidden="true"><path fill="currentColor" d="M50 5 L58 42 L95 50 L58 58 L50 95 L42 58 L5 50 L42 42 Z"/><circle cx="50" cy="50" r="6.5" fill="var(--bg)"/></svg>';
@@ -11,6 +13,7 @@
 
   var WIKI = [
     ['Start','index.html','Overview'],
+    ['Start','calculator.html','Build Planner'],
     ['Progression','skill-levels.html','Skill Levels'],
     ['Progression','synergies.html','Synergies'],
     ['Progression','specializations.html','Specializations'],
@@ -19,7 +22,7 @@
     ['Cultivation','card-selection.html','Path Cards & Foci'],
     ['Cultivation','auto-stats.html','Psycaster Stats'],
     ['Cultivation','pilgrimages.html','Pilgrimages'],
-    ['The World','ascensions.html','Ascension Constellations'],
+    ['The World','apotheosis.html','Apotheosis Constellations'],
     ['The World','enemies.html','Enemy Psycasters'],
     ['Reference','casting.html','Casting & Charges'],
     ['Reference','settings.html','Settings Reference']
@@ -40,7 +43,8 @@
       '<a href="'+home+'" class="brand">'+SIGIL+' Psycasts\u00b2</a>'+
       '<div class="links">'+
         '<a href="'+home+'">Home</a>'+
-        '<a href="'+wikiHome+'"'+(inWiki?' class="active"':'')+'>Wiki</a>'+
+        '<a href="'+wikiHome+'"'+(inWiki&&!onPlanner?' class="active"':'')+'>Wiki</a>'+
+        '<a href="'+planner+'"'+(onPlanner?' class="active"':'')+'>Planner</a>'+
         '<a href="'+demo+'" class="cta">Live Demo</a>'+
         '<a href="'+STEAM+'" target="_blank" rel="noopener">Steam</a>'+
         '<button id="themebtn" class="themebtn themewrap" title="Toggle light / dark" aria-label="Toggle theme"></button>'+
@@ -169,7 +173,7 @@
     breakthrough:{w:600,h:300,pad:{l:54,r:20,t:16,b:44},
       x:{min:0,max:40,label:'Consecutive meditation hours',ticks:[0,10,20,30,40]},
       y:{min:0,max:0.65,label:'Breakthrough chance / hour',ticks:[0,0.2,0.4,0.6],fmt:function(v){return Math.round(v*100)+'%';}},
-      series:[{name:'Tier 0-3  (x1.0)',pts:bt(1)},{name:'Transcendent I  (x1.15)',pts:bt(1.15)},{name:'Transcendent VII  (x2.05)',pts:bt(2.05)}],
+      series:[{name:'Tier 0-3  (x1.0)',pts:bt(1)},{name:'Transcendent IV  (x1.15)',pts:bt(1.15)},{name:'Transcendent X  (x2.05)',pts:bt(2.05)}],
       marks:[{y:0.6,label:'hard cap 60%'}]},
     btier:{w:600,h:300,pad:{l:54,r:20,t:16,b:44},
       x:{min:0,max:10,label:'Enlightenment tier',ticks:[0,2,4,6,8,10]},
@@ -184,7 +188,7 @@
       x:{min:30,max:150,label:'Psycaster level (cap unlocked)',ticks:[30,60,90,120,150]},
       y:{min:0,max:2200,label:'Cumulative meditation hours',ticks:[0,500,1000,1500,2000]},
       series:[{name:'Meditation to unlock this level cap',pts:[[30,0],[42,36],[54,60],[66,84],[78,132],[90,209],[102,332],[114,529],[126,844],[138,1347],[150,2152]]}],
-      marks:[{y:84,label:'Ascended - guided journey ends (Lv 66)'}]},
+      marks:[{y:84,label:'Illuminated - guided journey ends (Lv 66)'}]},
     psyxp:{w:600,h:320,pad:{l:64,r:20,t:16,b:44},
       x:{min:1,max:50,label:'Psycaster level',ticks:[1,10,20,30,40,50]},
       y:{min:0,max:10000,label:'XP for this level',ticks:[0,2500,5000,7500,10000]},

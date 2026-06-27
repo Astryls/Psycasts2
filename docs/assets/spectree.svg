@@ -232,7 +232,7 @@
 <circle cx="417" cy="1135" r="0.8" fill="#fff" opacity="0.36"/>
 <circle cx="454" cy="225" r="0.4" fill="#fff" opacity="0.24"/>
 <line x1="40" y1="657" x2="944" y2="657" stroke="#fff" stroke-opacity="0.05" stroke-dasharray="3 7"/>
-<text x="938" y="158" fill="#9ea6b3" font-size="13" font-weight="700" letter-spacing="3" text-anchor="end" opacity="0.5">THE SEVEN ASCENSIONS</text>
+<text x="938" y="158" fill="#9ea6b3" font-size="13" font-weight="700" letter-spacing="3" text-anchor="end" opacity="0.5">THE SEVEN APOTHEOSIS</text>
 <text x="938" y="1047" fill="#9ea6b3" font-size="13" font-weight="700" letter-spacing="3" text-anchor="end" opacity="0.4">CORE CONSTELLATION</text>
 <line x1="386.8" y1="1015.6" x2="386.8" y2="883.0" stroke="#9aa4b2" stroke-opacity="0.30" stroke-width="1.6"/>
 <line x1="386.8" y1="1015.6" x2="290.8" y2="961.0" stroke="#ff7a5c" stroke-opacity="0.30" stroke-width="1.6"/>
@@ -374,14 +374,14 @@
 <circle cx="569.2" cy="415.0" r="10.5" fill="#ff8fc8" opacity="0.3"/>
 <circle cx="569.2" cy="415.0" r="6.5" fill="#ff8fc8" stroke="#0a0c10" stroke-width="2"/>
 <text x="300" y="166" fill="#8fe6a8" font-size="15" font-weight="800" text-anchor="middle">Halcyon</text>
-<text x="464" y="65" fill="#f5cf5c" font-size="15" font-weight="800" text-anchor="middle">Ascendant</text>
+<text x="464" y="65" fill="#f5cf5c" font-size="15" font-weight="800" text-anchor="middle">Singularity</text>
 <text x="809" y="72" fill="#b58bff" font-size="15" font-weight="800" text-anchor="middle">Penumbra</text>
 <text x="790" y="455" fill="#6db3ff" font-size="15" font-weight="800" text-anchor="middle">Empyrean</text>
 <text x="281" y="283" fill="#5fded0" font-size="15" font-weight="800" text-anchor="middle">Chronos</text>
 <text x="396" y="439" fill="#ff6b5c" font-size="15" font-weight="800" text-anchor="middle">Pandemonium</text>
 <text x="569" y="400" fill="#ff8fc8" font-size="15" font-weight="800" text-anchor="middle">Consonance</text>
-<text x="387" y="759" fill="#f5cf5c" font-size="16" font-weight="800" text-anchor="middle">SYNTHESIS</text>
-<text x="387" y="775" fill="#9ea6b3" font-size="11" font-weight="600" text-anchor="middle">opens the seven ascensions</text>
+<text x="387" y="759" fill="#f5cf5c" font-size="16" font-weight="800" text-anchor="middle">CONVERGENCE</text>
+<text x="387" y="775" fill="#9ea6b3" font-size="11" font-weight="600" text-anchor="middle">opens the seven Apotheosis</text>
 <text x="70" y="784" fill="#ff7a5c" font-size="11.5" font-weight="700" text-anchor="middle" opacity="0.92">Tempest</text>
 <text x="704" y="784" fill="#6db3ff" font-size="11.5" font-weight="700" text-anchor="middle" opacity="0.92">Maelstrom</text>
 <text x="704" y="1221" fill="#7fe0a0" font-size="11.5" font-weight="700" text-anchor="middle" opacity="0.92">Sanctuary</text>

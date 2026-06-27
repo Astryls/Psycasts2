@@ -13,7 +13,7 @@
 <article class="doc">
   <div class="breadcrumb"><a href="../index.html">Home</a> &rsaquo; <a href="index.html">Wiki</a> &rsaquo; Meditation &amp; Awakening</div>
   <h1>Meditation &amp; Awakening</h1>
-  <p class="sub">Meditation is the engine of the mod. A dedicated colonist meditates to the Awakening; a psycaster meditates for breakthroughs and, beyond Ascended, for Transcendence. But meditating around the clock courts the psychic coma - the system rewards rhythm, not grinding.</p>
+  <p class="sub">Meditation is the engine of the mod. A dedicated colonist meditates to the Awakening; a psycaster meditates for breakthroughs and, beyond Illuminated, for Transcendence. But meditating around the clock courts the psychic coma - the system rewards rhythm, not grinding.</p>
 
   <div class="callout"><b>Clock primer:</b> <code>2500 ticks = 1 in-game hour</code>, <code>60000 ticks = 1 day</code>.
   Progress only accrues while a pawn is actually meditating, not while walking to the spot.</div>
@@ -62,16 +62,16 @@ chance   = min( base <span class="op">&middot;</span> satMult <span class="op">&
     <div class="row"><span class="k">falloff</span><span class="d">penalty strength - setting, default 0.5</span></div>
     <div class="row"><span class="k">curve</span><span class="d">Transcendent breakthrough curve - setting, default 0.15 (each Transcendent tier multiplies the chance by +15%)</span></div>
   </div>
-  <div class="callout"><b>Past Ascended, breakthroughs speed up - but never become certain.</b> Each Transcendent tier raises the
+  <div class="callout"><b>Past Illuminated, breakthroughs speed up - but never become certain.</b> Each Transcendent tier raises the
   multiplier (Transcendent&nbsp;I &times;1.15 &hellip; Transcendent&nbsp;VII &times;2.05), so deep Transcendents reach the
   ceiling with about half the streak (~15h vs ~39h) as leveling slows. The <code>0.60</code> hard cap always holds.</div>
   <figure class="chartfig"><div class="chart" data-chart="breakthrough"></div><figcaption>Hourly breakthrough chance vs streak length, by tier (anti-farming saturation aside). Higher tiers reach the 60% ceiling with far less streak - but never exceed it.</figcaption></figure>
 
   <h3>How the chance grows per tier</h3>
-  <p>Tiers 0 through III (Ascended) all roll at the same base chance - the per-tier boost is a <strong>Transcendence</strong>
+  <p>Tiers 0 through III (Illuminated) all roll at the same base chance - the per-tier boost is a <strong>Transcendence</strong>
   reward. From Transcendent&nbsp;I (tier&nbsp;IV) the <code>tierMult</code> climbs +15% each tier, so the same streak
   converts to a breakthrough far more often. It still cannot pass the 60% ceiling; deeper tiers simply reach it sooner.</p>
-  <figure class="chartfig"><div class="chart" data-chart="btier"></div><figcaption>Hourly breakthrough chance by enlightenment tier, at two streak lengths. Flat through Ascended, then rising through Transcendence - a long (25h) streak hits the 60% cap by Transcendent IV (tier 7), while shorter sessions keep climbing toward it.</figcaption></figure>
+  <figure class="chartfig"><div class="chart" data-chart="btier"></div><figcaption>Hourly breakthrough chance by enlightenment tier, at two streak lengths. Flat through Illuminated, then rising through Transcendence - a long (25h) streak hits the 60% cap by Transcendent VII (tier 7), while shorter sessions keep climbing toward it.</figcaption></figure>
 
   <h2>Over-meditation &amp; the psychic coma</h2>
   <p>Up to the <strong>safe window</strong> each day there is no risk. Past it, every additional hour adds coma risk,

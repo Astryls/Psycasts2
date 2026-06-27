@@ -20,8 +20,8 @@
     <tr><th>Tier</th><th>Name</th><th>Reached by</th><th>Grants</th></tr>
     <tr><td class="num">I</td><td>Awakened</td><td>Meditation (the Awakening)</td><td>+10% psychic sensitivity, a path pick</td></tr>
     <tr><td class="num">II</td><td>Enlightened</td><td><a href="pilgrimages.html">Pilgrimage</a> Tier II</td><td>+20% sensitivity, spec points, a path pick</td></tr>
-    <tr><td class="num">III</td><td>Ascended</td><td><a href="pilgrimages.html">Pilgrimage</a> Tier III</td><td>+35% sensitivity, spec points, a path pick</td></tr>
-    <tr><td class="num">IV+</td><td>Transcendent I, II, &hellip;</td><td>Continued meditation past Ascended</td><td>+3 spec points &amp; an animated psycast-card pick, each tier</td></tr>
+    <tr><td class="num">III</td><td>Illuminated</td><td><a href="pilgrimages.html">Pilgrimage</a> Tier III</td><td>+35% sensitivity, spec points, a path pick</td></tr>
+    <tr><td class="num">IV+</td><td>Transcendent IV, V, &hellip;</td><td>Continued meditation past Illuminated</td><td>+3 spec points &amp; an animated psycast-card pick, each tier</td></tr>
   </table>
   <p>The tier shows as a blue hediff on the Health tab and a small Roman-numeral badge beside the
   specialization-point star. It is read on <em>any</em> humanlike, so <a class="xref" href="enemies.html">enemy
@@ -29,16 +29,16 @@
 
   <h2>Passive effects by tier</h2>
   <p>Everything a tier passively grants, at a glance. Flat psychic sensitivity comes from the hediff and caps at +35%
-  (Ascended on); the per-level rate and the breakthrough multiplier keep climbing with every tier.</p>
+  (Illuminated on); the per-level rate and the breakthrough multiplier keep climbing with every tier.</p>
   <table class="t">
     <tr><th>Tier</th><th>Sensitivity</th><th class="num">Level cap</th><th class="num">Per-level rate</th><th class="num">Breakthrough</th><th>On reaching</th></tr>
     <tr><td>0 - none</td><td>&mdash;</td><td class="num">30</td><td class="num">&times;1.00</td><td class="num">&times;1.00</td><td>&mdash;</td></tr>
     <tr><td>I - Awakened</td><td>+10%</td><td class="num">42</td><td class="num">&times;1.15</td><td class="num">&times;1.00</td><td>path pick</td></tr>
     <tr><td>II - Enlightened</td><td>+20%</td><td class="num">54</td><td class="num">&times;1.30</td><td class="num">&times;1.00</td><td>+4 pts, path</td></tr>
-    <tr><td>III - Ascended</td><td>+35%</td><td class="num">66</td><td class="num">&times;1.45</td><td class="num">&times;1.00</td><td>+6 pts, path</td></tr>
-    <tr><td>IV - Transc. I</td><td>+35%</td><td class="num">78</td><td class="num">&times;1.60</td><td class="num">&times;1.15</td><td>+3 pts, card / +4</td></tr>
-    <tr><td>VII - Transc. IV</td><td>+35%</td><td class="num">114</td><td class="num">&times;2.05</td><td class="num">&times;1.60</td><td>+3 pts, card / +4</td></tr>
-    <tr><td>X - Transc. VII</td><td>+35%</td><td class="num">150</td><td class="num">&times;2.50</td><td class="num">&times;2.05</td><td>+3 pts, card / +4</td></tr>
+    <tr><td>III - Illuminated</td><td>+35%</td><td class="num">66</td><td class="num">&times;1.45</td><td class="num">&times;1.00</td><td>+6 pts, path</td></tr>
+    <tr><td>Transcendent IV</td><td>+35%</td><td class="num">78</td><td class="num">&times;1.60</td><td class="num">&times;1.15</td><td>+3 pts, card / +4</td></tr>
+    <tr><td>Transcendent VII</td><td>+35%</td><td class="num">114</td><td class="num">&times;2.05</td><td class="num">&times;1.60</td><td>+3 pts, card / +4</td></tr>
+    <tr><td>Transcendent X</td><td>+35%</td><td class="num">150</td><td class="num">&times;2.50</td><td class="num">&times;2.05</td><td>+3 pts, card / +4</td></tr>
   </table>
   <div class="callout"><b>Per-level rate</b> multiplies the <a class="xref" href="auto-stats.html">auto-stat</a> growth (heat,
   recovery, sensitivity) for levels earned at that tier, non-retroactively. <b>Breakthrough</b> multiplies the meditation
@@ -64,7 +64,7 @@
   <figure class="chartfig"><div class="chart" data-chart="levelcap"></div><figcaption>The psycaster level cap by enlightenment tier. It crosses the ~148 needed for a level-15 build right around Tier 10 - the balance target.</figcaption></figure>
 
   <h2>Transcendence: the endless climb</h2>
-  <p>An Ascended (Tier III) psycaster who keeps meditating accumulates progress toward the next Transcendent tier.
+  <p>An Illuminated (Tier III) psycaster who keeps meditating accumulates progress toward the next Transcendent tier.
   The cost is <strong>geometric</strong>: each tier demands a fixed multiple of the previous one's meditation, so the
   journey slows dramatically - diminishing returns by design.</p>
   <div class="math"><div class="mh">Cost to next tier (meditation hours)</div><div class="eq">Hours(tier) = base <span class="op">&middot;</span> growth <sup>(tier <span class="op">&minus;</span> <span class="num">4</span>)</sup></div></div>
@@ -73,7 +73,7 @@
     <div class="row"><span class="k">base</span><span class="d">hours of meditation for Tier IV - setting, default 48</span></div>
     <div class="row"><span class="k">growth</span><span class="d">per-tier cost multiplier - setting, default 1.6</span></div>
   </div>
-  <p>Only meditation past Ascended counts, and only while the pawn is actively meditating. At the defaults:</p>
+  <p>Only meditation past Illuminated counts, and only while the pawn is actively meditating. At the defaults:</p>
   <table class="t">
     <tr><th>Reaching</th><th class="num">IV</th><th class="num">V</th><th class="num">VI</th><th class="num">VII</th><th class="num">VIII</th><th class="num">IX</th><th class="num">X</th></tr>
     <tr><td>meditation hours</td><td class="num">48</td><td class="num">77</td><td class="num">123</td><td class="num">197</td><td class="num">315</td><td class="num">503</td><td class="num">805</td></tr>
@@ -98,9 +98,9 @@
     <li>The <strong>+15% rate</strong> keeps compounding, so deep Transcendents earn outsized levels - earned slowly,
     never runaway, because the climb above is geometric.</li>
   </ul>
-  <div class="callout"><b>Three similar words, three systems:</b> "Ascended" is enlightenment Tier III (this page),
-  "Ascension" is a <a class="xref" href="ascensions.html">constellation identity</a>, and "Ascendance / Synthesis"
-  is the level-cap <a class="xref" href="specializations.html">specialization</a>.</div>
+  <div class="callout"><b>Three distinct systems, easy to tell apart:</b> "Illuminated" is enlightenment Tier III (this page),
+  "Convergence" is the apex <a class="xref" href="specializations.html">specialization</a> that opens the seven, and
+  "Apotheosis" is the set of seven <a class="xref" href="apotheosis.html">constellation identities</a>.</div>
 
   <div class="pagenav" id="pagenav"></div>
 </article>
