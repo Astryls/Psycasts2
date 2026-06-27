@@ -201,3 +201,69 @@ table.t td.num{font-variant-numeric:tabular-nums;font-weight:700;white-space:now
 .pagenav .k{font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:var(--faint)}
 .pagenav .v{font-weight:700;margin-top:2px}
 .pagenav a.next{text-align:right}
+
+/* ---------- charts (inline SVG, theme-aware) ---------- */
+.chartfig{margin:20px 0}
+.chartfig figcaption{color:var(--faint);font-size:12.5px;margin-top:8px;text-align:center;font-style:italic}
+.chart{border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);padding:8px}
+.chart svg{width:100%;height:auto;display:block;font-family:"Segoe UI",Roboto,Arial,sans-serif}
+.cg{stroke:var(--line);stroke-width:1}
+.ca{stroke:var(--line2);stroke-width:1.4}
+.ct{fill:var(--faint);font-size:11px}
+.cax{fill:var(--dim);font-size:11.5px;font-weight:600}
+.cm{stroke:var(--warn);stroke-width:1.3;stroke-dasharray:5 4;fill:none}
+.cml{fill:var(--warn);font-size:10.5px;font-weight:700}
+.cs{fill:none;stroke-width:2.6;stroke-linejoin:round;stroke-linecap:round}
+.cs1{stroke:var(--accent)} .cs2{stroke:var(--gold)} .cs3{stroke:var(--t3)}
+.cd1{fill:var(--accent)} .cd2{fill:var(--gold)} .cd3{fill:var(--t3)}
+.cl{fill:var(--text);font-size:12px;font-weight:600}
+/* non-retroactive "ledger" marimekko */
+.bk0{fill:var(--t1)} .bk1{fill:var(--t2)} .bk2{fill:var(--t3)} .bk3{fill:var(--t4)}
+.bkr{fill:var(--text);font-size:12.5px;font-weight:700}
+.bkl{fill:var(--faint);font-size:10.5px;font-weight:600}
+.bkax{stroke:var(--line2);stroke-width:1.3}
+.bkax2{fill:var(--dim);font-size:11px;font-weight:600}
+/* ancient-knowledge flow infographic */
+.flowgram{display:flex;flex-wrap:wrap;align-items:stretch;gap:8px;margin:18px 0 10px}
+.fstep{flex:1 1 0;min-width:124px;background:var(--panel2);border:1px solid var(--line);border-radius:var(--radius);padding:10px 12px}
+.fstep .ft{font-weight:700;color:var(--text);font-size:13.5px;line-height:1.25}
+.fstep .fd{color:var(--dim);font-size:12px;margin-top:3px;line-height:1.3}
+.fstep.fhi{border-color:var(--accent-line);background:var(--accent-soft)}
+.farrow{display:flex;align-items:center;justify-content:center;color:var(--faint);font-size:20px;font-weight:700;min-width:14px}
+.fbranch{flex:1.5 1 0;display:flex;flex-direction:column;gap:8px;min-width:160px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 8px}
+.chip{font-size:12px;font-weight:600;padding:4px 11px;border-radius:999px;border:1px solid var(--line);color:var(--dim);background:var(--panel)}
+.chip.up{color:var(--good);border-color:var(--good)}
+.chip.down{color:var(--bad);border-color:var(--bad)}
+.chip.cap{color:var(--accent);border-color:var(--accent-line)}
+.chip.warn{color:var(--warn);border-color:var(--warn)}
+/* focus -> schools infographic */
+.focusmap{display:flex;flex-direction:column;gap:6px;margin:14px 0}
+.frow{display:flex;gap:12px;align-items:flex-start;padding:9px 11px;background:var(--panel2);border:1px solid var(--line);border-radius:var(--radius)}
+.frow .fkey{flex:0 0 148px;display:flex;flex-direction:column}
+.frow .fkey b{color:var(--text);font-size:13.5px}
+.frow .fkey span{color:var(--faint);font-size:11.5px;margin-top:1px}
+.frow .fsch{flex:1 1 auto;display:flex;flex-wrap:wrap;gap:5px}
+.sch{font-size:11.5px;font-weight:600;color:var(--dim);background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:2px 7px}
+/* card-pick interactive */
+.ix{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;margin:16px 0}
+.ixrow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:10px}
+.ixlbl{font-size:11.5px;font-weight:700;color:var(--faint);text-transform:uppercase;letter-spacing:.04em;flex:0 0 58px}
+.ixbtns{display:flex;flex-wrap:wrap;gap:6px}
+.ixbtns.dim{opacity:.4}
+.ixbtns button,.ixdeal{font:inherit;cursor:pointer}
+.ixbtns button{font-size:12.5px;font-weight:600;padding:5px 11px;border-radius:6px;border:1px solid var(--line);background:var(--panel2);color:var(--dim)}
+.ixbtns button.on{background:var(--accent-soft);border-color:var(--accent-line);color:var(--accent)}
+.ixdeal{font-size:13px;font-weight:700;padding:7px 15px;border-radius:6px;border:1px solid var(--accent-line);background:var(--accent-soft);color:var(--accent)}
+.ixnote{font-size:12px;color:var(--faint)}
+.ixcards{display:flex;flex-wrap:wrap;gap:10px;margin:8px 0;min-height:152px}
+.ixcard{width:100px;height:146px;border-radius:8px;border:1px solid var(--line2);background:var(--panel2);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;text-align:center;padding:6px;transition:transform .12s,border-color .12s,box-shadow .12s}
+.ixcard:hover{transform:translateY(-3px)}
+.ixcard .ixback{font-size:32px;color:var(--faint);font-weight:800}
+.ixcard.flip{background:var(--panel);border-color:var(--line)}
+.ixcard.flip.themed{border-color:var(--accent-line)}
+.ixcard.pick{border-color:var(--gold);box-shadow:0 0 0 2px var(--gold) inset}
+.ixcard .ixname{font-size:13px;font-weight:700;color:var(--text);line-height:1.18}
+.ixcard .ixtag{font-size:10px;font-weight:700;color:var(--faint);margin-top:6px;text-transform:uppercase;letter-spacing:.03em}
+.ixcard.flip.themed .ixtag{color:var(--accent)}
+.ixresult{font-size:13px;color:var(--dim);margin-top:6px}

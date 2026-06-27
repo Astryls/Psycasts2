@@ -27,6 +27,23 @@
   specialization-point star. It is read on <em>any</em> humanlike, so <a class="xref" href="enemies.html">enemy
   psycasters</a> can be Enlightened too.</p>
 
+  <h2>Passive effects by tier</h2>
+  <p>Everything a tier passively grants, at a glance. Flat psychic sensitivity comes from the hediff and caps at +35%
+  (Ascended on); the per-level rate and the breakthrough multiplier keep climbing with every tier.</p>
+  <table class="t">
+    <tr><th>Tier</th><th>Sensitivity</th><th class="num">Level cap</th><th class="num">Per-level rate</th><th class="num">Breakthrough</th><th>On reaching</th></tr>
+    <tr><td>0 - none</td><td>&mdash;</td><td class="num">30</td><td class="num">&times;1.00</td><td class="num">&times;1.00</td><td>&mdash;</td></tr>
+    <tr><td>I - Awakened</td><td>+10%</td><td class="num">42</td><td class="num">&times;1.15</td><td class="num">&times;1.00</td><td>path pick</td></tr>
+    <tr><td>II - Enlightened</td><td>+20%</td><td class="num">54</td><td class="num">&times;1.30</td><td class="num">&times;1.00</td><td>+4 pts, path</td></tr>
+    <tr><td>III - Ascended</td><td>+35%</td><td class="num">66</td><td class="num">&times;1.45</td><td class="num">&times;1.00</td><td>+6 pts, path</td></tr>
+    <tr><td>IV - Transc. I</td><td>+35%</td><td class="num">78</td><td class="num">&times;1.60</td><td class="num">&times;1.15</td><td>+3 pts, card / +4</td></tr>
+    <tr><td>VII - Transc. IV</td><td>+35%</td><td class="num">114</td><td class="num">&times;2.05</td><td class="num">&times;1.60</td><td>+3 pts, card / +4</td></tr>
+    <tr><td>X - Transc. VII</td><td>+35%</td><td class="num">150</td><td class="num">&times;2.50</td><td class="num">&times;2.05</td><td>+3 pts, card / +4</td></tr>
+  </table>
+  <div class="callout"><b>Per-level rate</b> multiplies the <a class="xref" href="auto-stats.html">auto-stat</a> growth (heat,
+  recovery, sensitivity) for levels earned at that tier, non-retroactively. <b>Breakthrough</b> multiplies the meditation
+  <a class="xref" href="meditation.html">breakthrough</a> chance, hard-capped at 60%.</div>
+
   <h2>Growth scaling: +15% per tier</h2>
   <p>Higher tiers make each <em>new</em> level you earn worth more. The per-level
   <a class="xref" href="auto-stats.html">stat gains</a> are multiplied by a rate that climbs 15% per tier.</p>
@@ -38,6 +55,13 @@
   <div class="callout gold"><b>Non-retroactive.</b> A level is banked at the rate of the tier you were at when you
   earned it. Reaching a higher tier speeds up only your future levels - past levels keep their old value, so each
   point you gain in a new tier is permanently worth more than the ones before it.</div>
+  <div class="callout"><b>The level cap rises with you.</b> VPE caps a psycaster's level at 30. Each enlightenment tier
+  raises that ceiling by <code>+12</code> (so the cap is <code>30 + tier&times;12</code>), and the balance target is that
+  <strong>Tier 10 reaches level ~150</strong> - enough to clear the level-15 requirement of even the deepest abilities, so
+  a fully-maxed ascendancy is finishable by Tier 10. Keep climbing past it for more auto-stats, points and paths. At
+  Tier 0 you are stuck at 30 until you Awaken - which is what makes the non-retroactive rate meaningful: new levels are
+  earned <em>at</em> the higher tier's rate.</div>
+  <figure class="chartfig"><div class="chart" data-chart="levelcap"></div><figcaption>The psycaster level cap by enlightenment tier. It crosses the ~148 needed for a level-15 build right around Tier 10 - the balance target.</figcaption></figure>
 
   <h2>Transcendence: the endless climb</h2>
   <p>An Ascended (Tier III) psycaster who keeps meditating accumulates progress toward the next Transcendent tier.
@@ -51,15 +75,26 @@
   </div>
   <p>Only meditation past Ascended counts, and only while the pawn is actively meditating. At the defaults:</p>
   <table class="t">
-    <tr><th>Reaching</th><th class="num">IV</th><th class="num">V</th><th class="num">VI</th><th class="num">VII</th><th class="num">VIII</th></tr>
-    <tr><td>meditation hours</td><td class="num">48</td><td class="num">77</td><td class="num">123</td><td class="num">197</td><td class="num">315</td></tr>
+    <tr><th>Reaching</th><th class="num">IV</th><th class="num">V</th><th class="num">VI</th><th class="num">VII</th><th class="num">VIII</th><th class="num">IX</th><th class="num">X</th></tr>
+    <tr><td>meditation hours</td><td class="num">48</td><td class="num">77</td><td class="num">123</td><td class="num">197</td><td class="num">315</td><td class="num">503</td><td class="num">805</td></tr>
   </table>
+  <figure class="chartfig"><div class="chart" data-chart="transcost"></div><figcaption>Meditation hours required for each Transcendent tier, IV through X (the Tier-10 / level-150 max). The geometric x1.6 growth is the diminishing-returns curve that slows the endless climb - Tier X alone costs ~805 hours.</figcaption></figure>
+  <div class="callout"><b>Meditation to reach each tier.</b> Tier&nbsp;I (Awakened) takes up to ~36 cumulative meditation hours
+  (guaranteed by then). Tiers&nbsp;II-III come from <a class="xref" href="pilgrimages.html">pilgrimages</a> - a few days of
+  capped (6h/day) meditation each. From Tier&nbsp;IV the cost is the geometric curve above, roughly doubling every two tiers.</div>
+
+  <h3>Meditation required for levels up to 150</h3>
+  <p>Because the <a class="xref" href="auto-stats.html">level cap</a> rises with tier, unlocking higher psycaster levels is
+  really a meditation cost. This is the <strong>cumulative</strong> meditation to open leveling all the way to each cap, from
+  30 to the level-150 ceiling - gentle through the guided tiers, then exponential through Transcendence.</p>
+  <figure class="chartfig"><div class="chart" data-chart="medlevel"></div><figcaption>Total meditation to unlock leveling to each cap (30 &rarr; 150). Reaching the level-150 ceiling is roughly 2,150 cumulative meditation hours; the guided portion (to level 66) is a small fraction of it. Tiers II-III are shown as pilgrimage estimates.</figcaption></figure>
 
   <h2>What a Transcendent tier grants</h2>
   <ul>
     <li><strong>+3 specialization points</strong>, bankable in the <a class="xref" href="specializations.html">constellation tree</a>.</li>
     <li><strong>An animated psycast-card pick</strong> - the same tarot-flip ceremony as the Awakening, drawing three
-    cards from every path you have not yet claimed. Embrace one to unlock that whole path for free.</li>
+    cards from every path you have not yet claimed. Embrace one to unlock that whole path for free, <em>or</em>
+    <strong>forgo the card</strong> for a further <code>+4</code> specialization points (on top of the tier's +3).</li>
     <li>The <strong>+15% rate</strong> keeps compounding, so deep Transcendents earn outsized levels - earned slowly,
     never runaway, because the climb above is geometric.</li>
   </ul>

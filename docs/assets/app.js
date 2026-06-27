@@ -16,6 +16,7 @@
     ['Progression','specializations.html','Specializations'],
     ['Progression','enlightenment.html','Enlightenment & Transcendence'],
     ['Cultivation','meditation.html','Meditation & Awakening'],
+    ['Cultivation','card-selection.html','Path Cards & Foci'],
     ['Cultivation','auto-stats.html','Psycaster Stats'],
     ['Cultivation','pilgrimages.html','Pilgrimages'],
     ['The World','ascensions.html','Ascension Constellations'],
@@ -147,4 +148,93 @@
     $('labReset').onclick=function(){MATES.forEach(function(m){m.lv=0;$('lv_'+m.id).textContent='0';});T.lv=3;if(lr)lr.value=3;paint();feed.innerHTML='<li class="empty">Level a path-mate to empower Firestorm.</li>';};
     paint();
   }
+
+  /* ---- charts: inline SVG, colours via CSS classes so they follow the theme live ---- */
+  function bt(m){var a=[];for(var h=0;h<=40;h+=2)a.push([h,Math.min((0.02+0.015*h)*m,0.6)]);return a;}
+  function btT(h){var a=[],base=0.02+0.015*h;for(var t=0;t<=10;t++){var m=t>3?1+(t-3)*0.15:1;a.push([t,Math.min(base*m,0.6)]);}return a;}
+  function roman(n){return ['','I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII'][n]||(''+n);}
+  var CHARTS={
+    levelreq:{w:600,h:320,pad:{l:54,r:20,t:16,b:44},
+      x:{min:1,max:15,label:'Skill level',ticks:[1,3,5,7,9,11,13,15]},
+      y:{min:0,max:150,label:'Psycaster level required',ticks:[0,30,60,90,120,150]},
+      series:[
+        {name:'Tier 1 ability (shallow)',pts:[[1,0],[2,3],[3,7],[4,12],[5,18],[6,25],[7,33],[8,42],[9,52],[10,63],[11,75],[12,88],[13,102],[14,117],[15,133]]},
+        {name:'Tier 6 ability (deepest)',pts:[[1,15],[2,18],[3,22],[4,27],[5,33],[6,40],[7,48],[8,57],[9,67],[10,78],[11,90],[12,103],[13,117],[14,132],[15,148]]}
+      ],marks:[{y:30,label:'VPE base cap (psy 30)'}]},
+    levelcap:{w:600,h:300,pad:{l:54,r:20,t:16,b:44},
+      x:{min:0,max:10,label:'Enlightenment tier',ticks:[0,2,4,6,8,10]},
+      y:{min:0,max:160,label:'Psycaster level cap',ticks:[0,40,80,120,160]},
+      series:[{name:'Cap = 30 + tier x 12',pts:[[0,30],[1,42],[2,54],[3,66],[4,78],[5,90],[6,102],[7,114],[8,126],[9,138],[10,150]]}],
+      marks:[{y:148,label:'level-15 build needs ~148'}]},
+    breakthrough:{w:600,h:300,pad:{l:54,r:20,t:16,b:44},
+      x:{min:0,max:40,label:'Consecutive meditation hours',ticks:[0,10,20,30,40]},
+      y:{min:0,max:0.65,label:'Breakthrough chance / hour',ticks:[0,0.2,0.4,0.6],fmt:function(v){return Math.round(v*100)+'%';}},
+      series:[{name:'Tier 0-3  (x1.0)',pts:bt(1)},{name:'Transcendent I  (x1.15)',pts:bt(1.15)},{name:'Transcendent VII  (x2.05)',pts:bt(2.05)}],
+      marks:[{y:0.6,label:'hard cap 60%'}]},
+    btier:{w:600,h:300,pad:{l:54,r:20,t:16,b:44},
+      x:{min:0,max:10,label:'Enlightenment tier',ticks:[0,2,4,6,8,10]},
+      y:{min:0,max:0.65,label:'Breakthrough chance / hour',ticks:[0,0.2,0.4,0.6],fmt:function(v){return Math.round(v*100)+'%';}},
+      series:[{name:'After a 25h streak',pts:btT(25)},{name:'After a 10h streak',pts:btT(10)}],
+      marks:[{y:0.6,label:'hard cap 60%'}]},
+    transcost:{w:600,h:300,pad:{l:62,r:20,t:16,b:44},
+      x:{min:4,max:10,label:'Transcendent tier reached',ticks:[4,5,6,7,8,9,10],fmt:roman},
+      y:{min:0,max:850,label:'Meditation hours for this tier',ticks:[0,200,400,600,800]},
+      series:[{name:'Cost = 48 x 1.6^(tier-4)',pts:[[4,48],[5,77],[6,123],[7,197],[8,315],[9,503],[10,805]]}]},
+    medlevel:{w:600,h:320,pad:{l:68,r:20,t:16,b:44},
+      x:{min:30,max:150,label:'Psycaster level (cap unlocked)',ticks:[30,60,90,120,150]},
+      y:{min:0,max:2200,label:'Cumulative meditation hours',ticks:[0,500,1000,1500,2000]},
+      series:[{name:'Meditation to unlock this level cap',pts:[[30,0],[42,36],[54,60],[66,84],[78,132],[90,209],[102,332],[114,529],[126,844],[138,1347],[150,2152]]}],
+      marks:[{y:84,label:'Ascended - guided journey ends (Lv 66)'}]},
+    psyxp:{w:600,h:320,pad:{l:64,r:20,t:16,b:44},
+      x:{min:1,max:50,label:'Psycaster level',ticks:[1,10,20,30,40,50]},
+      y:{min:0,max:10000,label:'XP for this level',ticks:[0,2500,5000,7500,10000]},
+      series:[{name:'XP for this level',pts:[[1,100],[5,175],[10,352],[15,708],[20,1423],[25,2291],[30,3689],[35,4708],[40,6008],[45,7668],[50,9787]]}],
+      marks:[{y:3689,label:'level 30 - base cap'}]},
+    accum:{w:600,h:330,pad:{l:66,r:20,t:16,b:44},
+      x:{min:0,max:150,label:'Psycaster level',ticks:[0,30,60,90,120,150]},
+      y:{min:0,max:6000,label:'Neural-heat offset gained',ticks:[0,1500,3000,4500,6000]},
+      series:[
+        {name:'Non-retroactive (what you actually get)',pts:[[0,0],[30,450],[42,657],[54,891],[66,1152],[78,1440],[90,1755],[102,2097],[114,2466],[126,2862],[138,3285],[150,3735]]},
+        {name:'Retroactive (if past levels were re-valued)',pts:[[0,0],[30,450],[42,724.5],[54,1053],[66,1435.5],[78,1872],[90,2362.5],[102,2907],[114,3505.5],[126,4158],[138,4864.5],[150,5625]]}
+      ]},
+    ledger:{type:'mk',w:600,h:210,pad:{l:42,r:18,t:28,b:36},ylabel:'per-level rate',
+      bands:[{lv:30,rate:1.0,t:'0'},{lv:12,rate:1.15,t:'I'},{lv:12,rate:1.30,t:'II'},{lv:12,rate:1.45,t:'III'},{lv:12,rate:1.60,t:'IV'},{lv:12,rate:1.75,t:'V'},{lv:12,rate:1.90,t:'VI'},{lv:12,rate:2.05,t:'VII'},{lv:12,rate:2.20,t:'VIII'},{lv:12,rate:2.35,t:'IX'},{lv:12,rate:2.50,t:'X'}]}
+  };
+  function buildMk(host,sp){
+    var W=sp.w,H=sp.h,P=sp.pad,tot=0,maxR=0;
+    sp.bands.forEach(function(b){tot+=b.lv;if(b.rate>maxR)maxR=b.rate;});
+    var bw=W-P.l-P.r, bh=H-P.t-P.b, base=H-P.b, s='<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="xMidYMid meet" role="img">';
+    s+='<text class="bkax2" transform="translate(13,'+((P.t+base)/2).toFixed(0)+') rotate(-90)" text-anchor="middle">'+sp.ylabel+'</text>';
+    s+='<line class="bkax" x1="'+P.l+'" y1="'+base+'" x2="'+(W-P.r)+'" y2="'+base+'"/>';
+    var x=P.l;
+    sp.bands.forEach(function(b,i){
+      var w=b.lv/tot*bw, h=b.rate/maxR*bh, top=base-h;
+      s+='<rect class="bk'+(i%4)+'" x="'+x.toFixed(1)+'" y="'+top.toFixed(1)+'" width="'+(w-1).toFixed(1)+'" height="'+h.toFixed(1)+'" rx="1.5"/>';
+      s+='<text class="bkl" x="'+(x+w/2).toFixed(1)+'" y="'+(base+14)+'" text-anchor="middle">'+b.t+'</text>';
+      s+='<text class="bkl" x="'+(x+w/2).toFixed(1)+'" y="'+(top-4).toFixed(1)+'" text-anchor="middle">x'+b.rate.toFixed(2)+'</text>';
+      x+=w;
+    });
+    host.innerHTML=s+'</svg>';
+  }
+  function buildChart(host){
+    var sp=CHARTS[host.dataset.chart]; if(!sp) return;
+    if(sp.type==='mk'){buildMk(host,sp);return;}
+    var W=sp.w,H=sp.h,P=sp.pad;
+    var xs=function(v){return P.l+(v-sp.x.min)/(sp.x.max-sp.x.min)*(W-P.l-P.r);};
+    var ys=function(v){return H-P.b-(v-sp.y.min)/(sp.y.max-sp.y.min)*(H-P.t-P.b);};
+    var yf=sp.y.fmt||function(v){return v;}, xf=sp.x.fmt||function(v){return v;};
+    var s='<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="xMidYMid meet" role="img">';
+    sp.y.ticks.forEach(function(t){var y=ys(t);s+='<line class="cg" x1="'+P.l+'" y1="'+y+'" x2="'+(W-P.r)+'" y2="'+y+'"/><text class="ct" x="'+(P.l-7)+'" y="'+(y+3.5)+'" text-anchor="end">'+yf(t)+'</text>';});
+    sp.x.ticks.forEach(function(t){var x=xs(t);s+='<text class="ct" x="'+x+'" y="'+(H-P.b+16)+'" text-anchor="middle">'+xf(t)+'</text>';});
+    s+='<line class="ca" x1="'+P.l+'" y1="'+P.t+'" x2="'+P.l+'" y2="'+(H-P.b)+'"/><line class="ca" x1="'+P.l+'" y1="'+(H-P.b)+'" x2="'+(W-P.r)+'" y2="'+(H-P.b)+'"/>';
+    s+='<text class="cax" x="'+((P.l+W-P.r)/2)+'" y="'+(H-5)+'" text-anchor="middle">'+sp.x.label+'</text>';
+    s+='<text class="cax" transform="translate(14,'+((P.t+H-P.b)/2)+') rotate(-90)" text-anchor="middle">'+sp.y.label+'</text>';
+    (sp.marks||[]).forEach(function(m){var y=ys(m.y);s+='<line class="cm" x1="'+P.l+'" y1="'+y+'" x2="'+(W-P.r)+'" y2="'+y+'"/><text class="cml" x="'+(W-P.r-2)+'" y="'+(y-4)+'" text-anchor="end">'+m.label+'</text>';});
+    sp.series.forEach(function(se,i){var pts=se.pts.map(function(p){return xs(p[0]).toFixed(1)+','+ys(p[1]).toFixed(1);}).join(' ');s+='<polyline class="cs cs'+(i+1)+'" points="'+pts+'"/>';});
+    var lx=P.l+10, ly=P.t+12;
+    sp.series.forEach(function(se,i){s+='<circle class="cd cd'+(i+1)+'" cx="'+lx+'" cy="'+(ly-4)+'" r="4"/><text class="cl" x="'+(lx+9)+'" y="'+ly+'">'+se.name+'</text>';ly+=18;});
+    s+='</svg>';
+    host.innerHTML=s;
+  }
+  document.querySelectorAll('[data-chart]').forEach(buildChart);
 })();
