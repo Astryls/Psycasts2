@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Remove the de-facto royal-title requirement on vanilla thrones for meditation. The abstract ThroneBase
+     (parent of Throne + GrandThrone, and modded thrones) lists only "Dignified" as its meditation focus
+     type, and Dignified has requiresRoyalTitle=true - so only titled nobles ever benefit from a throne's
+     meditation focus. We ADD our requirement-free PS_UniversalFocus alongside Dignified: nobles still match
+     Dignified (Reigning and the throne-satisfies-requirements bonus are untouched), while any other psycaster
+     now matches PS_UniversalFocus and gains the focus too. Wrapped in a Conditional so it no-ops cleanly if
+     Royalty is somehow absent (no red error). -->
+<Patch>
+  <!-- 1) Meditation focus type: add requirement-free PS_UniversalFocus alongside Dignified so any psycaster
+          (not just titled nobles) gains the throne's meditation focus. -->
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[@Name="ThroneBase"]/comps/li[@Class="CompProperties_MeditationFocus"]/focusTypes</xpath>
+    <match Class="PatchOperationAdd">
+      <xpath>Defs/ThingDef[@Name="ThroneBase"]/comps/li[@Class="CompProperties_MeditationFocus"]/focusTypes</xpath>
+      <value>
+        <li>PS_UniversalFocus</li>
+      </value>
+    </match>
+  </Operation>
+  <!-- 2) Manual meditate order: vanilla has NO manual "meditate here" command (reigning needs a title), so
+          add our generic CompPilgrimMeditation. Any psycaster can then right-click a throne and pick
+          "Meditate at ... (until told to stop)" - they stand at the interaction cell and meditate with the
+          throne as focus, no ownership or title required. -->
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[@Name="ThroneBase"]/comps</xpath>
+    <match Class="PatchOperationAdd">
+      <xpath>Defs/ThingDef[@Name="ThroneBase"]/comps</xpath>
+      <value>
+        <li Class="PsycastSynergies.CompProperties_PilgrimMeditation" />
+      </value>
+    </match>
+  </Operation>
+</Patch>

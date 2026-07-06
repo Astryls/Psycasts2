@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+  <!-- Mood buff from an Enlightenment event during meditation. -->
+  <ThoughtDef>
+    <defName>PS_InsightMemory</defName>
+    <durationDays>1</durationDays>
+    <stackLimit>5</stackLimit>
+    <stackedEffectMultiplier>0.75</stackedEffectMultiplier>
+    <stages>
+      <li>
+        <label>touched by insight</label>
+        <description>A moment of psychic clarity during meditation left me serene and inspired.</description>
+        <baseMoodEffect>4</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+</Defs>

@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+  <!-- The Ancient Psycaster Order: hidden, permanent-enemy, psycaster-only humanlike faction.
+       Created on demand at first wave (Patch in PilgrimQuest.cs) so we don't need worldgen entry. -->
+  <FactionDef>
+    <defName>PS_AncientPsycasters</defName>
+    <label>ancient psycaster order</label>
+    <description>An ancient order of psycasters who guard sites of psychic resonance from the unworthy. Wherever an Awakened pilgrim seeks a higher tier of Enlightenment, the order's adepts gather to test them.</description>
+    <pawnSingular>ancient psycaster</pawnSingular>
+    <pawnsPlural>ancient psycasters</pawnsPlural>
+    <!-- fixedName so FactionGenerator.NewGeneratedFaction skips name generation. Without a fixedName
+         AND no factionNameMaker, NameGenerator.GenerateName(null,...) throws an NRE at faction creation. -->
+    <fixedName>Ancient Psycaster Order</fixedName>
+    <permanentEnemy>true</permanentEnemy>
+    <hidden>true</hidden>
+    <humanlikeFaction>true</humanlikeFaction>
+    <techLevel>Spacer</techLevel>
+    <basicMemberKind>PS_AncientPsycaster_Basic</basicMemberKind>
+    <maxConfigurableAtWorldCreation>0</maxConfigurableAtWorldCreation>
+    <leaderTitle>archon</leaderTitle>
+    <backstoryFilters>
+      <li>
+        <categories>
+          <li>Pirate</li>
+        </categories>
+      </li>
+    </backstoryFilters>
+    <raidLootValueFromPointsCurve>
+      <points>
+        <li>(35,     8)</li>
+        <li>(100,   60)</li>
+        <li>(1000, 250)</li>
+        <li>(2000, 400)</li>
+        <li>(4000, 700)</li>
+      </points>
+    </raidLootValueFromPointsCurve>
+    <!-- Humanlike-style curve: caps a single pawn's cost well under the point total so waves field
+         SEVERAL psycasters (our cheapest is cp200). The mech 1:1 curve let one pawn eat the budget. -->
+    <maxPawnCostPerTotalPointsCurve>
+      <points>
+        <li>(0,      250)</li>
+        <li>(1000,   400)</li>
+        <li>(2000,   750)</li>
+        <li>(100000, 10000)</li>
+      </points>
+    </maxPawnCostPerTotalPointsCurve>
+    <pawnGroupMakers>
+      <li>
+        <kindDef>Combat</kindDef>
+        <commonality>100</commonality>
+        <options>
+          <PS_AncientPsycaster_Basic>10</PS_AncientPsycaster_Basic>
+          <PS_AncientPsycaster_Adept>4</PS_AncientPsycaster_Adept>
+          <PS_AncientPsycaster_Master>1</PS_AncientPsycaster_Master>
+        </options>
+      </li>
+    </pawnGroupMakers>
+  </FactionDef>
+
+  <!-- Basic - necropath path (death magic). Cheap, plentiful. -->
+  <PawnKindDef>
+    <defName>PS_AncientPsycaster_Basic</defName>
+    <label>ancient psycaster</label>
+    <race>Human</race>
+    <combatPower>200</combatPower>
+    <isFighter>true</isFighter>
+    <defaultFactionType>PS_AncientPsycasters</defaultFactionType>
+    <initialResistanceRange>10~20</initialResistanceRange>
+    <initialWillRange>1~4</initialWillRange>
+    <weaponMoney>99999</weaponMoney>
+    <weaponTags Inherit="False"><li>EltexStaff</li></weaponTags>
+    <requiredWorkTags><li>Violent</li></requiredWorkTags>
+    <apparelMoney>400~700</apparelMoney>
+    <apparelTags>
+      <li>IndustrialAdvanced</li>
+      <li>Robe</li>
+    </apparelTags>
+    <modExtensions>
+      <li Class="VanillaPsycastsExpanded.PawnKindAbilityExtension_Psycasts">
+        <implantDef>VPE_PsycastAbilityImplant</implantDef>
+        <unlockedPaths>
+          <VPE_Necropath>1~3|3~5</VPE_Necropath>
+        </unlockedPaths>
+        <statUpgradePoints>2~4</statUpgradePoints>
+      </li>
+    </modExtensions>
+  </PawnKindDef>
+
+  <!-- Adept - conflagrator path (fire). Mid-tier elite. -->
+  <PawnKindDef>
+    <defName>PS_AncientPsycaster_Adept</defName>
+    <label>ancient adept</label>
+    <race>Human</race>
+    <combatPower>360</combatPower>
+    <isFighter>true</isFighter>
+    <defaultFactionType>PS_AncientPsycasters</defaultFactionType>
+    <initialResistanceRange>15~25</initialResistanceRange>
+    <initialWillRange>2~5</initialWillRange>
+    <weaponMoney>99999</weaponMoney>
+    <weaponTags Inherit="False"><li>EltexStaff</li></weaponTags>
+    <requiredWorkTags><li>Violent</li></requiredWorkTags>
+    <apparelMoney>600~1200</apparelMoney>
+    <apparelTags>
+      <li>IndustrialAdvanced</li>
+      <li>Robe</li>
+      <li>RoyalNoble</li>
+    </apparelTags>
+    <modExtensions>
+      <li Class="VanillaPsycastsExpanded.PawnKindAbilityExtension_Psycasts">
+        <implantDef>VPE_PsycastAbilityImplant</implantDef>
+        <unlockedPaths>
+          <VPE_Conflagrator>1~4|5~8</VPE_Conflagrator>
+        </unlockedPaths>
+        <statUpgradePoints>5~8</statUpgradePoints>
+      </li>
+    </modExtensions>
+  </PawnKindDef>
+
+  <!-- Master - archotechist path. Rare, dangerous. -->
+  <PawnKindDef>
+    <defName>PS_AncientPsycaster_Master</defName>
+    <label>ancient archon</label>
+    <race>Human</race>
+    <combatPower>700</combatPower>
+    <isFighter>true</isFighter>
+    <defaultFactionType>PS_AncientPsycasters</defaultFactionType>
+    <initialResistanceRange>20~35</initialResistanceRange>
+    <initialWillRange>3~6</initialWillRange>
+    <weaponMoney>99999</weaponMoney>
+    <weaponTags Inherit="False"><li>EltexStaff</li></weaponTags>
+    <requiredWorkTags><li>Violent</li></requiredWorkTags>
+    <apparelMoney>1000~2200</apparelMoney>
+    <apparelTags>
+      <li>RoyalNoble</li>
+      <li>IndustrialAdvanced</li>
+    </apparelTags>
+    <modExtensions>
+      <li Class="VanillaPsycastsExpanded.PawnKindAbilityExtension_Psycasts">
+        <implantDef>VPE_PsycastAbilityImplant</implantDef>
+        <unlockedPaths>
+          <VPE_Archotechist>2~5|4~7</VPE_Archotechist>
+        </unlockedPaths>
+        <statUpgradePoints>10~16</statUpgradePoints>
+      </li>
+    </modExtensions>
+  </PawnKindDef>
+
+</Defs>

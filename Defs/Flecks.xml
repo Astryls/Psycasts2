@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+  <!-- Ascension aura particles (emitted from HediffComp_AscensionFx, tinted per path at spawn). -->
+
+  <FleckDef ParentName="FleckBase_Thrown">
+    <defName>PS_Fleck_Leaf</defName>
+    <graphicData>
+      <texPath>FX/Ascension/leaf</texPath>
+      <graphicClass>Graphic_Fleck</graphicClass>
+      <shaderType>MoteGlow</shaderType>
+    </graphicData>
+    <altitudeLayer>MoteOverhead</altitudeLayer>
+    <fadeInTime>0.15</fadeInTime>
+    <solidTime>0.25</solidTime>
+    <fadeOutTime>1.1</fadeOutTime>
+    <growthRate>-0.12</growthRate>
+  </FleckDef>
+
+  <FleckDef ParentName="FleckBase_Thrown">
+    <defName>PS_Fleck_Wisp</defName>
+    <graphicData>
+      <texPath>FX/Ascension/wisp</texPath>
+      <graphicClass>Graphic_Fleck</graphicClass>
+      <shaderType>MoteGlow</shaderType>
+    </graphicData>
+    <altitudeLayer>MoteOverhead</altitudeLayer>
+    <fadeInTime>0.15</fadeInTime>
+    <solidTime>0.25</solidTime>
+    <fadeOutTime>1.1</fadeOutTime>
+    <growthRate>-0.12</growthRate>
+  </FleckDef>
+
+  <FleckDef ParentName="FleckBase_Thrown">
+    <defName>PS_Fleck_Dot</defName>
+    <graphicData>
+      <texPath>FX/Ascension/dot</texPath>
+      <graphicClass>Graphic_Fleck</graphicClass>
+      <shaderType>MoteGlow</shaderType>
+    </graphicData>
+    <altitudeLayer>MoteOverhead</altitudeLayer>
+    <fadeInTime>0.1</fadeInTime>
+    <solidTime>0.15</solidTime>
+    <fadeOutTime>0.95</fadeOutTime>
+    <growthRate>-0.05</growthRate>
+  </FleckDef>
+
+  <!-- Transcendence: falling binary glyphs (digital rain). -->
+  <FleckDef ParentName="FleckBase_Thrown">
+    <defName>PS_Fleck_Glyph0</defName>
+    <graphicData>
+      <texPath>FX/Ascension/glyph0</texPath>
+      <graphicClass>Graphic_Fleck</graphicClass>
+      <shaderType>MoteGlow</shaderType>
+    </graphicData>
+    <altitudeLayer>MoteOverhead</altitudeLayer>
+    <fadeInTime>0.15</fadeInTime>
+    <solidTime>0.45</solidTime>
+    <fadeOutTime>1.0</fadeOutTime>
+  </FleckDef>
+
+  <FleckDef ParentName="FleckBase_Thrown">
+    <defName>PS_Fleck_Glyph1</defName>
+    <graphicData>
+      <texPath>FX/Ascension/glyph1</texPath>
+      <graphicClass>Graphic_Fleck</graphicClass>
+      <shaderType>MoteGlow</shaderType>
+    </graphicData>
+    <altitudeLayer>MoteOverhead</altitudeLayer>
+    <fadeInTime>0.15</fadeInTime>
+    <solidTime>0.45</solidTime>
+    <fadeOutTime>1.0</fadeOutTime>
+  </FleckDef>
+
+</Defs>

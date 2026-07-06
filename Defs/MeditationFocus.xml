@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <!-- A meditation focus type with NO requirement at all. RimWorld's
+       MeditationFocusTypeAvailabilityCache.PawnCanUseInt returns true for ANY pawn on a focus type that
+       (a) does not requireRoyalTitle, (b) has an empty requiredBackstoriesAny, and (c) is not granted by
+       any trait or hediff's allowedMeditationFocusTypes - such a type falls through to the universal
+       fallback at the end of that method. Since nothing references PS_UniversalFocus, every pawn can use it.
+       We attach it to thrones (and our pilgrim foci) so any awakened psycaster - not just titled nobles or
+       tribals - gains the focus building's meditation bonus. -->
+  <MeditationFocusDef>
+    <defName>PS_UniversalFocus</defName>
+    <label>open</label>
+    <modExtensions>
+      <li Class="VanillaPsycastsExpanded.MeditationFocusExtension">
+        <icon>UI/SchoolFocus</icon>
+      </li>
+    </modExtensions>
+  </MeditationFocusDef>
+</Defs>

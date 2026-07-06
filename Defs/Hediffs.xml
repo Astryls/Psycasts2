@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+  <!-- Enlightenment tier marker. Severity == tier (1 Awakened, 2 Enlightened, 3 Illuminated, open-ended
+       beyond). Granted by the awakening/pilgrimage progression (and injected onto enemy psycasters). The
+       per-tier psychic-sensitivity bonus lives on the stages; the custom class labels it by tier name. -->
+  <HediffDef>
+    <defName>PS_Enlightenment</defName>
+    <hediffClass>PsycastSynergies.Hediff_Enlightenment</hediffClass>
+    <label>enlightenment</label>
+    <description>A measure of how deeply this mind has awakened to psychic enlightenment. Each tier perceives the lattice of mind ever more clearly.</description>
+    <isBad>false</isBad>
+    <maxSeverity>99</maxSeverity>
+    <scenarioCanAdd>false</scenarioCanAdd>
+    <defaultLabelColor>(0.45, 0.75, 1)</defaultLabelColor>
+    <stages>
+      <li>
+        <minSeverity>1</minSeverity>
+        <statOffsets><PsychicSensitivity>0.10</PsychicSensitivity></statOffsets>
+      </li>
+      <li>
+        <minSeverity>2</minSeverity>
+        <statOffsets><PsychicSensitivity>0.20</PsychicSensitivity></statOffsets>
+      </li>
+      <li>
+        <minSeverity>3</minSeverity>
+        <statOffsets><PsychicSensitivity>0.35</PsychicSensitivity></statOffsets>
+      </li>
+    </stages>
+  </HediffDef>
+
+  <!-- Informational summary hediff: shows the pawn's synergies/specs in the Health tab. -->
+  <HediffDef>
+    <defName>PS_PsychicResonance</defName>
+    <hediffClass>PsycastSynergies.Hediff_PsychicResonance</hediffClass>
+    <label>psychic resonance</label>
+    <description>This psycaster has cultivated skill synergies and specializations. (Informational - the actual bonuses are applied by Psycasts²; this is a readout.)</description>
+    <isBad>false</isBad>
+    <maxSeverity>1</maxSeverity>
+    <scenarioCanAdd>false</scenarioCanAdd>
+    <defaultLabelColor>(0.55, 0.78, 1)</defaultLabelColor>
+    <stages>
+      <li><label>attuned</label></li>
+    </stages>
+  </HediffDef>
+
+  <!-- Apotheosis: Tranquil Mind (severity = number of cluster nodes owned). -->
+  <HediffDef>
+    <defName>PS_TranquilMind</defName>
+    <hediffClass>HediffWithComps</hediffClass>
+    <label>halcyon</label>
+    <description>A perfected stillness of mind. Neural heat builds slowly and dissipates quickly; at full power the psyche cannot break.</description>
+    <isBad>false</isBad>
+    <maxSeverity>3</maxSeverity>
+    <scenarioCanAdd>false</scenarioCanAdd>
+    <defaultLabelColor>(0.5, 0.9, 0.55)</defaultLabelColor>
+    <comps>
+      <li Class="PsycastSynergies.HediffCompProperties_AscensionFx"><path>tranquil</path></li>
+    </comps>
+    <stages>
+      <li><minSeverity>1</minSeverity><label>stillness</label>
+        <statFactors><PsychicEntropyGain>0.8</PsychicEntropyGain><PsychicEntropyRecoveryRate>1.25</PsychicEntropyRecoveryRate></statFactors></li>
+      <li><minSeverity>2</minSeverity><label>serenity</label>
+        <statFactors><PsychicEntropyGain>0.65</PsychicEntropyGain><PsychicEntropyRecoveryRate>1.5</PsychicEntropyRecoveryRate></statFactors></li>
+      <li><minSeverity>3</minSeverity>
+        <statFactors><PsychicEntropyGain>0.45</PsychicEntropyGain><PsychicEntropyRecoveryRate>1.9</PsychicEntropyRecoveryRate></statFactors></li>
+    </stages>
+  </HediffDef>
+
+  <!-- Apotheosis: Archotech Singularity. -->
+  <HediffDef>
+    <defName>PS_ArchotechAscendant</defName>
+    <hediffClass>HediffWithComps</hediffClass>
+    <label>singularity</label>
+    <description>The mind verges on the archotech. Psyfocus self-sustains, psycasts cost less focus, and psychic sense widens.</description>
+    <isBad>false</isBad>
+    <maxSeverity>4</maxSeverity>
+    <scenarioCanAdd>false</scenarioCanAdd>
+    <defaultLabelColor>(0.95, 0.82, 0.4)</defaultLabelColor>
+    <comps>
+      <li Class="PsycastSynergies.HediffCompProperties_PsyfocusRegen">
+        <perInterval>0.001</perInterval>
+      </li>
+      <li Class="PsycastSynergies.HediffCompProperties_AscensionFx"><path>archotech</path></li>
+    </comps>
+    <stages>
+      <li><minSeverity>1</minSeverity><label>convergence</label>
+        <statOffsets><PsychicSensitivity>0.10</PsychicSensitivity></statOffsets>
+        <statFactors><VPE_PsyfocusCostFactor>0.95</VPE_PsyfocusCostFactor></statFactors></li>
+      <li><minSeverity>2</minSeverity><label>logic engine</label>
+        <statOffsets><PsychicSensitivity>0.18</PsychicSensitivity></statOffsets>
+        <statFactors><VPE_PsyfocusCostFactor>0.9</VPE_PsyfocusCostFactor></statFactors></li>
+      <li><minSeverity>3</minSeverity><label>datum</label>
+        <statOffsets><PsychicSensitivity>0.25</PsychicSensitivity></statOffsets>
+        <statFactors><VPE_PsyfocusCostFactor>0.85</VPE_PsyfocusCostFactor></statFactors></li>
+      <li><minSeverity>4</minSeverity>
+        <statOffsets><PsychicSensitivity>0.35</PsychicSensitivity></statOffsets>
+        <statFactors><VPE_PsyfocusCostFactor>0.8</VPE_PsyfocusCostFactor></statFactors></li>
+    </stages>
+  </HediffDef>
+
+  <!-- Apotheosis: Umbral Sovereign. -->
+  <HediffDef>
+    <defName>PS_UmbralSovereign</defName>
+    <hediffClass>HediffWithComps</hediffClass>
+    <label>penumbra</label>
+    <description>Wreathed in psychic shadow. The mind grows unbreakable, and at full power a smothering aura dulls nearby hostile psycasters.</description>
+    <isBad>false</isBad>
+    <maxSeverity>5</maxSeverity>
+    <scenarioCanAdd>false</scenarioCanAdd>
+    <defaultLabelColor>(0.7, 0.5, 0.95)</defaultLabelColor>
+    <comps>
+      <li Class="PsycastSynergies.HediffCompProperties_UmbralAura">
+        <radius>9</radius>
+      </li>
+      <li Class="PsycastSynergies.HediffCompProperties_AscensionFx"><path>umbral</path></li>
+    </comps>
+    <stages>
+      <li><minSeverity>1</minSeverity><label>umbral veil</label>
+        <statOffsets><PsychicSensitivity>0.08</PsychicSensitivity></statOffsets></li>
+      <li><minSeverity>2</minSeverity><label>shade</label>
+        <statOffsets><PsychicSensitivity>0.14</PsychicSensitivity></statOffsets></li>
+      <li><minSeverity>3</minSeverity><label>gloaming</label>
+        <statOffsets><PsychicSensitivity>0.20</PsychicSensitivity></statOffsets></li>
+      <li><minSeverity>4</minSeverity><label>eclipse</label>
+        <statOffsets><PsychicSensitivity>0.27</PsychicSensitivity></statOffsets></li>
+      <li><minSeverity>5</minSeverity>
+        <statOffsets><PsychicSensitivity>0.34</PsychicSensitivity></statOffsets></li>
+    </stages>
+  </HediffDef>
+
+  <!-- Debuff applied to hostile psycasters by the Umbral Sovereign aura. -->
+  <HediffDef>
+    <defName>PS_UmbralSuppression</defName>
+    <hediffClass>HediffWithComps</hediffClass>
+    <label>umbral suppression</label>
+    <description>Psychic shadow smothers this mind, dulling its psychic sensitivity.</description>
+    <isBad>true</isBad>
+    <maxSeverity>1</maxSeverity>
+    <scenarioCanAdd>false</scenarioCanAdd>
+    <defaultLabelColor>(0.6, 0.45, 0.85)</defaultLabelColor>
+    <comps>
+      <li Class="HediffCompProperties_Disappears">
+        <disappearsAfterTicks>300</disappearsAfterTicks>
+        <showRemainingTime>false</showRemainingTime>
+      </li>
+    </comps>
+    <stages>
+      <li><statFactors><PsychicSensitivity>0.5</PsychicSensitivity></statFactors></li>
+    </stages>
+  </HediffDef>
+
+  <!-- Apotheosis: Empyrean (stars). -->
+  <HediffDef>
+    <defName>PS_Empyrean</defName>
+    <hediffClass>HediffWithComps</hediffClass>
+    <label>empyrean</label>
+    <description>The mind reaches into the void between the stars. Psychic sense widens; at full power, borrowed starlight sharpens the sense of every nearby ally.</description>
+    <isBad>false</isBad>
+    <maxSeverity>5</maxSeverity>
+    <scenarioCanAdd>false</scenarioCanAdd>
+    <defaultLabelColor>(0.54, 0.69, 1)</defaultLabelColor>
+    <comps>
+      <li Class="PsycastSynergies.HediffCompProperties_AllyAura"><radius>9</radius><capstoneKey>empyrean</capstoneKey><psycastersOnly>false</psycastersOnly></li>
+      <li Class="PsycastSynergies.HediffCompProperties_AscensionFx"><path>empyrean</path></li>
+    </comps>
+    <stages>
+      <li><minSeverity>1</minSeverity><label>stargazer</label><statOffsets><PsychicSensitivity>0.10</PsychicSensitivity></statOffsets></li>
+      <li><minSeverity>3</minSeverity><label>farsight</label><statOffsets><PsychicSensitivity>0.20</PsychicSensitivity></statOffsets></li>
+      <li><minSeverity>5</minSeverity><statOffsets><PsychicSensitivity>0.30</PsychicSensitivity></statOffsets></li>
+    </stages>
+  </HediffDef>
+
+  <!-- Apotheosis: Pandemonium (chaos). -->
+  <HediffDef>
+    <defName>PS_Pandemonium</defName>
+    <hediffClass>HediffWithComps</hediffClass>
+    <label>pandemonium</label>
+    <description>The mind runs wild. Psychic sense sharpens, and at full power no will can command it.</description>
+    <isBad>false</isBad>
+    <maxSeverity>5</maxSeverity>
+    <scenarioCanAdd>false</scenarioCanAdd>
+    <defaultLabelColor>(0.93, 0.33, 0.38)</defaultLabelColor>
+    <comps>
+      <li Class="PsycastSynergies.HediffCompProperties_AscensionFx"><path>pandemonium</path></li>
+    </comps>
+    <stages>
+      <li><minSeverity>1</minSeverity><label>spark</label><statOffsets><PsychicSensitivity>0.08</PsychicSensitivity></statOffsets></li>
+      <li><minSeverity>3</minSeverity><label>frenzy</label><statOffsets><PsychicSensitivity>0.16</PsychicSensitivity></statOffsets></li>
+      <li><minSeverity>5</minSeverity><statOffsets><PsychicSensitivity>0.26</PsychicSensitivity></statOffsets></li>
+    </stages>
+  </HediffDef>
+
+  <!-- Apotheosis: Chronos (time). -->
+  <HediffDef>
+    <defName>PS_Chronos</defName>
+    <hediffClass>HediffWithComps</hediffClass>
+    <label>chronos</label>
+    <description>Master of moments. Meditation deepens and psyfocus self-sustains.</description>
+    <isBad>false</isBad>
+    <maxSeverity>5</maxSeverity>
+    <scenarioCanAdd>false</scenarioCanAdd>
+    <defaultLabelColor>(0.27, 0.78, 0.75)</defaultLabelColor>
+    <comps>
+      <li Class="PsycastSynergies.HediffCompProperties_PsyfocusRegen"><perInterval>0.0011</perInterval></li>
+      <li Class="PsycastSynergies.HediffCompProperties_AscensionFx"><path>chronos</path></li>
+    </comps>
+    <stages>
+      <li><minSeverity>1</minSeverity><label>hourglass</label><statOffsets><MeditationFocusGain>0.1</MeditationFocusGain><PsychicSensitivity>0.05</PsychicSensitivity></statOffsets></li>
+      <li><minSeverity>3</minSeverity><label>dilation</label><statOffsets><MeditationFocusGain>0.2</MeditationFocusGain><PsychicSensitivity>0.10</PsychicSensitivity></statOffsets></li>
+      <li><minSeverity>5</minSeverity><statOffsets><MeditationFocusGain>0.3</MeditationFocusGain><PsychicSensitivity>0.15</PsychicSensitivity></statOffsets></li>
+    </stages>
+  </HediffDef>
+
+  <!-- Apotheosis: Consonance (collective). -->
+  <HediffDef>
+    <defName>PS_Consonance</defName>
+    <hediffClass>HediffWithComps</hediffClass>
+    <label>consonance</label>
+    <description>One voice in many. Psychic sense widens; at full power, nearby allied psycasters fall into resonant harmony, their sense amplified.</description>
+    <isBad>false</isBad>
+    <maxSeverity>6</maxSeverity>
+    <scenarioCanAdd>false</scenarioCanAdd>
+    <defaultLabelColor>(0.91, 0.6, 0.82)</defaultLabelColor>
+    <comps>
+      <li Class="PsycastSynergies.HediffCompProperties_AllyAura"><radius>9</radius><capstoneKey>consonance</capstoneKey><psycastersOnly>true</psycastersOnly></li>
+      <li Class="PsycastSynergies.HediffCompProperties_AscensionFx"><path>consonance</path></li>
+    </comps>
+    <stages>
+      <li><minSeverity>1</minSeverity><label>resonate</label><statOffsets><PsychicSensitivity>0.08</PsychicSensitivity></statOffsets></li>
+      <li><minSeverity>3</minSeverity><label>chord</label><statOffsets><PsychicSensitivity>0.16</PsychicSensitivity></statOffsets></li>
+      <li><minSeverity>6</minSeverity><statOffsets><PsychicSensitivity>0.24</PsychicSensitivity></statOffsets></li>
+    </stages>
+  </HediffDef>
+
+  <!-- Ally blessing applied by the Empyrean / Consonance auras. -->
+  <HediffDef>
+    <defName>PS_AscensionBlessing</defName>
+    <hediffClass>HediffWithComps</hediffClass>
+    <label>psychic blessing</label>
+    <description>Wrapped in an exalted psycaster's aura. Psychic sensitivity is lifted.</description>
+    <isBad>false</isBad>
+    <maxSeverity>1</maxSeverity>
+    <scenarioCanAdd>false</scenarioCanAdd>
+    <defaultLabelColor>(0.7, 0.85, 1)</defaultLabelColor>
+    <comps>
+      <li Class="HediffCompProperties_Disappears">
+        <disappearsAfterTicks>300</disappearsAfterTicks>
+        <showRemainingTime>false</showRemainingTime>
+      </li>
+    </comps>
+    <stages>
+      <li><statOffsets><PsychicSensitivity>0.12</PsychicSensitivity></statOffsets></li>
+    </stages>
+  </HediffDef>
+
+</Defs>

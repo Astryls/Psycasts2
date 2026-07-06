@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Attach the focus-type selector comp to every meditation-focus building (vanilla shrines, sculptures,
+     braziers, anima tree, throne, etc. via CompProperties_MeditationFocus) AND to the meditation SPOT
+     and other focus-users (CompProperties_UsesMeditationFocus). Runs after all defs load, so it covers
+     content from every active mod. -->
+<Patch>
+  <Operation Class="PatchOperationAdd">
+    <xpath>Defs/ThingDef[comps/li[@Class="CompProperties_MeditationFocus" or @Class="CompProperties_UsesMeditationFocus"]]/comps</xpath>
+    <value>
+      <li Class="PsycastSynergies.CompProperties_SchoolFocus" />
+    </value>
+  </Operation>
+</Patch>

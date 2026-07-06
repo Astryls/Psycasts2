@@ -1,0 +1,27 @@
+{
+  "textures": [
+    "UI/Specs/node_ring",
+    "UI/Specs/node_glow",
+    "UI/Specs/orbit_ring",
+    "UI/Specs/apply",
+    "UI/Specs/clear",
+    "UI/Specs/dev_points",
+    "UI/Specs/dev_reset",
+    "UI/Specs/dev_edit",
+    "UI/Specs/dev_log",
+    "UI/Specs/zoom_in",
+    "UI/Specs/zoom_out",
+    "UI/Specs/view_reset",
+    "UI/Specs/respec",
+    "UI/Gizmos/aura_toggle",
+    "UI/CardBack",
+    "UI/Sparkle",
+    "UI/Glow",
+    "UI/Accept",
+    "UI/SchoolFocus",
+    "UI/Pilgrim_Unbound",
+    "UI/Pilgrim_Altar",
+    "UI/Pilgrim_Anima"
+  ],
+  "audio": []
+}

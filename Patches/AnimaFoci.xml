@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Let psycasters force-meditate at anima trees with the "Meditate at ... (until told to stop)" right-click
+     order, exactly like the pilgrimage thrones, so the Anima pilgrimage can be driven directly. The comp only
+     shows its float-menu option for pawns with a psylink, so it is harmless on ordinary anima trees. Wrapped in
+     a Conditional so it no-ops cleanly if Plant_TreeAnima is absent (no Royalty). PS_GiantAnimaTree gets the
+     comp directly in its def (it inherits the rest from TreeAnima). -->
+<Patch>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="Plant_TreeAnima"]/comps</xpath>
+    <match Class="PatchOperationAdd">
+      <xpath>Defs/ThingDef[defName="Plant_TreeAnima"]/comps</xpath>
+      <value>
+        <li Class="PsycastSynergies.CompProperties_PilgrimMeditation" />
+      </value>
+    </match>
+  </Operation>
+</Patch>

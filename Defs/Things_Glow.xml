@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+  <!-- Invisible follower things carrying a slight colored glow (one per ascension path).
+       HediffComp_AscensionFx spawns/repositions the right one at the ascended pawn. -->
+  <ThingDef Name="PS_AscensionGlowBase" Abstract="True">
+    <thingClass>ThingWithComps</thingClass>
+    <label>psychic glow</label>
+    <category>Ethereal</category>
+    <tickerType>Never</tickerType>
+    <drawerType>None</drawerType>
+    <selectable>false</selectable>
+    <useHitPoints>false</useHitPoints>
+    <isSaveable>false</isSaveable>
+    <altitudeLayer>MoteOverhead</altitudeLayer>
+  </ThingDef>
+
+  <ThingDef ParentName="PS_AscensionGlowBase">
+    <defName>PS_AscensionGlow_Tranquil</defName>
+    <comps>
+      <li Class="CompProperties_Glower">
+        <glowRadius>2.4</glowRadius>
+        <glowColor>(55,120,75,0)</glowColor>
+        <colorPickerEnabled>false</colorPickerEnabled>
+      </li>
+    </comps>
+  </ThingDef>
+
+  <ThingDef ParentName="PS_AscensionGlowBase">
+    <defName>PS_AscensionGlow_Transcendence</defName>
+    <comps>
+      <li Class="CompProperties_Glower">
+        <glowRadius>2.4</glowRadius>
+        <glowColor>(140,112,45,0)</glowColor>
+        <colorPickerEnabled>false</colorPickerEnabled>
+      </li>
+    </comps>
+  </ThingDef>
+
+  <ThingDef ParentName="PS_AscensionGlowBase">
+    <defName>PS_AscensionGlow_Umbral</defName>
+    <comps>
+      <li Class="CompProperties_Glower">
+        <glowRadius>2.2</glowRadius>
+        <glowColor>(95,52,165,0)</glowColor>
+        <colorPickerEnabled>false</colorPickerEnabled>
+      </li>
+    </comps>
+  </ThingDef>
+
+  <ThingDef ParentName="PS_AscensionGlowBase">
+    <defName>PS_AscensionGlow_Empyrean</defName>
+    <comps>
+      <li Class="CompProperties_Glower">
+        <glowRadius>2.4</glowRadius>
+        <glowColor>(70,110,200,0)</glowColor>
+        <colorPickerEnabled>false</colorPickerEnabled>
+      </li>
+    </comps>
+  </ThingDef>
+
+  <ThingDef ParentName="PS_AscensionGlowBase">
+    <defName>PS_AscensionGlow_Pandemonium</defName>
+    <comps>
+      <li Class="CompProperties_Glower">
+        <glowRadius>2.4</glowRadius>
+        <glowColor>(200,60,75,0)</glowColor>
+        <colorPickerEnabled>false</colorPickerEnabled>
+      </li>
+    </comps>
+  </ThingDef>
+
+  <ThingDef ParentName="PS_AscensionGlowBase">
+    <defName>PS_AscensionGlow_Chronos</defName>
+    <comps>
+      <li Class="CompProperties_Glower">
+        <glowRadius>2.4</glowRadius>
+        <glowColor>(50,170,160,0)</glowColor>
+        <colorPickerEnabled>false</colorPickerEnabled>
+      </li>
+    </comps>
+  </ThingDef>
+
+  <ThingDef ParentName="PS_AscensionGlowBase">
+    <defName>PS_AscensionGlow_Consonance</defName>
+    <comps>
+      <li Class="CompProperties_Glower">
+        <glowRadius>2.4</glowRadius>
+        <glowColor>(200,110,170,0)</glowColor>
+        <colorPickerEnabled>false</colorPickerEnabled>
+      </li>
+    </comps>
+  </ThingDef>
+
+</Defs>

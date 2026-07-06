@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ModMetaData>
+  <name>Psycasts²</name>
+  <packageId>astryl.Psycasts</packageId>
+  <author>astryl</author>
+  <description>[h1]Psycasts²[/h1]
+Psycasts² turns Vanilla Psycasts Expanded into a deep, Diablo-style RPG progression system. Level up your psycasts, weave automatic synergies, climb a Path of Exile constellation tree, and walk the long road from a first meditation to ascended psychic mastery.
+
+[h2]Skill Levels[/h2]
+[list]
+[*] Invest points to level up ANY VPE or VPE-framework psycast, right from the psycast tab (the vanilla VPE tab or Modern Psycasts UI).
+[*] Each level raises the ability's power, radius and duration. Tooltips show the exact per-level gain.
+[/list]
+
+[h2]Automatic Synergies[/h2]
+Leveling related psycasts of the same path makes them amplify each other, with directed, role-based bonuses generated for every school in your load order. The synergy graph is frozen the first time it is built, so it stays stable as you add or remove addons.
+
+[h2]In-Game Balance Editor[/h2]
+Retune the whole synergy web from inside the game. Enable dev mode and open the Balance editor from the psycast tab: pick a tree, then change any skill's primary effect, the synergies it receives, the skills it empowers, and the strength of every link from simple dropdowns. A live preview card renders the tree with your changes the moment you make them, including the real numbers for your selected pawn. Your picks apply instantly, persist in your config, and can be baked into the mod as your own defaults from mod settings, so anyone can craft a custom experience.
+
+[h2]Constellation Specializations[/h2]
+Spend specialization points up a Path of Exile-style tree of masteries, disciplines and attunements. Any branch capstone opens Convergence, the apex, which unlocks seven floating Apotheosis constellations, one chosen per pawn, each with its own rendered aura and signature power.
+
+[h2]Meditation, Awakening and Enlightenment[/h2]
+[list]
+[*] Any colonist can be set to meditate. Sustained meditation can trigger a flow of ancient knowledge: a full psycaster level for a psycaster, or insight toward Awakening for a non-psycaster.
+[*] A dedicated non-psycaster awakens to Tier I within about a week of meditation.
+[*] Psycasters climb three Enlightenment tiers, each a fresh card pick plus bonus specialization points.
+[*] Psycasters are earned: random pawns no longer arrive already holding a psylink unless they awakened, though some can still spawn as true Awakened psycasters at a tunable chance.
+[*] Over-meditation is dangerous: push far past the daily safe window and you risk ever-longer psychic comas.
+[/list]
+
+[h2]Pilgrimage Quests[/h2]
+Reach the higher tiers through two storyteller quest chains: the Trial of the Altar, a single hallowed site held against waves of an ancient psycaster order, or the Way of the Anima, a longer, bloodless pilgrimage among the anima trees.
+
+[h2]Enemy Psycaster Tiers[/h2]
+Hostile psycasters, especially the Empire, can spawn Enlightened: boosted psylink, extra schools, full psyfocus and faster casting, for a tougher late game.
+
+[h2]Quality of Life[/h2]
+[list]
+[*] Psyfocus no longer decays by default: it only rises from meditation and falls when you spend it casting.
+[*] Thrones are usable by any psycaster, no royal title required.
+[*] In-game skill compendium and field manual.
+[*] Everything is configurable in mod settings.
+[/list]
+
+[h2]Compatibility[/h2]
+Requires Royalty and Vanilla Psycasts Expanded. Modern Psycasts UI is recommended. Psycasts² reads any VPE/VEF psycast school dynamically, so it works across the VPE addon ecosystem, including the Sentinel series. If you run ISEKAI RPG Leveling, Psycasts² keeps its generic RPG levels from inflating your psychic stats.
+
+[i]Feedback and bug reports are very welcome.[/i]
+[hr][/hr]
+[h3] My Quality Commitment:[/h3]
+[list]
+[*] [b]Fully Tested:[/b] Every feature and line of code has been thoroughly tested in-game to ensure it functions as intended and integrates smoothly.
+[*] [b]Active Support:[/b] I am fully committed to maintaining this mod. If you encounter any bugs, compatibility issues, or unintended behavior, please report them in the comments or a dedicated discussion thread.
+[*] [b]No Abandonware:[/b] I will actively patch, refine, and update this mod to keep it working and up to standard.
+[*] [b]No Coffee:[/b] I will never ask for donations for AI created / assisted mods. I share these in the hopes they spark joy for someone, making AI generated content and then begging for money that could go to artists and people more deserving is NOT responsible AI usage.
+[/list]</description>
+  <supportedVersions>
+    <li>1.6</li>
+  </supportedVersions>
+  <modDependencies>
+    <li>
+      <packageId>brrainz.harmony</packageId>
+      <displayName>Harmony</displayName>
+      <steamWorkshopUrl>steam://url/CommunityFilePage/2009463077</steamWorkshopUrl>
+      <downloadUrl>https://github.com/pardeike/HarmonyRimWorld/releases/latest</downloadUrl>
+    </li>
+    <li>
+      <packageId>VanillaExpanded.VPsycastsE</packageId>
+      <displayName>Vanilla Psycasts Expanded</displayName>
+      <steamWorkshopUrl>steam://url/CommunityFilePage/2842502659</steamWorkshopUrl>
+    </li>
+  </modDependencies>
+  <loadAfter>
+    <li>brrainz.harmony</li>
+    <li>OskarPotocki.VanillaFactionsExpanded.Core</li>
+    <li>VanillaExpanded.VPsycastsE</li>
+    <li>astryl.ModernPsycastsUI</li>
+  </loadAfter>
+</ModMetaData>

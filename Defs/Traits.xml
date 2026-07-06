@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+  <!-- The enlightenment tier moved from a trait (PS_EnlightenmentTier) to the PS_Enlightenment hediff
+       (see Hediffs.xml). The hediff's Severity is the tier and is open-ended, which a trait degree could
+       not represent. Existing saves migrate via GameComponent_PsycastSynergies.FinalizeInit. -->
+
+</Defs>
