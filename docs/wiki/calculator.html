@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Build Planner - Psycasts² Codex</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<script>try{var t=localStorage.getItem("ps2-theme");if(!t&&window.matchMedia&&matchMedia("(prefers-color-scheme:dark)").matches)t="dark";if(t)document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
+<style>
+.bp{display:grid;grid-template-columns:1fr;gap:16px}
+@media(min-width:1080px){.bp{grid-template-columns:minmax(0,1fr) 320px;align-items:start}}
+.bptree{height:600px;overflow:auto;background:radial-gradient(circle at 50% 32%,#171c24 0%,#0f1218 60%,#0a0c10 100%);border:1px solid var(--line2);border-radius:var(--radius);cursor:grab;user-select:none}
+.bptree.grabbing{cursor:grabbing}
+.bptree svg{display:block}
+.bpsel{font:inherit;font-size:13px;padding:6px 10px;border-radius:6px;border:1px solid var(--line);background:var(--panel2);color:var(--text);max-width:320px}
+.bptree::-webkit-scrollbar{width:10px;height:10px}
+.bptree::-webkit-scrollbar-thumb{background:#2c333d;border-radius:5px}
+.snode{cursor:pointer}
+.snode text{pointer-events:none;font-family:"Segoe UI",Arial,sans-serif}
+.bpside{position:sticky;top:12px;display:flex;flex-direction:column;gap:12px}
+.bpcard{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:12px 14px}
+.bpcard h3{margin:0 0 8px;font-size:13px;text-transform:uppercase;letter-spacing:.04em;color:var(--faint)}
+.bprow{display:flex;justify-content:space-between;align-items:baseline;font-size:13px;margin:4px 0;color:var(--dim)}
+.bprow b{color:var(--text);font-size:14px}
+.bprow.warn b{color:var(--bad)}
+.bprow.ok b{color:var(--good)}
+.bpctrl{margin:7px 0}
+.bpctrl label{display:flex;justify-content:space-between;font-size:12px;color:var(--faint);font-weight:600;margin-bottom:2px}
+.bpctrl input[type=range]{width:100%}
+.eff{font-size:12px;color:var(--dim);padding:3px 0;border-top:1px solid var(--line)}
+.eff:first-child{border-top:0}
+.eff b{color:var(--accent);font-weight:700}
+.bptabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.bptabs button{font:inherit;font-size:12.5px;font-weight:600;padding:5px 11px;border-radius:6px;border:1px solid var(--line);background:var(--panel2);color:var(--dim);cursor:pointer}
+.bptabs button.on{background:var(--accent-soft);border-color:var(--accent-line);color:var(--accent)}
+.skl{display:grid;grid-template-columns:1fr auto auto;gap:8px 10px;align-items:center}
+.skl .sn{font-weight:600;color:var(--text);font-size:13.5px}
+.skl .sn small{display:block;color:var(--faint);font-weight:400;font-size:11px}
+.skl .stp{display:flex;align-items:center;gap:6px}
+.skl .stp button{width:24px;height:24px;border-radius:5px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer;font-weight:700;line-height:1}
+.skl .stp span{min-width:42px;text-align:center;font-variant-numeric:tabular-nums;color:var(--dim);font-size:12.5px}
+.skl .dmg{font-variant-numeric:tabular-nums;font-weight:700;color:var(--gold);text-align:right;min-width:54px}
+.skl .star{cursor:pointer;color:var(--faint);font-size:15px}
+.skl .star.on{color:var(--gold)}
+.legend{font-size:11.5px;color:var(--faint);margin-top:8px}
+.legend span{display:inline-block;margin-right:10px}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;vertical-align:middle;margin-right:3px}
+</style>
+</head>
+<body>
+<nav id="site-nav"></nav>
+<div class="wiki">
+<aside class="wikiside" id="wikiside"></aside>
+<article class="doc">
+  <div class="breadcrumb"><a href="../index.html">Home</a> &rsaquo; <a href="index.html">Wiki</a> &rsaquo; Build Planner</div>
+  <h1>Build Planner</h1>
+  <p class="sub">Plan a psycaster end to end: set a level and tier, walk the constellation, pick a school and level its psycasts, and watch the specialization points, skill points, requirements and damage update live.</p>
+
+  <div class="callout"><b>What's exact vs illustrative.</b> The constellation tree, its costs and effects, the point budgets and the
+  level-requirement curve are taken straight from the mod's code. The <em>per-skill damage</em> is an illustrative model on
+  representative psycasts: real base values come from VPE plus whatever school add-ons you run, so treat damage as
+  relative, not absolute.</div>
+  <p style="font-size:13px;color:var(--dim);margin-top:-2px"><b>Progression</b> ties the build to the grind: schools used = path cards needed (one per enlightenment tier); <b>cards deferred</b> = card draws you would forgo (+4 specialization points each) to cover any spec-point shortfall; and the <b>tier required</b> and <b>total</b> cumulative meditation hours fold in the tiers for both your schools and those deferred cards. Casting and kills also supply spec points in play, so deferrals are an upper bound.</p>
+
+  <div class="bp">
+    <div>
+      <div class="bptree" id="bp-tree"></div>
+      <div class="legend" id="bp-legend"></div>
+    </div>
+
+    <div class="bpside">
+      <div class="bpcard">
+        <h3>The psycaster</h3>
+        <div class="bpctrl"><label>Psycaster level <span id="lv-val">30</span></label><input type="range" id="in-lv" min="1" max="150" value="30"></div>
+        <div class="bpctrl"><label>Enlightenment tier <span id="ti-val">0</span></label><input type="range" id="in-ti" min="0" max="10" value="0"></div>
+        <div class="bpctrl"><label>Neural heat (for Fervor) <span id="ht-val">50%</span></label><input type="range" id="in-ht" min="0" max="100" value="50"></div>
+      </div>
+
+      <div class="bpcard">
+        <h3>Budget</h3>
+        <div class="bprow" id="r-spec"><span>Specialization points</span><b>0 / 0</b></div>
+        <div class="bprow" id="r-skill"><span>Skill points</span><b>0 / 0</b></div>
+        <div class="bprow" id="r-cap"><span>Skill level cap</span><b>10</b></div>
+        <div class="bprow" id="r-req"><span>Psycaster level needed</span><b>0</b></div>
+        <div class="bprow" id="r-apo"><span>Apotheosis</span><b>none</b></div>
+      </div>
+
+      <div class="bpcard">
+        <h3>Progression</h3>
+        <div class="bprow" id="r-cards"><span>Schools used (cards)</span><b>0</b></div>
+        <div class="bprow" id="r-tier"><span>Tier required</span><b>none</b></div>
+        <div class="bprow" id="r-med"><span>Hours meditation required</span><b>0 h</b></div>
+        <div class="bprow" id="r-defer"><span>Cards deferred required</span><b>0</b></div>
+      </div>
+
+      <div class="bpcard">
+        <h3>Active effects</h3>
+        <div id="bp-eff"><div class="eff">Walk the tree to see effects.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <h2>Skills</h2>
+  <p>Pick a school (your card), then level its psycasts. Each level costs one skill point and needs a high enough psycaster
+  level; the spec tree above multiplies the result. Damage shown is the primary stat at the set level. The dropdown covers VPE
+  and its add-on schools (grouped by meditation focus); each school's psycasts here are representative. Drag the constellation
+  to pan it, like the in-game tab.</p>
+  <div class="bpcard">
+    <div class="bptabs" id="sk-tabs"></div>
+    <div class="skl" id="sk-list"></div>
+    <div class="bprow" style="margin-top:10px;border-top:1px solid var(--line);padding-top:8px"><span>This school: skill points / total damage</span><b id="sk-tot">0 pts &middot; 0</b></div>
+  </div>
+
+  <div class="pagenav" id="pagenav"></div>
+</article>
+</div>
+<footer id="site-footer"></footer>
+<script src="../assets/app.js"></script>
+<script>
+(function(){
+  // ---- exact spec-tree data (from Specs.cs) ----
+  var NODES=[
+   {id:'kindling',l:'Kindling',c:8,b:'Root',x:3.5,y:4,p:[],e:'+3% every psycast primary stat'},
+   {id:'surge',l:'Surge',c:10,b:'Offense',x:2.5,y:3.3,p:['kindling'],e:'+15% damage / power'},
+   {id:'resonance',l:'Resonance',c:10,b:'Control',x:4.5,y:3.3,p:['kindling'],e:'+15% radius'},
+   {id:'lingering',l:'Lingering',c:10,b:'Control',x:2.5,y:4.7,p:['kindling'],e:'+15% duration'},
+   {id:'potency',l:'Potency',c:10,b:'Ward',x:4.5,y:4.7,p:['kindling'],e:'+15% buff / boon magnitude'},
+   {id:'onslaught',l:'Onslaught',c:15,b:'Offense',x:1.7,y:2.6,p:['surge'],e:'offensive +20% power; off. synergies count double'},
+   {id:'dominion',l:'Dominion',c:15,b:'Control',x:5.3,y:2.6,p:['resonance'],e:'control casts +20% radius & duration'},
+   {id:'bulwark',l:'Bulwark',c:15,b:'Ward',x:5.3,y:5.4,p:['potency'],e:'boons +20% strength & duration'},
+   {id:'flow',l:'Flow',c:12,b:'Flow',x:1.7,y:5.4,p:['kindling'],e:'halve the level heat & psyfocus penalty'},
+   {id:'fervor',l:'Fervor',c:18,b:'Offense',x:0.9,y:1.9,p:['onslaught'],e:'offensive power up to +25% with neural heat'},
+   {id:'abandon',l:'Abandon',c:18,b:'Offense',x:0.6,y:3,p:['onslaught'],e:'+40% offensive power, +40% cost'},
+   {id:'echo',l:'Echo',c:18,b:'Control',x:6.1,y:1.9,p:['dominion'],e:'20% chance a cast refreshes its cooldown'},
+   {id:'wellspring',l:'Wellspring',c:18,b:'Ward',x:6.1,y:6.1,p:['bulwark'],e:'regenerate psyfocus over time'},
+   {id:'confluence',l:'Confluence',c:15,b:'Flow',x:0.9,y:6.1,p:['flow'],e:'synergies you receive are doubled'},
+   {id:'tempest',l:'Tempest',c:20,b:'Offense',x:0.2,y:1.2,p:['fervor'],e:'a kill refunds half that cast\u2019s heat & psyfocus'},
+   {id:'maelstrom',l:'Maelstrom',c:20,b:'Control',x:6.8,y:1.2,p:['echo'],e:'area casts +50% radius, +25% duration'},
+   {id:'sanctuary',l:'Sanctuary',c:20,b:'Ward',x:6.8,y:6.8,p:['wellspring'],e:'boons +50% strength & duration'},
+   {id:'conduit',l:'Conduit',c:20,b:'Flow',x:0.2,y:6.8,p:['confluence'],e:'synergies you receive +50%'},
+   {id:'overflow',l:'Overflow',c:12,b:'Mod',x:3.5,y:2.3,p:['kindling'],x2:'spec',e:'+8% to ALL of a skill\u2019s stats'},
+   {id:'catalyst',l:'Catalyst',c:15,b:'Flow',x:0.6,y:5,p:['flow'],e:'your psycasts cast 25% faster'},
+   {id:'siphon',l:'Siphon',c:16,b:'Offense',x:1.4,y:0.9,p:['onslaught'],e:'kills restore 25% of that cast\u2019s psyfocus'},
+   {id:'mastery',l:'Mastery',c:20,b:'Mod',x:2.6,y:7.3,p:['kindling'],x2:'spec',e:'one chosen skill +100% primary, ignores cost scaling'},
+   {id:'discipline',l:'Discipline',c:20,b:'Mod',x:3.5,y:7.7,p:['kindling'],x2:'spec',e:'one chosen school +50% per-level scaling, +1 level'},
+   {id:'attunement',l:'Attunement',c:20,b:'Mod',x:4.4,y:7.3,p:['kindling'],x2:'spec',e:'one element +25% power & radius'},
+   {id:'convergence',l:'Convergence',c:30,b:'Apex',x:3.5,y:0.3,p:[],any:['tempest','maelstrom','sanctuary','conduit'],e:'+15% ALL stats & synergies, +5 skill cap, opens the seven'},
+   {id:'tm_gate',l:'Stillness',c:20,b:'Halcyon',x:0.8,y:-6.6,p:['convergence'],fl:1,x2:'apo',e:'Halcyon gate: heat -20% build / +25% recover'},
+   {id:'tm_mid',l:'Serenity',c:20,b:'Halcyon',x:1.7,y:-7.2,p:['tm_gate'],e:'heat -35% build / +50% recover'},
+   {id:'tm_cap',l:'Halcyon',c:30,b:'Halcyon',x:2.6,y:-6.7,p:['tm_mid'],e:'heat -55%/+90%; immune to all mental breaks'},
+   {id:'ar_gate',l:'Event Horizon',c:25,b:'Singularity',x:4.3,y:-6.4,p:['convergence'],fl:1,x2:'apo',e:'Singularity gate: -5% psyfocus, +10% sensitivity'},
+   {id:'ar_l',l:'Logic Engine',c:20,b:'Singularity',x:3.6,y:-7.2,p:['ar_gate'],e:'-10% psyfocus, +18% sensitivity'},
+   {id:'ar_r',l:'Datum',c:20,b:'Singularity',x:5.0,y:-7.2,p:['ar_gate'],e:'-15% psyfocus, +25% sensitivity, slow regen'},
+   {id:'ar_cap',l:'Singularity',c:35,b:'Singularity',x:4.3,y:-8.0,p:['ar_l','ar_r'],e:'-20% psyfocus, +35% sensitivity, steady regen'},
+   {id:'um_gate',l:'Umbral Veil',c:30,b:'Penumbra',x:6.2,y:-6.4,p:['convergence'],fl:1,x2:'apo',e:'Penumbra gate: +8% sensitivity'},
+   {id:'um_a',l:'Shade',c:20,b:'Penumbra',x:7.0,y:-7.1,p:['um_gate'],e:'+14% sensitivity'},
+   {id:'um_b',l:'Gloaming',c:20,b:'Penumbra',x:7.9,y:-6.5,p:['um_a'],e:'+20% sensitivity'},
+   {id:'um_c',l:'Eclipse',c:20,b:'Penumbra',x:8.8,y:-7.1,p:['um_b'],e:'+27% sensitivity'},
+   {id:'um_cap',l:'Penumbra',c:40,b:'Penumbra',x:7.9,y:-7.9,p:['um_c'],e:'+34% sensitivity; immune to breaks/berserk/mind control; suppression aura'},
+   {id:'em_gate',l:'Stargazer',c:25,b:'Empyrean',x:6.4,y:-3.7,p:['convergence'],fl:1,x2:'apo',e:'Empyrean gate: +10% sensitivity, immune to psychic drone'},
+   {id:'em_a',l:'Farsight',c:20,b:'Empyrean',x:7.2,y:-4.4,p:['em_gate'],e:'+18% sensitivity'},
+   {id:'em_b',l:'Constellate',c:20,b:'Empyrean',x:8.2,y:-4.4,p:['em_a'],e:'+24% sensitivity'},
+   {id:'em_c',l:'Starlit',c:20,b:'Empyrean',x:9.0,y:-3.7,p:['em_b'],e:'+30% sensitivity'},
+   {id:'em_cap',l:'Empyrean',c:35,b:'Empyrean',x:7.7,y:-3.0,p:['em_c'],e:'+30% sensitivity; starlight aura buffs nearby allies'},
+   {id:'cr_gate',l:'Hourglass',c:25,b:'Chronos',x:0.4,y:-3.6,p:['convergence'],fl:1,x2:'apo',e:'Chronos gate: +10% meditation focus, slow regen'},
+   {id:'cr_waist',l:'Dilation',c:20,b:'Chronos',x:1.4,y:-4.4,p:['cr_gate'],e:'+20% focus, stronger regen'},
+   {id:'cr_a',l:'Eddy',c:20,b:'Chronos',x:2.4,y:-3.6,p:['cr_waist'],e:'+8% sensitivity'},
+   {id:'cr_b',l:'Rewind',c:20,b:'Chronos',x:0.4,y:-5.2,p:['cr_waist'],e:'+14% sensitivity'},
+   {id:'cr_cap',l:'Chronos',c:35,b:'Chronos',x:2.4,y:-5.2,p:['cr_b'],e:'+30% focus, strong steady regen'},
+   {id:'pn_gate',l:'Spark',c:30,b:'Pandemonium',x:3.0,y:-1.5,p:['convergence'],fl:1,x2:'apo',e:'Pandemonium gate: +8% sensitivity'},
+   {id:'pn_a',l:'Fracture',c:20,b:'Pandemonium',x:2.1,y:-2.2,p:['pn_gate'],e:'+15% sensitivity'},
+   {id:'pn_b',l:'Frenzy',c:20,b:'Pandemonium',x:4.0,y:-2.2,p:['pn_gate'],e:'+15% sensitivity'},
+   {id:'pn_c',l:'Riot',c:20,b:'Pandemonium',x:2.7,y:-3.0,p:['pn_a'],e:'+21% sensitivity'},
+   {id:'pn_cap',l:'Pandemonium',c:40,b:'Pandemonium',x:3.6,y:-3.2,p:['pn_b','pn_c'],e:'+26% sensitivity; immune to mind control'},
+   {id:'cn_gate',l:'Resonate',c:25,b:'Consonance',x:5.4,y:-1.5,p:['convergence'],fl:1,x2:'apo',e:'Consonance gate: +8% sensitivity'},
+   {id:'cn_a',l:'Attune',c:20,b:'Consonance',x:4.6,y:-2.2,p:['cn_gate'],e:'+14% sensitivity'},
+   {id:'cn_b',l:'Chord',c:20,b:'Consonance',x:4.8,y:-3.1,p:['cn_a'],e:'+20% sensitivity'},
+   {id:'cn_d',l:'Accord',c:20,b:'Consonance',x:6.2,y:-2.2,p:['cn_gate'],e:'+14% sensitivity'},
+   {id:'cn_c',l:'Harmony',c:20,b:'Consonance',x:6.0,y:-3.1,p:['cn_d'],e:'+20% sensitivity'},
+   {id:'cn_cap',l:'Consonance',c:35,b:'Consonance',x:5.4,y:-3.7,p:['cn_b','cn_c'],e:'+24% sensitivity; harmony aura buffs allied psycasters'}
+  ];
+  var BCOL={Root:'#f5cf5c',Apex:'#f5cf5c',Offense:'#ff7a5c',Control:'#6db3ff',Ward:'#7fe0a0',Flow:'#5fded0',Mod:'#c9a0ff',Halcyon:'#8fe6a8',Singularity:'#f5cf5c',Penumbra:'#b58bff',Empyrean:'#6db3ff',Chronos:'#5fded0',Pandemonium:'#ff6b5c',Consonance:'#ff8fc8'};
+  var byId={}; NODES.forEach(function(n){byId[n.id]=n;});
+
+  // ---- representative schools / psycasts (illustrative damage) ----
+  // schools (cards) grouped by their VPE meditation focus - the base game plus its add-ons
+  var GROUPS=[
+    {g:'Flame',el:'fire',pool:['Ember','Flame','Pyre','Cinder','Solar','Inferno'],schools:['Conflagrator','Flameheart','Luminis','Civilight','Shining','Meteor']},
+    {g:'Morbid',el:'death',pool:['Blight','Hemo','Necrotic','Grave','Carrion','Wither'],schools:['Necropath','Deadlife','Hemosage','Veincaster','Deathmarch','Destined Death']},
+    {g:'Void',el:'void',pool:['Umbral','Void','Eclipse','Null','Shadow','Abyssal'],schools:['Voidweaver','Umbral','Nightstalker','Horaxian','Lunacy']},
+    {g:'Natural',el:'toxic',pool:['Thorn','Spore','Venom','Wild','Bramble','Verdant'],schools:['Druid','Empath','Animancer','Wildhunter','Wildspeaker','Bugmancer']},
+    {g:'Artistic',el:'kinetic',pool:['Echo','Phase','Tempo','Discord','Warp','Cadence'],schools:['Harmonist','Chronopath','Fateweaver','Tieweaver','Skipmaster','Phase Shift']},
+    {g:'Science',el:'emp',pool:['Pulse','Static','Nanite','Plasma','Volt','Ion'],schools:['Technomancer','Neurophage','Oripathy','Biohazard','Glitch','Staticlord']},
+    {g:'Archotech',el:'arc',pool:['Datum','Graviton','Logic','Quantum','Archon','Singular'],schools:['Archotechist','Archon','Enlightened','Gravcaster','Saileach']},
+    {g:'Group',el:'psychic',pool:['Mind','Command','Dominate','Psi','Rally','Overmind'],schools:['Puppeteer','Protector','Warlord','Amiya',"Kal'tsit",'Silence']},
+    {g:'Wealth',el:'elemental',pool:['Stone','Frost','Tidal','Gale','Quartz','Squall'],schools:['Geomancer','Mudrock','Frostshaper','Hydromancer','Aeromancer','Ascalon']},
+    {g:'Dignified',el:'blade',pool:['Edge','Riposte','Lunge','Execute','Parry','Vanguard'],schools:['Crownslayer','Ines',"Wis'adel",'Blader','Ranger','Biosoother']},
+    {g:'Minimal',el:'psychic',pool:['Mono','Null','Stark','Spare','Quiet','Plain'],schools:['Mechanitor']}
+  ];
+  function genSkills(grp,name){
+    var suf=['Bolt','Strike','Surge','Storm'],baseT=[22,34,32,58],tierT=[1,2,4,6],perT=[0.12,0.11,0.10,0.10],seed=7;
+    for(var i=0;i<name.length;i++)seed=(seed*131+name.charCodeAt(i))>>>0;
+    var st=seed%grp.pool.length,sk=[];
+    for(var j=0;j<4;j++){var v=((seed>>(j*4))&7)-3;sk.push({name:grp.pool[(st+j)%grp.pool.length]+' '+suf[j],base:baseT[j]+v,per:perT[j],tier:tierT[j]});}
+    return sk;
+  }
+  var PATHS={},GROUPOF={};
+  GROUPS.forEach(function(grp){grp.schools.forEach(function(sc){PATHS[sc]={el:grp.el,sk:genSkills(grp,sc)};GROUPOF[sc]=grp.g;});});
+  // hand-tuned skills for a few marquee schools
+  var DETAIL={
+    Conflagrator:[{name:'Flame Bolt',base:22,per:0.12,tier:1},{name:'Fireball',base:38,per:0.11,tier:2},{name:'Heat Spear',base:30,per:0.10,tier:3},{name:'Firestorm',base:58,per:0.10,tier:4}],
+    Voidweaver:[{name:'Mind Spike',base:25,per:0.12,tier:1},{name:'Void Bolt',base:40,per:0.11,tier:3},{name:'Entropy',base:33,per:0.10,tier:4},{name:'Oblivion',base:65,per:0.09,tier:6}],
+    Necropath:[{name:'Death Blast',base:28,per:0.11,tier:2},{name:'Decay',base:24,per:0.10,tier:2},{name:'Plague',base:36,per:0.10,tier:4},{name:'Deathfield',base:60,per:0.09,tier:6}],
+    Technomancer:[{name:'Microburst',base:21,per:0.12,tier:1},{name:'EMP Lance',base:35,per:0.10,tier:3},{name:'Nanite Swarm',base:30,per:0.10,tier:4},{name:'Meltdown',base:62,per:0.09,tier:6}],
+    Frostshaper:[{name:'Ice Shard',base:20,per:0.12,tier:1},{name:'Frost Ray',base:34,per:0.11,tier:2},{name:'Glaciate',base:27,per:0.09,tier:3},{name:'Blizzard',base:52,per:0.10,tier:5}]
+  };
+  Object.keys(DETAIL).forEach(function(k){if(PATHS[k])PATHS[k].sk=DETAIL[k];});
+
+  // ---- state ----
+  var owned={}, psyLv=30, tier=0, heat=0.5, activePath='Conflagrator', lvls={}, masteryName=null;
+  Object.keys(PATHS).forEach(function(p){PATHS[p].sk.forEach(function(s){lvls[p+'/'+s.name]=0;});});
+
+  // ---- formulas (from the mod) ----
+  function tierPts(t){return (t>=2?4:0)+(t>=3?6:0)+Math.max(0,t-3)*3;}
+  function specAvail(){return Math.floor(psyLv/4)+tierPts(tier);}
+  function skillCap(){return 10+(owned['convergence']?5:0);}
+  function levelReq(t,n){return n<=1?Math.max(0,3*(t-1)):3*(t-1)+3*(n-1)+(n-1)*(n-2)/2;}
+  var ROM=['','I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII','XIII','XIV','XV','XVI','XVII','XVIII','XIX','XX'];
+  function tierName(t){return t<=0?'none':(t<=3?['','Awakened','Enlightened','Illuminated'][t]:'Transcendent '+(ROM[t]||t));}
+  function medCum(T){var c=[0,36,60,84,132,209,332,529,844,1347,2152];T=Math.max(0,Math.round(T));if(T<=10)return c[T];var h=2152;for(var t=11;t<=Math.min(T,20);t++)h+=Math.round(48*Math.pow(1.6,t-4));return h;} // cumulative meditation hours to reach a tier
+
+  function canAlloc(n){
+    if(owned[n.id])return false;
+    for(var i=0;i<(n.p||[]).length;i++) if(!owned[n.p[i]])return false;
+    if(n.any && !n.any.some(function(a){return owned[a];})) return false;
+    if(n.x2){for(var j=0;j<NODES.length;j++){var m=NODES[j];if(m.x2===n.x2&&m.id!==n.id&&owned[m.id])return false;}}
+    return true;
+  }
+  function cascade(){
+    var changed=true;
+    while(changed){changed=false;
+      NODES.forEach(function(n){
+        if(!owned[n.id])return;
+        var ok=true;
+        for(var i=0;i<(n.p||[]).length;i++) if(!owned[n.p[i]])ok=false;
+        if(n.any && !n.any.some(function(a){return owned[a];})) ok=false;
+        if(!ok){delete owned[n.id];if(n.id==='mastery')masteryName=null;changed=true;}
+      });
+    }
+  }
+  function toggle(id){
+    var n=byId[id];
+    if(owned[id]){delete owned[id];if(id==='mastery')masteryName=null;cascade();}
+    else if(canAlloc(n)){owned[id]=1;}
+    renderAll();
+  }
+
+  // ---- spec power bonus (multiplier-space, additive) for an offensive primary ----
+  function powerBonus(skPath){
+    var b=0;
+    if(owned['kindling'])b+=0.03;
+    if(owned['surge'])b+=0.15;
+    if(owned['onslaught'])b+=0.20;
+    if(owned['abandon'])b+=0.40;
+    if(owned['fervor'])b+=0.25*heat;
+    if(owned['overflow'])b+=0.08;
+    if(owned['convergence'])b+=0.15;
+    if(owned['attunement'] && skPath===activePath)b+=0.25; // element match (active school is themed)
+    return b;
+  }
+  function synFactor(){return (owned['confluence']?2:1)*(owned['conduit']?1.5:1)*(owned['convergence']?1.15:1);}
+  function skillDamage(path,sk){
+    var lv=lvls[path+'/'+sk.name]||0; if(lv<=0)return 0;
+    var per=sk.per, extra=0;
+    if(owned['discipline'] && path===activePath){per*=1.5;extra=1;}
+    var scale=1+per*(lv+extra);
+    var b=powerBonus(path);
+    if(owned['mastery'] && masteryName===sk.name)b+=1.0;
+    var syn=0; PATHS[path].sk.forEach(function(o){if(o.name!==sk.name)syn+=(lvls[path+'/'+o.name]||0)*0.02;});
+    syn*=synFactor();
+    return sk.base*scale*(1+b+syn);
+  }
+
+  // ---- rendering ----
+  var SW=900,SH=1360,PD=48;
+  function sx(c){return PD+(c-0.2)/8.8*(SW-2*PD);}
+  function sy(r){return PD+(r+8.0)/15.7*(SH-2*PD);}
+  function renderTree(){
+    var s='<defs><radialGradient id="bptg" cx="50%" cy="33%" r="82%"><stop offset="0%" stop-color="#181d26"/><stop offset="60%" stop-color="#0f1218"/><stop offset="100%" stop-color="#0a0c10"/></radialGradient></defs>';
+    s+='<rect width="'+SW+'" height="'+SH+'" fill="url(#bptg)"/>';
+    var sr=99173; function rnd(){sr=(sr*1103515245+12345)&0x7fffffff;return sr/0x7fffffff;}
+    for(var i=0;i<95;i++)s+='<circle cx="'+(rnd()*SW).toFixed(0)+'" cy="'+(rnd()*SH).toFixed(0)+'" r="'+(0.4+rnd()*1.2).toFixed(1)+'" fill="#fff" opacity="'+(0.05+rnd()*0.33).toFixed(2)+'"/>';
+    s+='<text x="'+(SW-22)+'" y="58" text-anchor="end" fill="#9ea6b3" font-size="12.5" font-weight="700" letter-spacing="3" opacity="0.42">THE SEVEN APOTHEOSIS</text>';
+    s+='<text x="'+(SW-22)+'" y="'+sy(1.0).toFixed(0)+'" text-anchor="end" fill="#9ea6b3" font-size="12.5" font-weight="700" letter-spacing="3" opacity="0.35">CORE CONSTELLATION</text>';
+    NODES.forEach(function(n){if(n.fl)return;(n.p||[]).forEach(function(pid){var pn=byId[pid];if(!pn)return;var lit=owned[n.id]&&owned[pid];s+='<line x1="'+sx(pn.x).toFixed(1)+'" y1="'+sy(pn.y).toFixed(1)+'" x2="'+sx(n.x).toFixed(1)+'" y2="'+sy(n.y).toFixed(1)+'" stroke="'+(lit?BCOL[n.b]:'#39414d')+'" stroke-width="'+(lit?2.4:1.4)+'" stroke-opacity="'+(lit?0.78:0.5)+'"/>';});});
+    NODES.forEach(function(n){var col=BCOL[n.b],al=!!owned[n.id],av=canAlloc(n);var big=n.id==='convergence'||/_cap$/.test(n.id),r=big?14:(n.fl?11:9);var cx=sx(n.x).toFixed(1),cy=sy(n.y).toFixed(1);s+='<g class="snode" data-id="'+n.id+'">';if(al)s+='<circle cx="'+cx+'" cy="'+cy+'" r="'+(r+11)+'" fill="'+col+'" opacity="0.12"/><circle cx="'+cx+'" cy="'+cy+'" r="'+(r+5)+'" fill="'+col+'" opacity="0.24"/>';s+='<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="'+(al?col:'#12161c')+'" stroke="'+col+'" stroke-width="'+(big?2.6:1.9)+'" stroke-opacity="'+(al?1:(av?0.92:0.34))+'"/>';if(al)s+='<circle cx="'+cx+'" cy="'+cy+'" r="'+(r*0.4).toFixed(1)+'" fill="#fff" opacity="0.9"/>';s+='<text x="'+cx+'" y="'+(parseFloat(cy)+r+14)+'" text-anchor="middle" font-size="11" font-weight="700" fill="'+(al?col:(av?'#c6cdd6':'#6a717a'))+'">'+n.l+'</text></g>';});
+    var el=document.getElementById('bp-tree');
+    el.innerHTML='<svg width="'+SW+'" height="'+SH+'" viewBox="0 0 '+SW+' '+SH+'" role="img">'+s+'</svg>';
+    if(!el._sc){el._sc=1;var ch=el.clientHeight||600,cw=el.clientWidth||600;el.scrollTop=Math.max(0,sy(0.3)-ch/2+30);el.scrollLeft=Math.max(0,(SW-cw)/2);}
+  }
+  function spent(){var t=0;NODES.forEach(function(n){if(owned[n.id])t+=n.c;});return t;}
+  function apoName(){
+    var caps=['tm_cap','ar_cap','um_cap','em_cap','cr_cap','pn_cap','cn_cap'];
+    for(var i=0;i<caps.length;i++) if(owned[caps[i]])return byId[caps[i]].l;
+    var gates=['tm_gate','ar_gate','um_gate','em_gate','cr_gate','pn_gate','cn_gate'];
+    for(var j=0;j<gates.length;j++) if(owned[gates[j]])return byId[gates[j]].b+' (started)';
+    return 'none';
+  }
+  function renderSide(){
+    var skSpent=0,minReq=0,used={};
+    Object.keys(PATHS).forEach(function(p){PATHS[p].sk.forEach(function(s){
+      var lv=lvls[p+'/'+s.name]||0; skSpent+=lv;
+      if(lv>0)used[p]=1;
+      if(lv>=2)minReq=Math.max(minReq,levelReq(s.tier,lv));
+    });});
+    var K=Object.keys(used).length, Teff=Math.max(tier,K), sp=spent(), base=Math.floor(psyLv/4);
+    // climb tiers from the schools' tier until the tree is affordable; each extra tier is a deferred (forgone) card worth +4 plus that tier's own reward
+    var Treq=Teff; while(Treq<60 && base+tierPts(Treq)+4*Math.max(0,Treq-K)<sp) Treq++;
+    var defer=Math.min(Math.max(0,Treq-K),Math.max(0,Math.ceil((sp-base-tierPts(Treq))/4))), spA=base+tierPts(Treq)+4*defer, medH=medCum(Treq);
+    function set(id,txt,bad){var el=document.getElementById(id);el.querySelector('b').textContent=txt;el.className='bprow'+(bad?' warn':'');}
+    set('r-spec',sp+' / '+spA,sp>spA);
+    set('r-skill',skSpent+' / '+psyLv,skSpent>psyLv);
+    document.getElementById('r-cap').querySelector('b').textContent=skillCap();
+    set('r-req',minReq+(minReq>psyLv?' (raise level)':''),minReq>psyLv);
+    document.getElementById('r-apo').querySelector('b').textContent=apoName();
+    document.getElementById('r-cards').querySelector('b').textContent=K;
+    document.getElementById('r-tier').querySelector('b').textContent=(Treq>0?tierName(Treq)+' ('+Treq+')':'none');
+    set('r-med',medH.toLocaleString()+' h',false);
+    set('r-defer',defer,defer>0);
+    // effects
+    var eff='';
+    NODES.forEach(function(n){if(owned[n.id])eff+='<div class="eff"><b>'+n.l+'</b> &mdash; '+n.e+'</div>';});
+    document.getElementById('bp-eff').innerHTML=eff||'<div class="eff">Walk the tree to see effects.</div>';
+  }
+  function renderSelect(){
+    var h='<select id="sk-sel" class="bpsel" aria-label="School">';
+    GROUPS.forEach(function(grp){h+='<optgroup label="'+grp.g+'">';grp.schools.forEach(function(sc){h+='<option value="'+sc+'"'+(sc===activePath?' selected':'')+'>'+sc+'</option>';});h+='</optgroup>';});
+    h+='</select>';
+    document.getElementById('sk-tabs').innerHTML=h;
+    document.getElementById('sk-sel').addEventListener('change',function(e){activePath=e.target.value;renderSkills();});
+  }
+  function renderSkills(){
+    var P=PATHS[activePath],h='',tot=0,pts=0,cap=skillCap();
+    P.sk.forEach(function(s){
+      var key=activePath+'/'+s.name,lv=lvls[key]||0,dmg=skillDamage(activePath,s),req=levelReq(s.tier,Math.max(lv,2));
+      tot+=dmg;pts+=lv;
+      var star=owned['mastery']?'<span class="star'+(masteryName===s.name?' on':'')+'" data-mast="'+s.name+'" title="Mastery: +100% to this skill">&#9733;</span>':'';
+      h+='<div class="sn">'+star+' '+s.name+'<small>tier '+s.tier+' &middot; lvl-'+lv+' needs psy '+(lv>=2?req:0)+'</small></div>';
+      h+='<div class="stp"><button data-dec="'+s.name+'">&minus;</button><span>'+lv+' / '+cap+'</span><button data-inc="'+s.name+'">+</button></div>';
+      h+='<div class="dmg">'+(dmg?Math.round(dmg):'\u2013')+'</div>';
+    });
+    document.getElementById('sk-list').innerHTML=h;
+    document.getElementById('sk-tot').textContent=pts+' pts \u00b7 '+Math.round(tot);
+  }
+  function renderLegend(){
+    var groups=[['Core','Offense','Control','Ward','Flow'],['Apex / picks','Apex','Mod'],['Apotheosis','Halcyon','Singularity','Penumbra','Empyrean','Chronos','Pandemonium','Consonance']];
+    var h='';groups.forEach(function(g){h+='<span style="opacity:.6">'+g[0]+':</span> ';for(var i=1;i<g.length;i++)h+='<span><span class="dot" style="background:'+BCOL[g[i]]+'"></span>'+g[i]+'</span>';h+='<br>';});
+    document.getElementById('bp-legend').innerHTML=h;
+  }
+  function renderAll(){renderTree();renderSide();renderSkills();}
+
+  // ---- events ----
+  var tre=document.getElementById('bp-tree'),dragS=null,supClick=false;
+  tre.addEventListener('mousedown',function(e){if(e.button!==0)return;dragS={x:e.clientX,y:e.clientY,sl:tre.scrollLeft,st:tre.scrollTop,moved:false};tre.classList.add('grabbing');});
+  window.addEventListener('mousemove',function(e){if(!dragS)return;var dx=e.clientX-dragS.x,dy=e.clientY-dragS.y;if(dx*dx+dy*dy>16)dragS.moved=true;tre.scrollLeft=dragS.sl-dx;tre.scrollTop=dragS.st-dy;});
+  window.addEventListener('mouseup',function(){if(!dragS)return;supClick=dragS.moved;tre.classList.remove('grabbing');dragS=null;});
+  tre.addEventListener('click',function(e){if(supClick){supClick=false;return;}var g=e.target.closest('.snode');if(g)toggle(g.getAttribute('data-id'));});
+  document.getElementById('in-lv').addEventListener('input',function(e){psyLv=+e.target.value;document.getElementById('lv-val').textContent=psyLv;renderAll();});
+  document.getElementById('in-ti').addEventListener('input',function(e){tier=+e.target.value;document.getElementById('ti-val').textContent=tier;renderAll();});
+  document.getElementById('in-ht').addEventListener('input',function(e){heat=+e.target.value/100;document.getElementById('ht-val').textContent=e.target.value+'%';renderSkills();});
+  document.getElementById('sk-list').addEventListener('click',function(e){
+    var inc=e.target.getAttribute('data-inc'),dec=e.target.getAttribute('data-dec'),mast=e.target.getAttribute('data-mast');
+    var cap=skillCap();
+    if(inc){var k=activePath+'/'+inc;lvls[k]=Math.min(cap,(lvls[k]||0)+1);renderSkills();renderSide();}
+    else if(dec){var k2=activePath+'/'+dec;lvls[k2]=Math.max(0,(lvls[k2]||0)-1);renderSkills();renderSide();}
+    else if(mast){masteryName=(masteryName===mast?null:mast);renderSkills();}
+  });
+
+  renderSelect();renderLegend();renderAll();
+})();
+</script>
+</body>
+</html>
