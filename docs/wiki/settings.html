@@ -20,7 +20,8 @@
     <tr><th>Setting</th><th class="num">Default</th><th>Effect</th></tr>
     <tr><td>Maximum level per ability</td><td class="num">10</td><td>The per-ability ceiling (before Convergence's +5).</td></tr>
     <tr><td>Psycaster levels per skill level</td><td class="num">3</td><td>The <code>per</code> term in the <a class="xref" href="skill-levels.html">requirement curve</a>; higher = slower leveling.</td></tr>
-    <tr><td>Psycaster level cap, +per tier</td><td class="num">12</td><td>VPE caps the psycaster LEVEL at 30; each <a class="xref" href="enlightenment.html">enlightenment tier</a> raises that ceiling by this much (Tier 10 &rarr; ~150 = a full level-15 ascendancy). 0 disables.</td></tr>
+    <tr><td>Max psycaster level</td><td class="num">400</td><td>Flat psycaster level ceiling, written to VPE's maximum level. <a class="xref" href="enlightenment.html">Enlightenment tiers</a> do not affect it (30-500; off defers to VPE's own setting).</td></tr>
+    <tr><td>Suppress ISEKAI RPG psycaster stats</td><td class="num">on</td><td>When ISEKAI RPG Leveling is installed, stops it from boosting psychic sensitivity, neural heat limit and recovery, meditation focus and psyfocus, so this mod's scaling stays authoritative.</td></tr>
     <tr><td>Per-level scaling</td><td class="num">-</td><td>Global growth knob for each skill's primary stat.</td></tr>
     <tr><td>Auto psycaster stats</td><td class="num">on</td><td>Heat / recovery / sensitivity grow per level; manual upgrades off. See <a class="xref" href="auto-stats.html">Stats</a>.</td></tr>
     <tr><td>Remove psyfocus decay</td><td class="num">on</td><td>Psyfocus no longer drains over time.</td></tr>
@@ -62,6 +63,8 @@
   <table class="t">
     <tr><th>Setting</th><th>Effect</th></tr>
     <tr><td>Enlightened enemies</td><td>Enable / cap the <a class="xref" href="enemies.html">tier</a> of hostile psycasters and the rarity weights.</td></tr>
+    <tr><td>Suppress untiered psylinks</td><td>Random pawns of any faction that would generate already holding a psylink lose it unless they awakened, so psycasters are earned rather than handed out. On by default.</td></tr>
+    <tr><td>Chance a random pawn spawns Awakened+</td><td>While suppression is on, each eligible pawn (age 13+) has this chance (default 5%) to instead generate as a true <a class="xref" href="enlightenment.html">Awakened</a> psycaster, with a psylink, a path and a tier already earned. 0% = no random psycasters spawn.</td></tr>
     <tr><td>Empire psylink awakens</td><td>Gaining a psylink from outside meditation (the Empire, anima, ritual) triggers the Awakening.</td></tr>
     <tr><td>Enemy Apotheosis</td><td>Allow the rare Tier III enemy to roll an <a class="xref" href="apotheosis.html">Apotheosis</a>.</td></tr>
   </table>
