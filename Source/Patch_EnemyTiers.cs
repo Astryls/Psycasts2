@@ -29,8 +29,8 @@ namespace PsycastSynergies
                 if (p == null || p.Dead || p.RaceProps == null || !p.RaceProps.Humanlike) return;
                 var s = PsycastSynergiesMod.Settings;
                 if (s == null) return;
-                if (s.enemyTiersEnabled) TryInjectTier(p, request, s);   // hostile psycaster -> chance of an Awakened+ tier
-                if (s.gateUntieredPsylinks) GatePsylink(p);              // strip a psylink from any pawn left untiered
+                if (s.enemyTiersEnabled && !TieringControl.EnemyTiersDisabled) TryInjectTier(p, request, s);   // hostile psycaster -> chance of an Awakened+ tier
+                if (s.gateUntieredPsylinks && !TieringControl.PsylinkGateDisabled) GatePsylink(p);              // strip a psylink from any pawn left untiered
             }
             catch (Exception e) { Log.Warning("[Psycasts²] pawn-gen psycast handling failed: " + e); }
         }
@@ -68,7 +68,7 @@ namespace PsycastSynergies
 
             // Any eligible pawn (age 13+) has a chance to spawn as a fresh Awakened psycaster - created from
             // scratch if it has no psylink yet (a psylink + a path + a tier), mostly Tier I, occasionally higher.
-            if (s != null && s.awakenedSpawnChance > 0f
+            if (s != null && s.awakenedSpawnChance > 0f && !TieringControl.RandomAwakenedSpawnsDisabled
                 && (p.ageTracker == null || p.ageTracker.AgeBiologicalYears >= 13f)
                 && Rand.Chance(s.awakenedSpawnChance))
             {

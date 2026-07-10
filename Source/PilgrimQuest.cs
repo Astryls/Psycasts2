@@ -460,6 +460,7 @@ namespace PsycastSynergies
 
         protected override bool TestRunInt(Slate slate)
         {
+            if (TieringControl.PilgrimagesDisabled) return false;   // a mod owns tier progression now
             int neededTier = targetTier - 1;
             return PilgrimRouting.FindPilgrim(neededTier, true) != null
                 && TileFinder.TryFindNewSiteTile(out _);
@@ -695,6 +696,7 @@ namespace PsycastSynergies
 
         protected override bool TestRunInt(Slate slate)
         {
+            if (TieringControl.PilgrimagesDisabled) return false;   // a mod owns tier progression now
             return PilgrimRouting.FindPilgrim(targetTier - 1, false) != null
                 && TileFinder.TryFindNewSiteTile(out _);
         }

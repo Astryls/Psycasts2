@@ -411,6 +411,8 @@ namespace PsycastSynergies
             Head(l, "A Flow of Ancient Knowledge");
             CB(l, "Enable meditation breakthroughs", ref s.enlightenmentEnabled,
                 "A meditating pawn can be struck by a flow of ancient knowledge: a full level for a psycaster, or progress toward Awakening for a non-psycaster.");
+            if (TieringControl.MeditationAwakeningDisabled)
+                ModOverrideNote(l, "Awakening from meditation is disabled - breakthroughs still grant psycaster levels");
             if (s.enlightenmentEnabled)
             {
                 FS(l, $"Breakthrough size: {s.enlightenmentFrac * 100f:F0}% of a level", ref s.enlightenmentFrac, 0.2f, 1.5f,
@@ -432,8 +434,14 @@ namespace PsycastSynergies
             Head(l, "Awakening & Cards");
             CB(l, "Empire psylink awakens", ref s.empirePsylinkIntegrate,
                 "Gaining a psylink from OUTSIDE meditation, the Empire's bestowing ceremony, the blinding ritual, or anima-tree linking, triggers this mod's Awakening, so the pawn enters the system and picks a path instead of becoming a path-less psycaster.");
+            if (TieringControl.ExternalPsylinkAwakeningDisabled)
+                ModOverrideNote(l, "External-psylink awakening is disabled");
             CB(l, "Suppress untiered psylinks at generation", ref s.gateUntieredPsylinks,
                 "A pawn that would generate already holding a psylink loses it unless it also has an Awakened (or higher) enlightenment tier, so psycasters are earned through Awakening rather than handed out at random. The Ancient Psycaster Order (pilgrimage enemies) is exempt, and enemy-tier upgrades still apply first.");
+            if (TieringControl.PsylinkGateDisabled)
+                ModOverrideNote(l, "The psylink gate is disabled");
+            else if (TieringControl.RandomAwakenedSpawnsDisabled)
+                ModOverrideNote(l, "Random Awakened+ spawns are disabled");
             if (s.gateUntieredPsylinks)
                 FS(l, $"   Chance a random pawn spawns Awakened+: {s.awakenedSpawnChance * 100f:F0}%", ref s.awakenedSpawnChance, 0f, 1f,
                     "Each eligible pawn (age 13+) of any faction has this chance to generate as a proper Awakened psycaster - a psylink, a path and a tier (mostly Tier I, occasionally higher), created from scratch if needed. Everyone else who would have generated with a psylink loses it. 0% = no random psycasters spawn.");
@@ -443,6 +451,8 @@ namespace PsycastSynergies
             Head(l, "Transcendence (Beyond Illuminated)");
             CB(l, "Enable Transcendent tiers", ref s.transcendEnabled,
                 "On: an Illuminated (Tier III) psycaster who keeps meditating climbs into open-ended Transcendent tiers (IV, V, ...). Each tier grants bonus specialization points and an animated psycast-card pick for a free path. Off: Illuminated is the ceiling.");
+            if (TieringControl.TranscendenceDisabled)
+                ModOverrideNote(l, "Transcendence from meditation is disabled");
             if (s.transcendEnabled)
             {
                 FS(l, $"First Transcendent tier after: {s.transcendBaseHours:F0} meditation hours", ref s.transcendBaseHours, 12f, 200f,
@@ -454,8 +464,18 @@ namespace PsycastSynergies
             }
         }
 
+        // Amber note under a setting row when a loaded mod's TieringOverrideDef has taken a path over.
+        private static void ModOverrideNote(Listing_Standard l, string what)
+        {
+            GUI.color = new Color(1f, 0.72f, 0.35f);
+            l.Label("   \u26a0 " + what + " by a tiering override from: " + TieringControl.OwnerLabel + ". This row has no effect.");
+            GUI.color = Color.white;
+        }
+
         void TabPilgrimage(Listing_Standard l)
         {
+            if (TieringControl.PilgrimagesDisabled)
+                ModOverrideNote(l, "Pilgrimage quests are disabled");
             var s = Settings;
             Head(l, "Trial of the Altar (Combat, single site)");
             float days = s.pilgrimDailyMaxTicks > 0 ? (float)s.pilgrimMeditationTicks / s.pilgrimDailyMaxTicks : 0f;
@@ -494,6 +514,8 @@ namespace PsycastSynergies
             Head(l, "Enlightened Enemy Psycasters");
             CB(l, "Enemy psycasters can spawn Enlightened", ref s.enemyTiersEnabled,
                 "Hostile psycasters, especially the Empire, can spawn with an Enlightenment tier: boosted psylink, extra schools and abilities, full psyfocus and faster casting.");
+            if (TieringControl.EnemyTiersDisabled)
+                ModOverrideNote(l, "Enemy enlightenment tiers are disabled");
             if (s.enemyTiersEnabled)
             {
                 CB(l, "   Allow Tier I", ref s.enemyTier1, "Permit Tier I (Awakened) hostile psycasters.");

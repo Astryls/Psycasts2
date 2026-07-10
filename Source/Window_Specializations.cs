@@ -882,6 +882,6 @@ namespace PsycastSynergies
             GUI.color = old;
         }
 
-        private static string TierWord(int t) => t >= 3 ? "Illuminated" : t == 2 ? "Enlightened" : t == 1 ? "Awakened" : "";
+        private static string TierWord(int t) => EnlightenmentTier.Name(UnityEngine.Mathf.Clamp(t, 0, 3));   // respects TieringOverrideDef reskins
     }
 }

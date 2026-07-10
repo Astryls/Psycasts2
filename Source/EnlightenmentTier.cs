@@ -22,6 +22,8 @@ namespace PsycastSynergies
         public static string Name(int tier)
         {
             if (tier <= 0) return "";
+            var custom = TieringControl.TierName(tier);   // a TieringOverrideDef can reskin the whole ladder
+            if (custom != null) return custom;
             if (tier <= 3) return Names[tier];
             return "Transcendent " + RomanNumerals.ToRoman(tier);   // tier 4+ named by the FULL tier (tier 6 -> "Transcendent VI")
         }
@@ -81,7 +83,8 @@ namespace PsycastSynergies
         {
             if (gc == null) return;
             var s = PsycastSynergiesMod.Settings;
-            int pts = tier == 2 ? (s?.tier2SpecPoints ?? 2) : tier == 3 ? (s?.tier3SpecPoints ?? 3) : tier >= 4 ? 3 : 0;   // +3 per Transcendent tier
+            int pts = TieringControl.SpecPoints(tier)   // a TieringOverrideDef can re-cost the ladder
+                ?? (tier == 2 ? (s?.tier2SpecPoints ?? 2) : tier == 3 ? (s?.tier3SpecPoints ?? 3) : tier >= 4 ? 3 : 0);   // +3 per Transcendent tier
             if (pts <= 0) return;
             var spec = gc.GetSpec(p, true);
             if (spec != null) spec.points += pts;

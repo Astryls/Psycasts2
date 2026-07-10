@@ -266,7 +266,7 @@ namespace PsycastSynergies
 
                     // Transcendence: an Illuminated (tier 3+) psycaster who keeps meditating climbs into the
                     // open-ended Transcendent tiers. Each tier costs geometrically more, so the climb slows hard.
-                    if (med.tier >= 3 && s.transcendEnabled
+                    if (med.tier >= 3 && s.transcendEnabled && !TieringControl.TranscendenceDisabled
                         && med.transcendTicks >= TranscendThreshold(med.tier + 1, s))
                     {
                         med.transcendTicks = 0;
@@ -279,6 +279,7 @@ namespace PsycastSynergies
                     // window. Psycasters use the saturation-scaled streak chance for their full-level breakthroughs.
                     if (p.Psycasts() == null)
                     {
+                        if (TieringControl.MeditationAwakeningDisabled) continue;   // a mod owns awakening now
                         float cumHours = med.awakenMeditationTicks / 2500f;
                         if (s.awakenGuaranteeHours > 0f && cumHours >= s.awakenGuaranteeHours)
                         {
@@ -675,6 +676,7 @@ namespace PsycastSynergies
             if (pawn?.Faction == null || !pawn.Faction.IsPlayer) return;
             if (!pawn.Spawned || pawn.RaceProps == null || !pawn.RaceProps.Humanlike) return;   // not at gen time
             if (PsycastSynergiesMod.Settings?.empirePsylinkIntegrate != true) return;
+            if (TieringControl.ExternalPsylinkAwakeningDisabled) return;   // a mod owns awakening now
             var med = GameComponent_PsycastSynergies.Instance?.GetMed(pawn, true);
             if (med == null || med.awakened) return;
             MeditationSystem.AwakenExternal(pawn, med);

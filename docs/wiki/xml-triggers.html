@@ -139,6 +139,42 @@
   chains</a> by design - they're for content that provides its own journey (a grand ritual, a boss reward, a quest
   chain). Prefer Tier I unless your content has earned the jump.</div>
 
+  <h2>8. Owning the whole ladder: TieringOverrideDef</h2>
+  <p>Building a complete replacement progression? Ship one def and Psycasts² hands the ladder over to you:
+  the disable flags switch off the built-in <i>earn paths</i>, while the tier system itself - the tier hediff,
+  card picks, spec points, and every trigger surface above - stays fully live as your progression's engine.
+  The reskin fields rename the ladder everywhere it appears (letters, health tab, card picks, spec UI) and
+  re-cost its spec-point rewards.</p>
+  <pre><code>&lt;PsycastSynergies.TieringOverrideDef&gt;
+  &lt;defName&gt;MyMod_Tiering&lt;/defName&gt;
+  &lt;disableBuiltInTiering&gt;true&lt;/disableBuiltInTiering&gt;  &lt;!-- umbrella: all flags below --&gt;
+  &lt;tierNames&gt;
+    &lt;li&gt;Initiate&lt;/li&gt;
+    &lt;li&gt;Adept&lt;/li&gt;
+    &lt;li&gt;Master&lt;/li&gt;
+  &lt;/tierNames&gt;
+  &lt;tierNameBeyondFormat&gt;Master {ROMAN}&lt;/tierNameBeyondFormat&gt;
+  &lt;tierSpecPoints&gt;&lt;li&gt;0&lt;/li&gt;&lt;li&gt;2&lt;/li&gt;&lt;li&gt;3&lt;/li&gt;&lt;/tierSpecPoints&gt;
+&lt;/PsycastSynergies.TieringOverrideDef&gt;</code></pre>
+  <table class="t">
+    <tr><th>Field</th><th>Effect</th></tr>
+    <tr><td><code>disableBuiltInTiering</code></td><td>Umbrella - every disable flag below at once (total handoff).</td></tr>
+    <tr><td><code>disableMeditationAwakening</code></td><td>Non-psycasters no longer Awaken (Tier I) from meditation. Psycaster level breakthroughs are untouched.</td></tr>
+    <tr><td><code>disableTranscendence</code></td><td>Illuminated pawns no longer climb Tier 4+ from meditation.</td></tr>
+    <tr><td><code>disablePilgrimages</code></td><td>The Tier II/III pilgrimage quest chains are never offered.</td></tr>
+    <tr><td><code>disableExternalPsylinkAwakening</code></td><td>Empire bestowing / anima linking no longer trigger Awakening.</td></tr>
+    <tr><td><code>disableEnemyTiers</code></td><td>Hostile psycasters no longer spawn tiered.</td></tr>
+    <tr><td><code>disableRandomAwakenedSpawns</code></td><td>No random fresh-Awakened pawn generation.</td></tr>
+    <tr><td><code>disablePsylinkGate</code></td><td>Stop stripping generated psylinks from untiered pawns - use this if your mod grants psylinks its own way.</td></tr>
+    <tr><td><code>tierNames</code></td><td>Display names for tiers 1..N, replacing Awakened / Enlightened / Illuminated.</td></tr>
+    <tr><td><code>tierNameBeyondFormat</code></td><td>Name for tiers past the list; <code>{TIER}</code> = number, <code>{ROMAN}</code> = numeral. Unset keeps "Transcendent {ROMAN}".</td></tr>
+    <tr><td><code>tierSpecPoints</code></td><td>Spec points granted on reaching tier 1..N (past the list reuses the last entry). Unset keeps built-in rewards.</td></tr>
+  </table>
+  <p>Disables are honored regardless of player settings - affected settings rows show an amber "overridden by
+  &lt;your mod&gt;" note so players know who owns progression. Multiple override defs merge: any mod's disable
+  wins; the first mod supplying <code>tierNames</code>/<code>tierSpecPoints</code> wins those (a log warning
+  names any loser). Everything is queryable from C# via <code>PsycastSynergies.TieringControl</code>.</p>
+
   <div class="pagenav" id="pagenav"></div>
 </article>
 </div>
