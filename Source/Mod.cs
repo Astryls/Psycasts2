@@ -328,10 +328,10 @@ namespace PsycastSynergies
             CB(l, "Scale buff / boon strength", ref s.scaleBuffStrength, "Scale the severity of hediffs a cast applies, both boons and debuffs, with level and synergies.");
             CB(l, "Scale sensitivity-derived effects", ref s.scaleViaSensitivity, "Briefly raise the caster's psychic sensitivity during a cast so addon effects hardcoded as a multiple of sensitivity, such as Geomancer's, also scale.");
 
-            Head(l, "Cost & caps");
-            CB(l, "Higher levels cost more (heat & psyfocus)", ref s.scaleCost, "Each invested level also raises the skill's psyfocus cost and neural heat. Scales with the skill's OWN level only; synergies never add cost.");
+            Head(l, "Cost and caps");
+            CB(l, "Higher levels cost more (heat and psyfocus)", ref s.scaleCost, "Each invested level also raises the skill's psyfocus cost and neural heat. Scales with the skill's OWN level only; synergies never add cost.");
             if (s.scaleCost)
-                FS(l, $"Cost increase per level: +{s.costPerLevelPct * 100f:F0}% heat & psyfocus", ref s.costPerLevelPct, 0f, 0.25f, "How steeply a skill's cost rises for each invested level.");
+                FS(l, $"Cost increase per level: +{s.costPerLevelPct * 100f:F0}% heat and psyfocus", ref s.costPerLevelPct, 0f, 0.25f, "How steeply a skill's cost rises for each invested level.");
             CB(l, "Set psycaster level cap", ref s.overrideVpeLevelCap, "Set Vanilla Psycasts Expanded's maximum psycaster level to the value below. Enlightenment tiers do not affect this cap. Off leaves VPE's own setting untouched.");
             if (s.overrideVpeLevelCap)
                 IS(l, $"Max psycaster level: {s.vpeLevelCap}", ref s.vpeLevelCap, 30, 500, "The flat psycaster level ceiling. Default 400.");
@@ -427,13 +427,13 @@ namespace PsycastSynergies
                     "Above Illuminated, each Transcendent tier multiplies a psycaster's hourly breakthrough chance by +this, so deep Transcendents earn free levels faster as leveling slows. The chance stays hard-capped at 60% - it never becomes guaranteed.");
             }
 
-            Head(l, "Over-meditation & comas");
+            Head(l, "Over-meditation and comas");
             FS(l, $"Safe meditation window: {s.comaSafeHours:F1} hours / day", ref s.comaSafeHours, 0f, 16f,
                 "Hours a pawn can meditate per day with NO risk. Meditating PAST this window starts adding psychic-coma risk each hour, AND builds saturation so each successive coma grows LONGER, up to 8 days. Keep daily meditation at or under this for safe, sustainable progress; push past it only when you accept the escalating, compounding risk. Pilgrimage meditation is exempt from comas entirely.");
             FS(l, $"Coma risk per excess hour: {s.comaRiskPerHour * 100f:F0}%", ref s.comaRiskPerHour, 0f, 0.25f,
                 "Added psychic-coma chance for EACH hour meditated beyond the safe window, rolled every hour. So the 9th hour of a day carries roughly three times the risk of the 7th. Coma length scales with the pawn's level, how far past the window they went, and accumulated saturation: a minimum of 4 hours up to a maximum of 8 days.");
 
-            Head(l, "Awakening & cards");
+            Head(l, "Awakening and cards");
             CB(l, "Empire psylink awakens", ref s.empirePsylinkIntegrate,
                 "Gaining a psylink from OUTSIDE meditation, the Empire's bestowing ceremony, the blinding ritual, or anima-tree linking, triggers this mod's Awakening, so the pawn enters the system and picks a path instead of becoming a path-less psycaster.");
             if (TieringControl.ExternalPsylinkAwakeningDisabled)

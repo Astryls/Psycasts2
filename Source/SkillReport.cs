@@ -80,7 +80,7 @@ namespace PsycastSynergies
                 sb.Append("+" + Pct(s.perLevelPct * PsycastInfo.PrimaryStrength(a)) + " " + Esc(SynergyRules.StatLabel(prim.Value)) + " " + TierTag(prim.Value));
             else
                 sb.Append("<span class='dim'>utility - no scaled stat</span>");
-            if (s.scaleCost) sb.Append(" &nbsp;&middot;&nbsp; +" + Pct(s.costPerLevelPct) + " Psyfocus &amp; Heat cost");
+            if (s.scaleCost) sb.Append(" &nbsp;&middot;&nbsp; +" + Pct(s.costPerLevelPct) + " psyfocus and heat cost");
             sb.Append("</div>");
 
             var fx = BaseEffects(a);

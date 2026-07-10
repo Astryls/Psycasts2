@@ -556,7 +556,7 @@ namespace PsycastSynergies
                 Widgets.DrawBoxSolid(fr, Palette.BGD);
                 GUI.color = Palette.Accent; Widgets.DrawBox(fr, 1); GUI.color = Color.white;
                 Text.Font = GameFont.Tiny; Text.Anchor = TextAnchor.MiddleCenter; GUI.color = Palette.Accent;
-                Widgets.Label(fr, "\u21e7  Hold Shift for synergies & details");
+                Widgets.Label(fr, "\u21e7  Hold Shift for synergies and details");
                 Text.Anchor = TextAnchor.UpperLeft; GUI.color = Color.white;
                 y += 26f;
             }
@@ -568,7 +568,7 @@ namespace PsycastSynergies
                 if (m.entropyCost > 0f) cc += (cc.Length > 0 ? "  \u2022  " : "") + m.entropyCost.ToString("0.#") + " Heat";
                 KeyVal(col, ref y, "Cast cost", cc, Palette.Stat);
             }
-            KeyVal(col, ref y, "Cost / level", "+" + Pct(m.costPct) + " Psyfocus & Heat", Palette.Bad);
+            KeyVal(col, ref y, "Cost / level", "+" + Pct(m.costPct) + " psyfocus and heat", Palette.Bad);
 
             // Diablo-2-style required-level line, anchored at the bottom. Red when your psycaster
             // level is below it.

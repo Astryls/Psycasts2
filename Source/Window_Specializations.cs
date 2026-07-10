@@ -500,7 +500,7 @@ namespace PsycastSynergies
             float y = inner.y;
             Text.Font = GameFont.Small; Text.Anchor = TextAnchor.UpperLeft; GUI.color = Palette.Stat;
             float lhS = Text.LineHeight;
-            Widgets.Label(new Rect(inner.x, y, inner.width, lhS), "Bonuses & Perks"); y += lhS + 3f;
+            Widgets.Label(new Rect(inner.x, y, inner.width, lhS), "Bonuses and perks"); y += lhS + 3f;
 
             // Points block.
             int pend = PendingCost();

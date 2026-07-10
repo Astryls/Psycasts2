@@ -61,17 +61,17 @@ namespace PsycastSynergies
             Add(new Spec("onslaught", "Onslaught", 15, "Offense", 1.7f, 2.6f,
                 "Offensive casts +20% power; synergies from offensive skills count double.", new[] { "surge" }));
             Add(new Spec("dominion", "Dominion", 15, "Control", 5.3f, 2.6f,
-                "Control casts +20% radius & duration.", new[] { "resonance" }));
+                "Control casts +20% radius and duration.", new[] { "resonance" }));
             Add(new Spec("bulwark", "Bulwark", 15, "Ward", 5.3f, 5.4f,
-                "Boons & shields +20% strength & duration.", new[] { "potency" }));
+                "Boons and shields +20% strength and duration.", new[] { "potency" }));
             Add(new Spec("flow", "Flow", 12, "Flow", 1.7f, 5.4f,
-                "Halves the level-based heat & psyfocus cost penalty.", new[] { "kindling" }));
+                "Halves the level-based heat and psyfocus cost penalty.", new[] { "kindling" }));
 
             // Tier 3 - power
             Add(new Spec("fervor", "Fervor", 18, "Offense", 0.9f, 1.9f,
                 "Offensive power rises with your current neural heat (up to +25% at maximum).", new[] { "onslaught" }));
             Add(new Spec("abandon", "Abandon", 18, "Offense", 0.6f, 3f,
-                "Reckless: +40% offensive power, but +40% psyfocus & heat cost.", new[] { "onslaught" }));
+                "Reckless: +40% offensive power, but +40% psyfocus and heat cost.", new[] { "onslaught" }));
             Add(new Spec("echo", "Echo", 18, "Control", 6.1f, 1.9f,
                 "20% chance a cast immediately refreshes its cooldown.", new[] { "dominion" }));
             Add(new Spec("wellspring", "Wellspring", 18, "Ward", 6.1f, 6.1f,
@@ -81,17 +81,17 @@ namespace PsycastSynergies
 
             // Tier 4 - capstones
             Add(new Spec("tempest", "Tempest", 20, "Offense", 0.2f, 1.2f,
-                "When a psycast kills, refund half of that cast's heat & psyfocus.", new[] { "fervor" }));
+                "When a psycast kills, refund half of that cast's heat and psyfocus.", new[] { "fervor" }));
             Add(new Spec("maelstrom", "Maelstrom", 20, "Control", 6.8f, 1.2f,
                 "Area casts surge outward: +50% radius and +25% duration.", new[] { "echo" }));
             Add(new Spec("sanctuary", "Sanctuary", 20, "Ward", 6.8f, 6.8f,
-                "Bastion of will: boons +50% strength & duration.", new[] { "wellspring" }));
+                "Bastion of will: boons +50% strength and duration.", new[] { "wellspring" }));
             Add(new Spec("conduit", "Conduit", 20, "Flow", 0.2f, 6.8f,
                 "Synergy bonuses you receive are increased by 50%.", new[] { "confluence" }));
 
             // Apex
             Add(new Spec("convergence", "Convergence", 30, "Apex", 3.5f, 0.3f,
-                "Convergence. +15% to ALL stats & synergies, and +5 to the per-skill level cap. Opens the seven Apotheosis constellations drifting above.",
+                "Convergence. +15% to ALL stats and synergies, and +5 to the per-skill level cap. Opens the seven Apotheosis constellations drifting above.",
                 null, Capstones));
 
             // Mod-aware picks
@@ -102,7 +102,7 @@ namespace PsycastSynergies
                 "Choose a path - its skills gain +50% per-level scaling and start one effective level higher.\n\nExclusive: only one of Overflow / Mastery / Discipline / Attunement.",
                 new[] { "kindling" }, null, pick: true, exclusive: "specialization"));
             Add(new Spec("attunement", "Attunement", 20, "Mod", 4.4f, 7.3f,
-                "Choose an element - casts of that damage type gain +25% power & radius.\n\nExclusive: only one of Overflow / Mastery / Discipline / Attunement.",
+                "Choose an element - casts of that damage type gain +25% power and radius.\n\nExclusive: only one of Overflow / Mastery / Discipline / Attunement.",
                 new[] { "kindling" }, null, pick: true, exclusive: "specialization"));
 
             // Extra nodes.

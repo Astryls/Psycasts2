@@ -87,7 +87,7 @@ namespace PsycastSynergies
             sb.Append("<nav class='sidebar'><div class='brand'>PSYCAST<br>SYNERGIES<span>Field Manual</span></div>");
             sb.Append("<a onclick=\"show('overview')\">&#9733; Overview</a>");
             sb.Append("<a onclick=\"show('specs')\">&#9670; Specializations</a>");
-            sb.Append("<a onclick=\"show('awaken')\">&#9728; Awakening &amp; Focus</a>");
+            sb.Append("<a onclick=\"show('awaken')\">&#9728; Awakening and focus</a>");
             sb.Append("<a onclick=\"show('pilgrim')\">&#9874; Pilgrimage Quests</a>");
             sb.Append("<div class='navhdr'>Paths (" + paths.Count + ")</div>");
             for (int i = 0; i < paths.Count; i++)
@@ -161,7 +161,7 @@ namespace PsycastSynergies
                 sb.Append("<div class='sec'><b>Scaling</b> &mdash; primary: +" + Pct(s.perLevelPct * boost * pstr) + "/level "
                     + Esc(SynergyRules.StatLabel(prim.Value)) + ".<br>");
                 sb.Append("<span class='atmax'>At max (Lv" + maxLvl + "): " + (reduction ? "&minus;" : "+") + Pct(ownPct) + " "
-                    + Esc(SynergyRules.StatLabel(prim.Value)) + "</span> from your own levels &mdash; synergies &amp; specializations stack on top.</div>");
+                    + Esc(SynergyRules.StatLabel(prim.Value)) + "</span> from your own levels &mdash; synergies and specializations stack on top.</div>");
             }
 
             // Effects (base + at-max for the primary).
@@ -296,7 +296,7 @@ namespace PsycastSynergies
                 + ".focus .ft{font-weight:700;white-space:nowrap;color:#e6c878;}"
                 + ".schl{display:inline-flex;align-items:center;gap:3px;background:#1b2029;border:1px solid #2c333f;border-radius:6px;padding:2px 8px 2px 4px;margin:3px 4px 3px 0;font-size:13px;}"
                 + ".ti{width:18px;height:18px;vertical-align:middle;object-fit:contain;}</style>");
-            sb.Append("<h1>Awakening &amp; Focused Meditation</h1>");
+            sb.Append("<h1>Awakening and focused meditation</h1>");
             sb.Append("<p class='lead'>Any colonist - psycaster or not - can be set to meditate toward <b>Enlightenment</b>. A non-psycaster who breaks through enough times <b>awakens</b> as a psycaster, choosing a first path from face-down cards; psycasters instead climb three Enlightenment <b>tiers</b> (Awakened, Enlightened, Illuminated), each a fresh card pick plus bonus specialization points.</p>");
             sb.Append("<h2>Focused rolls - steering your cards</h2>");
             sb.Append("<div class='panel'>Every meditation focus - sculptures, braziers, the anima tree, even the bare <b>meditation spot</b> - carries a <b>Focus type</b> gizmo. Attune it to a psychic focus type and a non-psycaster who meditates <i>facing it</i> is steered toward that type's schools: the awakening cards are weighted toward the matching schools, and one is effectively <b>guaranteed</b>. Leave it on <b>Any</b> to weight by the meditator's personality traits instead.</div>");
@@ -362,7 +362,7 @@ namespace PsycastSynergies
             float animaT2Days = capH > 0 ? animaT2 * animaPerSiteH / capH : 0;
             float animaT3Days = capH > 0 ? animaT3 * animaPerSiteH / capH : 0;
 
-            sb.Append("<div class='pchain'><span class='tag trial'>Trial</span><h2>The Altar Chain &mdash; short &amp; brutal</h2>");
+            sb.Append("<div class='pchain'><span class='tag trial'>Trial</span><h2>The altar chain &mdash; short and brutal</h2>");
             sb.Append("<p class='dim'>A single site spawns a focus structure (Pilgrim's altar by default; tunable to meditation spot, throne, or grand throne). The pilgrim meditates the required hours, <b>capped at "
                 + capH.ToString("F0") + "h/day</b>, while the <b>Ancient Psycaster Order</b> sends escalating raid waves every " + (s.pilgrimWaveIntervalTicks / 2500f).ToString("F0") + "h.</p>");
             sb.Append("<table class='qtbl'><thead><tr><th>Tier</th><th>Quest</th><th>Focus</th><th>Meditation</th><th>Waves</th></tr></thead><tbody>");
@@ -370,7 +370,7 @@ namespace PsycastSynergies
             sb.Append("<tr><td class='tier'>III</td><td class='ch'>Trial of Illumination</td><td>" + Esc(s.pilgrimFocusDef ?? "PS_PilgrimAltar") + "</td><td>" + altarH.ToString("F0") + "h \u00b7 \u2248 " + altarDays.ToString("F1") + " days</td><td>\u00d71.6 harder</td></tr>");
             sb.Append("</tbody></table></div>");
 
-            sb.Append("<div class='pchain'><span class='tag pacifist'>Pacifist</span><h2>The Anima Chain &mdash; long &amp; peaceful</h2>");
+            sb.Append("<div class='pchain'><span class='tag pacifist'>Pacifist</span><h2>The anima chain &mdash; long and peaceful</h2>");
             sb.Append("<p class='dim'>Multiple anima trees manifest across the world. The pilgrim must travel to <i>each</i> and meditate beneath its boughs. <b>No enemies attack the sites.</b> The total commitment is roughly 3&ndash;4&times; the altar chain &mdash; the right path for a single beloved colonist you don't want to risk.</p>");
             sb.Append("<table class='qtbl'><thead><tr><th>Tier</th><th>Quest</th><th>Sites</th><th>Per-site / total meditation</th><th>Special</th></tr></thead><tbody>");
             sb.Append("<tr><td class='tier'>II</td><td class='ch'>Song of the Anima</td><td>" + animaT2 + " anima trees</td><td>" + animaPerSiteH.ToString("F0") + "h / " + (animaT2 * animaPerSiteH).ToString("F0") + "h \u00b7 \u2248 " + animaT2Days.ToString("F1") + " days</td><td>-</td></tr>");
@@ -390,16 +390,16 @@ namespace PsycastSynergies
                 + "<h2>How it works</h2>"
                 + "<div class='panel'><b>1 &middot; Level your psycasts.</b> Click an unlocked psycast's icon (in the VPE tab or Modern Psycasts UI) to invest a point and raise its level &mdash; up to " + s.maxSkillLevel + " (Shift-click skips the confirm). Each level boosts that skill's effects.</div>"
                 + "<div class='panel'><b>2 &middot; One primary stat.</b> Every skill scales exactly ONE rarity-assigned stat &mdash; its <i>primary</i> &mdash; by +" + Pct(s.perLevelPct) + " per level (damage, radius, duration, projectiles, summons, &hellip;).</div>"
-                + "<div class='panel'><b>3 &middot; Synergies &amp; empowers.</b> Every skill is linked to a few path-mates. Leveling a skill <i>empowers</i> the ones it points to (\u25B8), and a skill <i>gains power from</i> its sources (\u25C2) &mdash; each link in its own stat. The graph is fixed per path: every skill receives at most 3 and gives at most 3, so spreading investment across a path matters. Each card lists both directions.</div>"
+                + "<div class='panel'><b>3 &middot; Synergies and empowers.</b> Every skill is linked to a few path-mates. Leveling a skill <i>empowers</i> the ones it points to (\u25B8), and a skill <i>gains power from</i> its sources (\u25C2) &mdash; each link in its own stat. The graph is fixed per path: every skill receives at most 3 and gives at most 3, so spreading investment across a path matters. Each card lists both directions.</div>"
                 + "<div class='panel'><b>4 &middot; Tiers.</b> Synergy types are tiered by strength &mdash; <span class='tt t0'>S</span> top, <span class='tt t1'>A</span> strong, <span class='tt t2'>B</span> moderate, <span class='tt t3'>C</span> minor &mdash; and each skill receives a balanced mix.</div>"
                 + "<div class='panel'><b>5 &middot; Specializations.</b> Psycaster levels also grant specialization points for the constellation tree (see the Specializations page) &mdash; global multipliers, capstones, and three Apotheosis paths.</div>"
-                + "<h2>Leveling, XP &amp; caps</h2>"
+                + "<h2>Leveling, XP and caps</h2>"
                 + "<div class='panel'><b>Per-skill levels.</b> Each ability levels 0&ndash;" + s.maxSkillLevel + " (Convergence raises the cap by +5). A higher skill level needs a higher <i>psycaster</i> level on a rising triangular curve, and deeper-tier abilities start that curve higher &mdash; so maxing a tier-6 skill is a real end-game investment, not an instant dump.</div>"
                 + "<div class='panel'><b>XP comes from casting</b>, scaled by the skill's tier (\u2248 " + s.castXpPerTier.ToString("0") + " XP &times; tier per cast). Casting your higher-tier psycasts levels your psycaster fastest.</div>"
                 + "<div class='panel'><b>Meditation</b> still grants psycast XP, but as a reduced trickle (" + Pct(s.meditationXpMult) + " of normal) &mdash; a steady background source rather than the main one.</div>"
-                + (s.enlightenmentEnabled ? "<div class='panel'><b>Meditation, Enlightenment, Awakening &amp; Pilgrimage.</b> Awakening from meditation reaches <b>Tier I</b>. Tier II and Tier III are earned through <b>pilgrimage quests</b> offered by the storyteller - see the <b>Pilgrimage Quests</b> page for the two chains (altar trial vs. anima journey).</div><div class='panel'><b> <i>Any</i> colonist can be set to meditate. Sustained meditation can trigger <b>a flow of ancient knowledge</b> - a psychic breakthrough. For a psycaster it is worth a <b>full psycaster level</b>; for a non-psycaster it is insight toward <b>awakening as a psycaster</b>, a path that ramps with total meditation and is guaranteed within about a week of dedication. The newly awakened pick a first path from a center-screen spread of face-down cards, biased toward the focus type they meditated at (see the <b>Awakening &amp; Focus</b> page for which focus steers which schools). A psycaster's breakthroughs get <b>progressively rarer the more days in a row</b> they over-meditate (recovering after a few days off), so they can't be farmed for a free level every day. And over-meditating within a day is dangerous: too many hours risks a <b>psychic coma</b>, so a sustainable rhythm beats round-the-clock grinding.</div>" : "")
+                + (s.enlightenmentEnabled ? "<div class='panel'><b>Meditation, Enlightenment, Awakening and Pilgrimage.</b> Awakening from meditation reaches <b>Tier I</b>. Tier II and Tier III are earned through <b>pilgrimage quests</b> offered by the storyteller - see the <b>Pilgrimage Quests</b> page for the two chains (altar trial vs. anima journey).</div><div class='panel'><b> <i>Any</i> colonist can be set to meditate. Sustained meditation can trigger <b>a flow of ancient knowledge</b> - a psychic breakthrough. For a psycaster it is worth a <b>full psycaster level</b>; for a non-psycaster it is insight toward <b>awakening as a psycaster</b>, a path that ramps with total meditation and is guaranteed within about a week of dedication. The newly awakened pick a first path from a center-screen spread of face-down cards, biased toward the focus type they meditated at (see the <b>Awakening and focus</b> page for which focus steers which schools). A psycaster's breakthroughs get <b>progressively rarer the more days in a row</b> they over-meditate (recovering after a few days off), so they can't be farmed for a free level every day. And over-meditating within a day is dangerous: too many hours risks a <b>psychic coma</b>, so a sustainable rhythm beats round-the-clock grinding.</div>" : "")
                 + "<h2>Reading a card</h2>"
-                + "<div class='panel'>Each skill card shows its art, tier &amp; role, base effects with their value <span class='gx'>&rarr; at max level</span>, the <span style='color:#7fe0a0'>\u25C2 sources that empower it</span>, and the <span style='color:#9fb6ff'>\u25B8 skills it empowers</span>. Use the sidebar to jump between paths.</div>";
+                + "<div class='panel'>Each skill card shows its art, tier and role, base effects with their value <span class='gx'>&rarr; at max level</span>, the <span style='color:#7fe0a0'>\u25C2 sources that empower it</span>, and the <span style='color:#9fb6ff'>\u25B8 skills it empowers</span>. Use the sidebar to jump between paths.</div>";
         }
 
         private static string BranchName(string b)
