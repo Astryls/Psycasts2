@@ -311,7 +311,7 @@ namespace PsycastSynergies
         void TabSkills(Listing_Standard l)
         {
             var s = Settings;
-            Head(l, "Skill Leveling");
+            Head(l, "Skill leveling");
             FS(l, $"Bonus per level invested: +{s.perLevelPct * 100f:F0}% power / radius / duration", ref s.perLevelPct, 0f, 0.25f,
                 "How much each point you invest in a psycast raises its primary stat, plus radius and duration. This is the skill's OWN per-level gain.");
             FS(l, $"Synergy bonus per level in same-path psycasts: +{s.synergyPct * 100f:F0}%", ref s.synergyPct, 0f, 0.10f,
@@ -321,14 +321,14 @@ namespace PsycastSynergies
             IS(l, $"Psycaster levels required per allowed skill level: {s.psyLevelsPerSkillLevel}", ref s.psyLevelsPerSkillLevel, 1, 10,
                 "Gating: a skill can only be raised as high as your psycaster level supports. Higher values mean leveling skills demands a higher psycaster level first.");
 
-            Head(l, "What Scales");
+            Head(l, "What scales");
             CB(l, "Scale power / damage", ref s.scalePower, "Scale an ability's power, such as melee and explosion damage, with its level and synergies.");
             CB(l, "Scale radius", ref s.scaleRadius, "Scale an ability's area-of-effect radius with its level and synergies.");
             CB(l, "Scale duration", ref s.scaleDuration, "Scale an ability's effect duration with its level and synergies, for longer buffs and debuffs.");
             CB(l, "Scale buff / boon strength", ref s.scaleBuffStrength, "Scale the severity of hediffs a cast applies, both boons and debuffs, with level and synergies.");
-            CB(l, "Scale sensitivity-derived effects", ref s.scaleViaSensitivity, "Briefly raise the caster's Psychic Sensitivity during a cast so addon effects hardcoded as a multiple of sensitivity, such as Geomancer's, also scale.");
+            CB(l, "Scale sensitivity-derived effects", ref s.scaleViaSensitivity, "Briefly raise the caster's psychic sensitivity during a cast so addon effects hardcoded as a multiple of sensitivity, such as Geomancer's, also scale.");
 
-            Head(l, "Cost & Caps");
+            Head(l, "Cost & caps");
             CB(l, "Higher levels cost more (heat & psyfocus)", ref s.scaleCost, "Each invested level also raises the skill's psyfocus cost and neural heat. Scales with the skill's OWN level only; synergies never add cost.");
             if (s.scaleCost)
                 FS(l, $"Cost increase per level: +{s.costPerLevelPct * 100f:F0}% heat & psyfocus", ref s.costPerLevelPct, 0f, 0.25f, "How steeply a skill's cost rises for each invested level.");
@@ -344,7 +344,7 @@ namespace PsycastSynergies
         void TabSpec(Listing_Standard l)
         {
             var s = Settings;
-            Head(l, "Specialization Points");
+            Head(l, "Specialization points");
             IS(l, $"Psycaster levels per specialization point: {s.specLevelsPerPoint}", ref s.specLevelsPerPoint, 1, 20,
                 "How many psycaster levels grant one point to spend on the constellation tree. Lower means points flow faster.");
             FS(l, $"Casting XP per specialization point: {s.specXpPerPoint:F0}", ref s.specXpPerPoint, 10f, 80f,
@@ -354,12 +354,12 @@ namespace PsycastSynergies
             IS(l, $"Tier III bonus points: {s.tier3SpecPoints}", ref s.tier3SpecPoints, 0, 16,
                 "Specialization points granted the moment a pawn reaches Enlightenment Tier III.");
 
-            Head(l, "Path Access");
+            Head(l, "Path access");
             CB(l, "Disable gene requirements", ref s.disableGeneRequirements, "Paths that require a specific gene, such as Archon, unlock without needing the gene.");
             CB(l, "Unlock removed Mech-Mind trees", ref s.enableLockedMechTrees, "Re-enable the Mechanitor Mech-Mind paths the addon ships but locks away as removed content.");
             CB(l, "Lock paths to Enlightenment", ref s.lockPathsToEnlightenment, "Paths unlock ONLY through the awakening cards; the tab's normal Unlock buttons are disabled. Dev mode still bypasses this.");
 
-            Head(l, "Synergy Graph");
+            Head(l, "Synergy graph");
             l.Label("Synergies are frozen the first time they are generated and never change afterward, even if you add psycast addons later.");
             int tuned = PlayerTuning.Count;
             l.Label("To retune skill effects, synergies and empowers, enable dev mode and open the Balance editor from the psycast tab."
@@ -371,7 +371,7 @@ namespace PsycastSynergies
                 Messages.Message("Synergy graph rebuilt from currently-installed psycasts.", MessageTypeDefOf.TaskCompletion, false);
             }
 
-            Head(l, "Balance Edits");
+            Head(l, "Balance edits");
             l.Label("Edits made in the in-game Balance editor are stored in this config and override the baked defaults. Baking writes them into the mod's ManualBalance.json as the NEW defaults and clears the live overlay - a custom balance that survives resetting your edits, and the file the mod ships with.");
             if (l.ButtonText(tuned > 0 ? $"Bake {tuned} edit(s) into mod defaults" : "Bake edits into mod defaults"))
             {
@@ -410,7 +410,7 @@ namespace PsycastSynergies
             CB(l, "Remove psyfocus decay", ref s.noPsyfocusDecay,
                 "On (default): psyfocus never drains on its own. It only rises from meditation and falls when you spend it casting. Off: vanilla decay, where idle psyfocus slowly bleeds away and must be topped up.");
 
-            Head(l, "A Flow of Ancient Knowledge");
+            Head(l, "A flow of ancient knowledge");
             CB(l, "Enable meditation breakthroughs", ref s.enlightenmentEnabled,
                 "A meditating pawn can be struck by a flow of ancient knowledge: a full level for a psycaster, or progress toward Awakening for a non-psycaster.");
             if (TieringControl.MeditationAwakeningDisabled)
@@ -427,13 +427,13 @@ namespace PsycastSynergies
                     "Above Illuminated, each Transcendent tier multiplies a psycaster's hourly breakthrough chance by +this, so deep Transcendents earn free levels faster as leveling slows. The chance stays hard-capped at 60% - it never becomes guaranteed.");
             }
 
-            Head(l, "Over-Meditation & Comas");
+            Head(l, "Over-meditation & comas");
             FS(l, $"Safe meditation window: {s.comaSafeHours:F1} hours / day", ref s.comaSafeHours, 0f, 16f,
                 "Hours a pawn can meditate per day with NO risk. Meditating PAST this window starts adding psychic-coma risk each hour, AND builds saturation so each successive coma grows LONGER, up to 8 days. Keep daily meditation at or under this for safe, sustainable progress; push past it only when you accept the escalating, compounding risk. Pilgrimage meditation is exempt from comas entirely.");
             FS(l, $"Coma risk per excess hour: {s.comaRiskPerHour * 100f:F0}%", ref s.comaRiskPerHour, 0f, 0.25f,
                 "Added psychic-coma chance for EACH hour meditated beyond the safe window, rolled every hour. So the 9th hour of a day carries roughly three times the risk of the 7th. Coma length scales with the pawn's level, how far past the window they went, and accumulated saturation: a minimum of 4 hours up to a maximum of 8 days.");
 
-            Head(l, "Awakening & Cards");
+            Head(l, "Awakening & cards");
             CB(l, "Empire psylink awakens", ref s.empirePsylinkIntegrate,
                 "Gaining a psylink from OUTSIDE meditation, the Empire's bestowing ceremony, the blinding ritual, or anima-tree linking, triggers this mod's Awakening, so the pawn enters the system and picks a path instead of becoming a path-less psycaster.");
             if (TieringControl.ExternalPsylinkAwakeningDisabled)
@@ -452,7 +452,7 @@ namespace PsycastSynergies
             IS(l, "Cards per tier-up: " + (s.cardPickCount <= 0 ? "auto (3; Tier II deals 5)" : s.cardPickCount.ToString()), ref s.cardPickCount, 0, 8,
                 "How many face-down cards every tier-up event deals. Auto (0) keeps the classic spread: 3 cards, or 5 at a Tier II pilgrimage. 1-8 forces that many cards at every tier-up. The deal can never exceed the paths the pawn hasn't unlocked yet.");
 
-            Head(l, "Transcendence (Beyond Illuminated)");
+            Head(l, "Transcendence (beyond Illuminated)");
             CB(l, "Enable Transcendent tiers", ref s.transcendEnabled,
                 "On: an Illuminated (Tier III) psycaster who keeps meditating climbs into open-ended Transcendent tiers (IV, V, ...). Each tier grants bonus specialization points and an animated psycast-card pick for a free path. Off: Illuminated is the ceiling.");
             if (TieringControl.TranscendenceDisabled)
@@ -481,7 +481,7 @@ namespace PsycastSynergies
             if (TieringControl.PilgrimagesDisabled)
                 ModOverrideNote(l, "Pilgrimage quests are disabled");
             var s = Settings;
-            Head(l, "Trial of the Altar (Combat, single site)");
+            Head(l, "Trial of the Altar (combat, single site)");
             float days = s.pilgrimDailyMaxTicks > 0 ? (float)s.pilgrimMeditationTicks / s.pilgrimDailyMaxTicks : 0f;
             IS(l, $"Total meditation required: {s.pilgrimMeditationTicks / 2500f:F1}h  (~{days:F1} days at the cap)", ref s.pilgrimMeditationTicks, 10000, 150000,
                 "Hours of meditation the pilgrim must complete at the altar site to advance a tier.");
@@ -492,30 +492,30 @@ namespace PsycastSynergies
             FS(l, $"Wave threat scale: {s.pilgrimWavePointsScale:F2}x", ref s.pilgrimWavePointsScale, 0.1f, 3f,
                 "Multiplier on each wave's combat strength. Higher makes the waves deadlier.");
 
-            Head(l, "Altar Focus Building (Tier II)");
-            l.Label("Tier III always uses the Grand Throne.");
+            Head(l, "Altar focus building (Tier II)");
+            l.Label("Tier III always uses the grand throne.");
             string[][] focusOpts = {
-                new[]{"PS_PilgrimThrone","Meditation Throne (default; in reliquary)"},
-                new[]{"PS_PilgrimAltar","Pilgrim's Altar (obelisk style)"},
-                new[]{"MeditationSpot","Meditation Spot (basic, no reliquary)"},
-                new[]{"Throne","Vanilla Throne (Dignified focus, royal title)"},
-                new[]{"GrandThrone","Vanilla Grand Throne (Dignified, royal title)"},
+                new[]{"PS_PilgrimThrone","Meditation throne (default; in reliquary)"},
+                new[]{"PS_PilgrimAltar","Pilgrim's altar (obelisk style)"},
+                new[]{"MeditationSpot","Meditation spot (basic, no reliquary)"},
+                new[]{"Throne","Vanilla throne (Dignified focus, royal title)"},
+                new[]{"GrandThrone","Vanilla grand throne (Dignified, royal title)"},
             };
             foreach (var opt in focusOpts)
                 if (l.RadioButton(opt[1], s.pilgrimFocusDef == opt[0])) s.pilgrimFocusDef = opt[0];
 
-            Head(l, "Way of the Anima (Pacifist, multi-site)");
+            Head(l, "Way of the Anima (pacifist, multi-site)");
             IS(l, $"Meditation per site: {s.animaPilgrimTicksPerSite / 2500f:F1}h", ref s.animaPilgrimTicksPerSite, 10000, 150000,
                 "Hours of meditation required at EACH anima tree site. The anima chain is bloodless: no enemies attack, and pilgrimage meditation never causes a coma.");
             IS(l, $"Tier II sites: {s.animaPilgrimT2Sites}", ref s.animaPilgrimT2Sites, 1, 6, "Number of anima-tree sites the Tier II journey visits.");
-            IS(l, $"Tier III sites: {s.animaPilgrimT3Sites}  (last spawns the Ancient Anima Tree)", ref s.animaPilgrimT3Sites, 1, 8,
-                "Number of sites the Tier III journey visits; the final one grows the giant Ancient Anima Tree.");
+            IS(l, $"Tier III sites: {s.animaPilgrimT3Sites}  (last spawns the ancient anima tree)", ref s.animaPilgrimT3Sites, 1, 8,
+                "Number of sites the Tier III journey visits; the final one grows the giant ancient anima tree.");
         }
 
         void TabEnemies(Listing_Standard l)
         {
             var s = Settings;
-            Head(l, "Enlightened Enemy Psycasters");
+            Head(l, "Enlightened enemy psycasters");
             CB(l, "Enemy psycasters can spawn Enlightened", ref s.enemyTiersEnabled,
                 "Hostile psycasters, especially the Empire, can spawn with an Enlightenment tier: boosted psylink, extra schools and abilities, full psyfocus and faster casting.");
             if (TieringControl.EnemyTiersDisabled)

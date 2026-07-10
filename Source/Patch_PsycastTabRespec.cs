@@ -10,8 +10,8 @@ using VEF.Abilities;
 
 namespace PsycastSynergies
 {
-    // Adds the bottom tool block to the psycast tab: a free "Respec skills" button, a tier-costing
-    // "Respec path" button, the "Pilgrim's path" routing dropdown (moved here from the old pawn
+    // Adds the bottom tool block to the psycast tab: a free "Reset skills" button, a tier-costing
+    // "Reset path" button, the "Pilgrim's path" routing dropdown (moved here from the old pawn
     // gizmo) and - when Modern Psycasts UI's clickable focus tiles aren't available - a "Default
     // focus" dropdown fallback. A postfix on ITab_Pawn_Psycasts.FillTab runs whether VPE's own tab
     // or Modern Psycasts UI's drawer rendered the panel, so the block appears in both.
@@ -118,18 +118,18 @@ namespace PsycastSynergies
                 }
             }
 
-            if (MXStyle.Button(r1, learnedPsycasts > 0 ? "Respec skills (" + learnedPsycasts + ")" : "Respec skills"))
+            if (MXStyle.Button(r1, learnedPsycasts > 0 ? "Reset skills (" + learnedPsycasts + ")" : "Reset skills"))
             {
                 if (learnedPsycasts > 0)
-                    Find.WindowStack.Add(new Dialog_Confirm("Respec skills",
+                    Find.WindowStack.Add(new Dialog_Confirm("Reset skills",
                         "Unlearn every psycast and refund all points spent learning and leveling them? Unlocked paths are kept. (Free.)",
                         () => SkillRespec(pawn, psy)));
-                else Messages.Message("No learned psycasts to respec.", MessageTypeDefOf.RejectInput, false);
+                else Messages.Message("No learned psycasts to reset.", MessageTypeDefOf.RejectInput, false);
             }
-            if (MXStyle.Button(r2, "Respec path"))
+            if (MXStyle.Button(r2, "Reset path"))
             {
                 if (tier >= 1)
-                    Find.WindowStack.Add(new Dialog_Confirm("Respec path - drop a tier",
+                    Find.WindowStack.Add(new Dialog_Confirm("Reset path - drop a tier",
                         "Surrender your highest enlightenment tier? Its path - and the abilities bought within it - are removed, and you must re-earn that tier to choose anew.",
                         () => CardRespec(pawn, psy)));
                 else Messages.Message("No enlightenment tier to surrender.", MessageTypeDefOf.RejectInput, false);
@@ -149,12 +149,12 @@ namespace PsycastSynergies
                 foreach (var a in comp.LearnedAbilities)
                     if (a?.def?.GetModExtension<AbilityExtension_Psycast>() != null)
                         refund += Mathf.Max(1, gc.GetLevel(pawn, a.def));
-            if (refund <= 0) { Messages.Message("No learned psycasts to respec.", MessageTypeDefOf.RejectInput, false); return; }
+            if (refund <= 0) { Messages.Message("No learned psycasts to reset.", MessageTypeDefOf.RejectInput, false); return; }
             psy.points += refund;
             gc.ClearPawn(pawn);
             comp?.LearnedAbilities.RemoveAll(a => a?.def?.GetModExtension<AbilityExtension_Psycast>() != null);   // un-learn psycasts (paths kept) -> 0/10
             SoundDefOf.Quest_Accepted.PlayOneShotOnCamera();
-            Messages.Message(pawn.LabelShortCap + " respecced their psycasts - " + refund + " point" + (refund == 1 ? "" : "s") + " returned.",
+            Messages.Message(pawn.LabelShortCap + " reset their psycasts - " + refund + " point" + (refund == 1 ? "" : "s") + " returned.",
                 pawn, MessageTypeDefOf.PositiveEvent, false);
         }
 

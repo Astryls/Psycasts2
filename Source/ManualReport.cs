@@ -363,7 +363,7 @@ namespace PsycastSynergies
             float animaT3Days = capH > 0 ? animaT3 * animaPerSiteH / capH : 0;
 
             sb.Append("<div class='pchain'><span class='tag trial'>Trial</span><h2>The Altar Chain &mdash; short &amp; brutal</h2>");
-            sb.Append("<p class='dim'>A single site spawns a focus structure (Pilgrim's Altar by default; tunable to Meditation Spot, Throne, or Grand Throne). The pilgrim meditates the required hours, <b>capped at "
+            sb.Append("<p class='dim'>A single site spawns a focus structure (Pilgrim's altar by default; tunable to meditation spot, throne, or grand throne). The pilgrim meditates the required hours, <b>capped at "
                 + capH.ToString("F0") + "h/day</b>, while the <b>Ancient Psycaster Order</b> sends escalating raid waves every " + (s.pilgrimWaveIntervalTicks / 2500f).ToString("F0") + "h.</p>");
             sb.Append("<table class='qtbl'><thead><tr><th>Tier</th><th>Quest</th><th>Focus</th><th>Meditation</th><th>Waves</th></tr></thead><tbody>");
             sb.Append("<tr><td class='tier'>II</td><td class='ch'>A Pilgrim's Path</td><td>" + Esc(s.pilgrimFocusDef ?? "PS_PilgrimAltar") + "</td><td>" + altarH.ToString("F0") + "h \u00b7 \u2248 " + altarDays.ToString("F1") + " days</td><td>standard</td></tr>");

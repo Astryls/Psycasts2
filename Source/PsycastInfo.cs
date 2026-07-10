@@ -648,7 +648,7 @@ namespace PsycastSynergies
             float yld = SkillSystem.StatMultiplier(pawn, def, SynStat.Yield) - 1f;
             if (yld > 0f) list.Add(new Effect("Psyfocus refund", PctS(Mathf.Min(yld, 0.9f)), null));
             float ins = SkillSystem.StatMultiplier(pawn, def, SynStat.Insight) - 1f;
-            if (ins > 0f) list.Add(new Effect("Bonus Psycast XP", "+" + PctS(Mathf.Min(ins, 2f)), null));
+            if (ins > 0f) list.Add(new Effect("Bonus psycast XP", "+" + PctS(Mathf.Min(ins, 2f)), null));
 
             var proj = def.GetModExtension<AbilityExtension_Projectile>();
             if (proj?.projectile?.projectile != null)

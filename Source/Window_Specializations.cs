@@ -568,9 +568,9 @@ namespace PsycastSynergies
             Widgets.EndScrollView();
             GUI.color = Color.white; Text.Anchor = TextAnchor.UpperLeft;
 
-            // Player respec (free): refund every owned spec back to the point pool.
+            // Player reset (free): refund every owned spec back to the point pool.
             bool hasOwned = d.owned.Count > 0;
-            if (IconButton(respecRow, RespecTex, hasOwned ? "Respec all - refund " + d.owned.Sum(id => Specs.Get(id)?.cost ?? 0) + " ★" : "Respec all", hasOwned))
+            if (IconButton(respecRow, RespecTex, hasOwned ? "Reset all - refund " + d.owned.Sum(id => Specs.Get(id)?.cost ?? 0) + " ★" : "Reset all", hasOwned))
                 OpenRespecConfirm(d);
 
             // Apply / Clear (icon buttons).
@@ -712,7 +712,7 @@ namespace PsycastSynergies
 
         private void OpenRespecConfirm(SpecData d)
         {
-            Find.WindowStack.Add(new Dialog_Confirm("Respec specializations",
+            Find.WindowStack.Add(new Dialog_Confirm("Reset specializations",
                 "Refund all specializations? Every spent point returns to your pool, all picks are cleared, and any Apotheosis path is undone. (Free.)",
                 () => RespecAll(d)));
         }
@@ -807,12 +807,12 @@ namespace PsycastSynergies
                 Vector2 size = __instance.Size;
                 var d = GameComponent_PsycastSynergies.Instance?.GetSpec(pawn, create: true);
 
-                // Right-aligned FLUSH to the left (pawn-info) card's content edge: card at x=14,
-                // 14px inner padding, width from ModernUIBridge.LeftCardWidth (Modern UI's card is
-                // a fixed 340px — deriving from size.x drifts short at narrow tab widths).
-                const float x0 = 14f, pad = 14f;
+                // Right-aligned FLUSH to the left (pawn-info) card's own edge (card at x=14, width
+                // from ModernUIBridge.LeftCardWidth): 3px inset so we sit just inside the 2px border,
+                // NOT at the 14px-padded content edge — the buttons hug the panel edge itself.
+                const float x0 = 14f;
                 float panelW = ModernUIBridge.LeftCardWidth(size.x);
-                Rect r = new Rect(x0 + panelW - pad - 92f, 18f, 92f, 26f);
+                Rect r = new Rect(x0 + panelW - 3f - 92f, 18f, 92f, 26f);
 
                 Palette.DrawCard(r);
                 if ((d?.points ?? 0) > 0)
