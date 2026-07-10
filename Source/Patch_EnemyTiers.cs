@@ -30,7 +30,7 @@ namespace PsycastSynergies
                 var s = PsycastSynergiesMod.Settings;
                 if (s == null) return;
                 if (s.enemyTiersEnabled && !TieringControl.EnemyTiersDisabled) TryInjectTier(p, request, s);   // hostile psycaster -> chance of an Awakened+ tier
-                if (s.gateUntieredPsylinks && !TieringControl.PsylinkGateDisabled) GatePsylink(p);              // strip a psylink from any pawn left untiered
+                if (s.gateUntieredPsylinks && !TieringControl.PsylinkGateDisabled) GatePsylink(p, request);     // strip a psylink from any pawn left untiered
             }
             catch (Exception e) { Log.Warning("[Psycasts²] pawn-gen psycast handling failed: " + e); }
         }
@@ -58,7 +58,7 @@ namespace PsycastSynergies
 
         // Psycasters are EARNED: a pawn generated with a psylink but no Awakened+ tier loses it. Tiered pawns
         // (including injected enemies) keep theirs, and the scripted Ancient Psycaster Order is exempt.
-        private static void GatePsylink(Pawn p)
+        private static void GatePsylink(Pawn p, PawnGenerationRequest request)
         {
             if (EnlightenmentTier.TierOf(p) >= 1) return;                                       // already Awakened+ (incl. injected enemies)
             if (p.Faction != null && p.Faction.def?.defName == "PS_AncientPsycasters") return;  // scripted psycaster order
@@ -68,7 +68,10 @@ namespace PsycastSynergies
 
             // Any eligible pawn (age 13+) has a chance to spawn as a fresh Awakened psycaster - created from
             // scratch if it has no psylink yet (a psylink + a path + a tier), mostly Tier I, occasionally higher.
+            // Starting colonists (new-game character creation) are exempt when noAwakenedStartingPawns is on:
+            // everyone begins mundane and must EARN their Awakening.
             if (s != null && s.awakenedSpawnChance > 0f && !TieringControl.RandomAwakenedSpawnsDisabled
+                && !(s.noAwakenedStartingPawns && request.Context == PawnGenerationContext.PlayerStarter)
                 && (p.ageTracker == null || p.ageTracker.AgeBiologicalYears >= 13f)
                 && Rand.Chance(s.awakenedSpawnChance))
             {

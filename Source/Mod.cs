@@ -73,6 +73,7 @@ namespace PsycastSynergies
         public bool empirePsylinkIntegrate = true;       // external psylink (Empire/anima) triggers our Awakening instead
         public bool gateUntieredPsylinks = true;         // strip a generated psylink from any pawn without an Awakened+ tier
         public float awakenedSpawnChance = 0.05f;        // chance ANY eligible pawn spawns as a fresh Awakened+ psycaster
+        public bool noAwakenedStartingPawns = true;      // starting colonists (new-game character creation) never roll the random Awakened+ spawn
         public bool cardRevealAll = false;               // awakening cards: the other cards can be turned by hand and any revealed card re-picked
         public int cardPickCount = 0;                    // cards dealt per tier-up pick: 0 = auto (3, or 5 at Tier II), 1-8 = fixed
         public float enlightenmentChance = 0.02f;        // base hourly Enlightenment chance while meditating
@@ -154,6 +155,7 @@ namespace PsycastSynergies
             Scribe_Values.Look(ref empirePsylinkIntegrate, "empirePsylinkIntegrate", true);
             Scribe_Values.Look(ref gateUntieredPsylinks, "gateUntieredPsylinks", true);
             Scribe_Values.Look(ref awakenedSpawnChance, "awakenedSpawnChance", 0.05f);
+            Scribe_Values.Look(ref noAwakenedStartingPawns, "noAwakenedStartingPawns", true);
             Scribe_Values.Look(ref cardRevealAll, "cardRevealAll", false);
             Scribe_Values.Look(ref cardPickCount, "cardPickCount", 0);
             Scribe_Values.Look(ref enlightenmentChance, "enlightenmentChance", 0.02f);
@@ -447,6 +449,9 @@ namespace PsycastSynergies
             if (s.gateUntieredPsylinks)
                 FS(l, $"   Chance a random pawn spawns Awakened+: {s.awakenedSpawnChance * 100f:F0}%", ref s.awakenedSpawnChance, 0f, 1f,
                     "Each eligible pawn (age 13+) of any faction has this chance to generate as a proper Awakened psycaster - a psylink, a path and a tier (mostly Tier I, occasionally higher), created from scratch if needed. Everyone else who would have generated with a psylink loses it. 0% = no random psycasters spawn.");
+            if (s.gateUntieredPsylinks)
+                CB(l, "   Starting colonists never spawn Awakened", ref s.noAwakenedStartingPawns,
+                    "On (default): the colonists you begin the game with are exempt from the random Awakened+ roll, so everyone starts the journey with an ordinary, mundane mind and must earn their Awakening. Off: starting colonists roll the same chance as everyone else.");
             CB(l, "Reveal all cards and allow re-picking", ref s.cardRevealAll,
                 "On: after turning your first awakening card you may turn the remaining cards by hand, one at a time, and re-pick any revealed card before embracing. Off (default): only the card you turn is revealed, and that path is committed.");
             IS(l, "Cards per tier-up: " + (s.cardPickCount <= 0 ? "auto (3; Tier II deals 5)" : s.cardPickCount.ToString()), ref s.cardPickCount, 0, 8,
