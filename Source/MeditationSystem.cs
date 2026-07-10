@@ -250,7 +250,9 @@ namespace PsycastSynergies
                         {
                             ApplyComa(p, med);
                             med.streakTicks = 0;
-                            med.pendingPick = 0;   // a coma interrupts a pending reroll
+                            // The pending card pick SURVIVES a coma - forfeiting it here could permanently
+                            // lose a tier-up (soft lock). Alert_PendingCardPick keeps it recoverable; the
+                            // coma's downtime and saturation are punishment enough.
                             continue;
                         }
                     }

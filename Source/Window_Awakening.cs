@@ -30,6 +30,7 @@ namespace PsycastSynergies
         private readonly int tier;
 
         private int chosen = -1;
+        private bool resolved;   // a real decision was made (embrace / forgo / defer); Esc-closes requeue the pick
         private readonly float[] flipT;
         private readonly bool[] flipping;
         private readonly float[] burstStart;
@@ -88,6 +89,17 @@ namespace PsycastSynergies
         public override void PostClose()
         {
             base.PostClose();
+            // Esc (or any close without a decision): requeue as a PENDING pick so the tier-up is never
+            // lost - the cards re-open while the pawn meditates, and Alert_PendingCardPick stays up
+            // with a one-click reopen. Without this, dismissing the window soft-locked the pick.
+            if (!resolved)
+            {
+                var med = GameComponent_PsycastSynergies.Instance?.GetMed(pawn, true);
+                if (med != null && med.pendingPick < tier) med.pendingPick = tier;
+                if (PawnUtility.ShouldSendNotificationAbout(pawn))
+                    Messages.Message(pawn.LabelShortCap + " set the cards aside for now - they return during meditation, or via the alert.",
+                        pawn, MessageTypeDefOf.CautionInput, false);
+            }
             MeditationSystem.ShowNextPick();   // chain to the next queued awakening, if another pawn awoke at the same time
         }
 
@@ -494,6 +506,7 @@ namespace PsycastSynergies
 
         private void DeferReroll()
         {
+            resolved = true;
             var med = GameComponent_PsycastSynergies.Instance?.GetMed(pawn, true);
             if (med != null) { med.pendingPick = tier; med.rerollCount++; }
             if (PawnUtility.ShouldSendNotificationAbout(pawn))
@@ -508,6 +521,7 @@ namespace PsycastSynergies
         // the +3 the tier-up already granted). The tier itself is already set, so this just awards points + closes.
         private void ForgoForPoints()
         {
+            resolved = true;
             var gc = GameComponent_PsycastSynergies.Instance;
             int pts = ForgoPoints();
             var spec = gc?.GetSpec(pawn, true);
@@ -523,6 +537,7 @@ namespace PsycastSynergies
 
         private void Confirm()
         {
+            resolved = true;
             var psy = pawn.Psycasts();
             var path = options[chosen];
             if (psy != null && !psy.unlockedPaths.Contains(path)) psy.UnlockPath(path);
