@@ -19,6 +19,10 @@ namespace PsycastSynergies
             var harmony = new Harmony("astryl.psycastsynergies");
             harmony.PatchAll(Assembly.GetExecutingAssembly());
 
+            // Soft-wire Modern Psycasts UI's focus-tile hooks (no-op when that mod is absent):
+            // its focus-type tiles become the per-pawn default-focus picker.
+            ModernUIBridge.TryWire();
+
             // Dynamically wrap every Ability.Cast override so def-field scaling reaches custom
             // ability classes that read def.radius/power/durationTime directly (addon paths).
             CastScaling.Install(harmony);

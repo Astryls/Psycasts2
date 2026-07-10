@@ -109,9 +109,10 @@ namespace PsycastSynergies
         }
     }
 
-    // Per-pawn default-focus gizmo. Shows on player-faction humanlike PSYCASTERS (anyone with a
-    // psylink - awakened pawns included since awakening grants one). Used by MeditationSystem's
-    // priority chain (building gizmo > pawn default > building's native > null/trait-weighted).
+    // Pawn gizmos. The old per-pawn "Default focus" and "Pilgrim's Path" gizmos moved into the
+    // psycast tab (focus = clickable focus-type tiles via Modern Psycasts UI's PawnFocusHooks,
+    // with a dropdown fallback; path = a dropdown row above the respec buttons - see
+    // Patch_PsycastTabRespec). Only the "Stop meditating" button remains on the pawn itself.
     [HarmonyPatch(typeof(Pawn), nameof(Pawn.GetGizmos))]
     public static class Patch_PawnDefaultFocusGizmo
     {
@@ -121,38 +122,6 @@ namespace PsycastSynergies
             if (__instance?.Faction == null || !__instance.Faction.IsPlayer) yield break;
             if (__instance.RaceProps == null || !__instance.RaceProps.Humanlike) yield break;
             if (__instance.GetMainPsylinkSource() == null) yield break;   // psycasters only
-
-            var med = GameComponent_PsycastSynergies.Instance?.GetMed(__instance, true);
-            if (med == null) yield break;
-
-            // Pilgrimage routing: which tier-up quest the storyteller offers this colonist. Only meaningful
-            // once awakened (Tier I+). Colonists incapable of violence are locked to the anima (pacifist) path.
-            if (EnlightenmentTier.TierOf(__instance) >= 1)
-            {
-                bool canFight = !__instance.WorkTagIsDisabled(WorkTags.Violent);
-                int pstyle = canFight ? med.pilgrimStyle : 2;
-                string[] pl = { "Pilgrim's Path: Unbound", "Pilgrim's Path: Trial of the Altar", "Pilgrim's Path: Way of the Anima" };
-                yield return new Command_Action
-                {
-                    defaultLabel = pl[pstyle],
-                    defaultDesc = "The road this seeker will be called to walk toward their next tier of Enlightenment:\n\n"
-                        + "• Trial of the Altar (combat): a single hallowed site, held against waves of the Ancient Psycaster Order.\n"
-                        + "• Way of the Anima (pacifist): a longer pilgrimage among the anima trees, with no bloodshed.\n"
-                        + "• Unbound: let fate (the storyteller) choose either road.\n\n"
-                        + "Those who cannot bring themselves to violence always walk the Way of the Anima.",
-                    icon = CompSchoolFocus.PilgrimIcon(pstyle),
-                    action = () =>
-                    {
-                        if (!canFight)
-                        {
-                            Messages.Message(__instance.LabelShortCap + " is incapable of violence — always the anima (pacifist) pilgrimage.",
-                                MessageTypeDefOf.RejectInput, false);
-                            return;
-                        }
-                        med.pilgrimStyle = (med.pilgrimStyle + 1) % 3;
-                    }
-                };
-            }
 
             // Stop button for "meditate your ass off" forced meditation (always reachable on the pawn).
             if (ForcedMeditation.On(__instance))
@@ -165,17 +134,6 @@ namespace PsycastSynergies
                     action = () => ForcedMeditation.Stop(__instance)
                 };
             }
-
-            MeditationFocusDef cur = string.IsNullOrEmpty(med.defaultFocus) ? null
-                : DefDatabase<MeditationFocusDef>.GetNamedSilentFail(med.defaultFocus);
-
-            yield return new Command_Action
-            {
-                defaultLabel = cur != null ? "Default focus: " + cur.LabelCap : "Default focus: any",
-                defaultDesc = "Personal meditation focus preference. Used when this colonist meditates at a focus building that doesn't have its own attunement set. \n\nPriority: building's gizmo \u2192 pawn's default \u2192 building's native focus \u2192 unfocused. So if you set the altar/sculpture/tree itself, that wins; otherwise this preference biases the awakening cards toward this focus type's schools.",
-                icon = CompSchoolFocus.FocusIcon(cur) ?? CompSchoolFocus.GizmoIcon,
-                action = () => CompSchoolFocus.OpenMenuFor(f => med.defaultFocus = f?.defName, "Any (defer to building / traits)")
-            };
         }
     }
 }
