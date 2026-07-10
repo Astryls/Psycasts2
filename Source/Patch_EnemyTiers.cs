@@ -127,7 +127,7 @@ namespace PsycastSynergies
             if (tier == 3 && s.enemyAscension) GrantAscension(p);
         }
 
-        private static void GrantPaths(Pawn p, Hediff_PsycastAbilities implant, CompAbilities comp, int count)
+        internal static void GrantPaths(Pawn p, Hediff_PsycastAbilities implant, CompAbilities comp, int count)
         {
             if (comp == null) { Log.Warning("[Psycasts²] enemy tier: no CompAbilities on " + p?.LabelShortCap); return; }
             var avail = DefDatabase<PsycasterPathDef>.AllDefs
@@ -159,7 +159,7 @@ namespace PsycastSynergies
                     + " abilities \u2192 " + p?.LabelShortCap + " now has " + comp.LearnedAbilities.Count + " psycasts.");
         }
 
-        private static void GrantAscension(Pawn p)
+        internal static void GrantAscension(Pawn p)
         {
             if (p.health == null) return;
             var hd = DefDatabase<HediffDef>.GetNamedSilentFail(AscensionHediffs.RandomElement());

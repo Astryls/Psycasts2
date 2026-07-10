@@ -25,7 +25,8 @@
     ['The World','apotheosis.html','Apotheosis Constellations'],
     ['The World','enemies.html','Enemy Psycasters'],
     ['Reference','casting.html','Casting & Charges'],
-    ['Reference','settings.html','Settings Reference']
+    ['Reference','settings.html','Settings Reference'],
+    ['Reference','xml-triggers.html','XML Triggers (modders)']
   ];
 
   function curTheme(){return document.documentElement.getAttribute('data-theme')==='dark'?'dark':'light';}

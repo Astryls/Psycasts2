@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+  <!-- ============================================================================
+       XML AWAKENING TRIGGERS - ready-made entry points for other mods, patches,
+       scenarios and quests. Everything funnels into AwakeningTrigger.Fire, so the
+       full awakening flow runs: card-pick window for colonists, silent tier+path
+       grant for everyone else. See docs (wiki) "XML triggers" for the vocabulary.
+       ============================================================================ -->
+
+  <!-- 1) TRIGGER HEDIFFS: apply one of these via ANY vanilla surface that gives
+       hediffs (IngestionOutcomeDoer_GiveHediff on a drug, CompAbilityEffect_GiveHediff
+       on an ability, surgery success, ritual outcome, gene, scenario part...) and the
+       pawn awakens. The hediff consumes itself immediately, whether or not the roll takes. -->
+  <HediffDef Name="PS_AwakeningTriggerBase">
+    <defName>PS_AwakeningTrigger</defName>
+    <label>psychic awakening</label>
+    <description>A latent psychic potential surging to the surface.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <initialSeverity>1</initialSeverity>
+    <maxSeverity>1</maxSeverity>
+    <isBad>false</isBad>
+    <everCurableByItem>false</everCurableByItem>
+    <scenarioCanAdd>false</scenarioCanAdd>
+    <comps>
+      <li Class="PsycastSynergies.HediffCompProperties_TriggerAwakening"/>
+    </comps>
+    <modExtensions>
+      <li Class="PsycastSynergies.AwakeningTriggerExtension">
+        <tier>1</tier>
+        <chance>1</chance>
+      </li>
+    </modExtensions>
+  </HediffDef>
+
+  <HediffDef ParentName="PS_AwakeningTriggerBase">
+    <defName>PS_AwakeningTriggerTierII</defName>
+    <label>psychic enlightenment (II)</label>
+    <modExtensions Inherit="False">
+      <li Class="PsycastSynergies.AwakeningTriggerExtension">
+        <tier>2</tier>
+        <chance>1</chance>
+      </li>
+    </modExtensions>
+  </HediffDef>
+
+  <HediffDef ParentName="PS_AwakeningTriggerBase">
+    <defName>PS_AwakeningTriggerTierIII</defName>
+    <label>psychic illumination (III)</label>
+    <modExtensions Inherit="False">
+      <li Class="PsycastSynergies.AwakeningTriggerExtension">
+        <tier>3</tier>
+        <chance>1</chance>
+      </li>
+    </modExtensions>
+  </HediffDef>
+
+  <!-- 2) AWAKENING INCIDENT: baseChance 0, so it never fires naturally - trigger it
+       from quests, scenario parts, storyteller mods or debug "Do incident". Picks the
+       colonist deepest into awakening meditation (fallback: random eligible). -->
+  <IncidentDef>
+    <defName>PS_Awakening</defName>
+    <label>psychic awakening</label>
+    <category>Misc</category>
+    <targetTags>
+      <li>Map_PlayerHome</li>
+    </targetTags>
+    <workerClass>PsycastSynergies.IncidentWorker_TriggerAwakening</workerClass>
+    <baseChance>0</baseChance>
+    <modExtensions>
+      <li Class="PsycastSynergies.AwakeningTriggerExtension">
+        <tier>1</tier>
+        <incidentTarget>meditator</incidentTarget>
+      </li>
+    </modExtensions>
+  </IncidentDef>
+
+  <!-- 3) AWAKENING SURGE condition: while active, meditation awakening/breakthrough odds
+       are multiplied by breakthroughMult, and meditating non-psycasters spontaneously roll
+       chancePerDay to awaken outright. Conditions never start themselves - trigger via the
+       wrapper incident below, a quest, or another mod's XML. -->
+  <GameConditionDef>
+    <defName>PS_AwakeningSurge</defName>
+    <conditionClass>PsycastSynergies.GameCondition_AwakeningSurge</conditionClass>
+    <label>psychic awakening surge</label>
+    <description>A tide of psychic resonance washes over the region. Meditation cuts far deeper than usual, and latent minds may awaken outright.</description>
+    <endMessage>The psychic awakening surge has passed.</endMessage>
+    <letterText>A tide of psychic resonance is washing over the region. While it lasts, meditation breakthroughs come far more easily, and colonists who meditate may awaken as psycasters outright.</letterText>
+    <canBePermanent>true</canBePermanent>
+    <modExtensions>
+      <li Class="PsycastSynergies.AwakeningTriggerExtension">
+        <tier>1</tier>
+        <breakthroughMult>3</breakthroughMult>
+        <chancePerDay>0.25</chancePerDay>
+        <onlyWhileMeditating>true</onlyWhileMeditating>
+      </li>
+    </modExtensions>
+  </GameConditionDef>
+
+  <IncidentDef>
+    <defName>PS_AwakeningSurgeIncident</defName>
+    <label>psychic awakening surge</label>
+    <category>Misc</category>
+    <targetTags>
+      <li>Map_PlayerHome</li>
+    </targetTags>
+    <workerClass>IncidentWorker_MakeGameCondition</workerClass>
+    <gameCondition>PS_AwakeningSurge</gameCondition>
+    <baseChance>0</baseChance>
+    <durationDays>1.5~3</durationDays>
+    <letterDef>PositiveEvent</letterDef>
+    <letterLabel>Psychic awakening surge</letterLabel>
+    <letterText>A tide of psychic resonance is washing over the region. While it lasts, meditation breakthroughs come far more easily, and colonists who meditate may awaken as psycasters outright.</letterText>
+  </IncidentDef>
+
+</Defs>

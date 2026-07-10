@@ -103,6 +103,7 @@ namespace PsycastSynergies
             }
             if (t % 60 == 0) Accumulate(t, gc);
             if (s.enlightenmentEnabled && t % 2500 == 0) RollHourly(t, gc, s);
+            if (t % 2500 == 0) AwakeningTrigger.HourlyScan(gc);   // XML trigger surfaces (thought/precept/surge), independent of the enlightenment toggle
         }
 
         [DebugAction("Psycasts²", "Force awakening (Tier I)", actionType = DebugActionType.ToolMapForPawns, allowedGameStates = AllowedGameStates.PlayingOnMap)]
@@ -184,7 +185,7 @@ namespace PsycastSynergies
         // Only count a pawn as meditating while they're actually in the meditation act - NOT while walking to
         // the spot (the Meditate job's goto toil still reports CurJobDef == Meditate). Without this, a pawn
         // whose schedule sends them to meditate accrues progress during the walk, before they ever sit down.
-        private static bool IsActivelyMeditating(Pawn p)
+        internal static bool IsActivelyMeditating(Pawn p)
             => p?.CurJobDef == JobDefOf.Meditate && p.pather != null && !p.pather.MovingNow;
 
         private static void Accumulate(int t, GameComponent_PsycastSynergies gc)
@@ -284,7 +285,7 @@ namespace PsycastSynergies
                             med.enlightenments = med.awakenThreshold;   // pity: force the final insight -> Awakening
                             Enlighten(p, med, s);
                         }
-                        else if (Rand.Chance(Mathf.Min(0.08f + cumHours * 0.02f, 0.6f)))
+                        else if (Rand.Chance(Mathf.Min((0.08f + cumHours * 0.02f) * AwakeningTrigger.SurgeMult(p.Map), 0.6f)))
                             Enlighten(p, med, s);
                         continue;
                     }
@@ -293,7 +294,7 @@ namespace PsycastSynergies
                     // Above Illuminated, each Transcendent tier speeds breakthroughs (leveling slows hard past 30) -
                     // but the 0.6 hard cap holds, so a breakthrough is never guaranteed.
                     float tierMult = med.tier > 3 ? 1f + (med.tier - 3) * s.transcendBreakthroughCurve : 1f;
-                    float chance = Mathf.Min((s.enlightenmentChance + streakHours * s.enlightenmentStreakBonus) * satMult * tierMult, 0.6f);
+                    float chance = Mathf.Min((s.enlightenmentChance + streakHours * s.enlightenmentStreakBonus) * satMult * tierMult * AwakeningTrigger.SurgeMult(p.Map), 0.6f);
                     if (Rand.Chance(chance)) Enlighten(p, med, s);
                 }
             }
