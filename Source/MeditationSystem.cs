@@ -394,7 +394,8 @@ namespace PsycastSynergies
             OpenPick(p, 1);
         }
 
-        // Opens the tiered card pick: Tier I = 3 themed, Tier II = 5 themed, Tier III = 3 any-roll.
+        // Opens the tiered card pick: Tier I = 3 themed, Tier II = 5 themed, Tier III = 3 any-roll
+        // (the cards-per-tier-up setting, when >0, overrides those counts for every tier).
         // Pending card picks. Multiple pawns can awaken/ascend on the SAME tick (e.g. two non-psycasters hit
         // their threshold in one hourly roll, or a mass psylink grant). Opening every Window_Awakening at once
         // stacks them modally and one gets lost, so we QUEUE picks and show exactly one at a time - the next
@@ -440,7 +441,8 @@ namespace PsycastSynergies
                 var req = pickQueue.Dequeue();
                 if (req.pawn == null || req.pawn.Dead) continue;
                 var med = GameComponent_PsycastSynergies.Instance?.GetMed(req.pawn, true);
-                int count = req.tier == 2 ? 5 : 3;
+                var st = PsycastSynergiesMod.Settings;
+                int count = st != null && st.cardPickCount > 0 ? st.cardPickCount : (req.tier == 2 ? 5 : 3);
                 bool anyRoll = req.tier >= 3;
                 var pool = BuildPool(req.pawn, med, count, !anyRoll, anyRoll);
                 if (pool.Count == 0) continue;

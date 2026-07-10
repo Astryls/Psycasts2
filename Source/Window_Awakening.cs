@@ -10,8 +10,8 @@ namespace PsycastSynergies
 {
     // The "awakening" pick. Face-down tarot cards; the player turns ONE (their choice) and it flips with a
     // reveal burst. By DEFAULT only that card is revealed, and its path is the one they commit to. With the
-    // "reveal all cards" setting ON, the remaining cards then auto-flip too and the player may center + click
-    // any of them to re-pick a different path before embracing. Card fronts are drawn in the Modern Psycasts
+    // "reveal all cards" setting ON, the remaining cards STAY face-down and may each be turned by hand
+    // (center a card and click to flip it); any revealed card can then be re-picked before embracing. Card fronts are drawn in the Modern Psycasts
     // UI tile style (disk-loaded path art via PathArt, near-black label bar, tile border, gold glow on the
     // pick) so they match the psycast tab. Embracing unlocks the path for free.
     [StaticConstructorOnStartup]
@@ -19,7 +19,6 @@ namespace PsycastSynergies
     {
         private const float FlipDur = 0.44f;
         private const float BurstDur = 0.85f;
-        private const float OtherStagger = 0.22f;
         private const float MaxCardW = 230f;
         private const float LabelBarH = 28f;
 
@@ -34,8 +33,6 @@ namespace PsycastSynergies
         private readonly float[] flipT;
         private readonly bool[] flipping;
         private readonly float[] burstStart;
-        private readonly float[] otherStart;
-        private bool othersScheduled;
         private float lastTime;
         private float carCenter = -1f;   // animated carousel focus (index space)
         private int carTarget;           // carousel focus target index
@@ -72,7 +69,6 @@ namespace PsycastSynergies
             flipT = new float[n];
             flipping = new bool[n];
             burstStart = new float[n];
-            otherStart = new float[n];
             carTarget = n / 2;
             forcePause = true;
             closeOnClickedOutside = false;
@@ -135,7 +131,7 @@ namespace PsycastSynergies
             GUI.color = MXStyle.TextDim;
             Widgets.Label(new Rect(0f, 44f, inRect.width, 24f),
                 chosen < 0 ? PromptText()
-                    : (RevealAll ? "Scroll a card to the center to choose its path, then embrace it."
+                    : (RevealAll ? "Turn the other cards to reveal them - the centered revealed card is the pick. Embrace when ready."
                                  : "The cards are cast. This path is now theirs."));
             GUI.color = Color.white;
             Text.Anchor = prevAnchor;
@@ -194,26 +190,10 @@ namespace PsycastSynergies
                     PlayAt(sndPulse);   // magical pulse at the reveal
                 }
 
-            // Reveal-all mode only: once the chosen card lands, auto-flip the others (staggered) so the player
-            // can see and re-pick any of them. Default mode leaves the other cards face-down (a committal pick).
-            if (RevealAll && chosen >= 0 && flipT[chosen] >= 1f && !othersScheduled)
-            {
-                othersScheduled = true;
-                int s = 0;
-                for (int j = 0; j < n; j++)
-                    if (j != chosen) { otherStart[j] = now + s * OtherStagger; s++; }
-            }
-            if (othersScheduled)
-                for (int j = 0; j < n; j++)
-                    if (j != chosen && !flipping[j] && now >= otherStart[j])
-                    {
-                        flipping[j] = true;
-                        PlayAt(sndFlip);
-                    }
-
-            // Reveal-all, post-pick: the centered card IS the current pick. Selection follows the carousel,
-            // so scrolling/chevron navigation updates the gold glow + Embrace button without a separate click.
-            if (RevealAll && othersScheduled && chosen >= 0)
+            // Reveal-all, post-pick: the centered card IS the current pick (once the player has turned it).
+            // Selection follows the carousel, so scrolling/chevron navigation updates the gold glow +
+            // Embrace button without a separate click. Face-down cards never steal the selection.
+            if (RevealAll && chosen >= 0)
             {
                 int c = ((Mathf.RoundToInt(carCenter) % n) + n) % n;
                 if (c != chosen && flipT[c] >= 0.999f) chosen = c;
@@ -251,7 +231,7 @@ namespace PsycastSynergies
                 var r = CarouselRect(i, cx, midY, cw, ch);
                 if (r.width < 6f) continue;
                 DrawCardVisual(r, i);
-                if (ad < 0.5f && (chosen < 0 || (RevealAll && i != chosen && flipT[i] >= 0.999f))) { GUI.color = new Color(0.5f, 0.78f, 1f, 0.55f); Widgets.DrawBox(r, 2); GUI.color = Color.white; }
+                if (ad < 0.5f && (chosen < 0 || (RevealAll && i != chosen))) { GUI.color = new Color(0.5f, 0.78f, 1f, 0.55f); Widgets.DrawBox(r, 2); GUI.color = Color.white; }
                 float uni = Mathf.Lerp(0f, 0.42f, Mathf.Clamp01((ad - 0.45f) / 1.6f));   // depth dim
                 if (uni > 0.01f) Fill(r, new Color(0f, 0f, 0f, uni));
                 float dirS = Mathf.Clamp01((ad - 0.3f) / 1.4f) * 0.72f;                 // curving terminator
@@ -324,12 +304,23 @@ namespace PsycastSynergies
                         if (Mathf.Abs(off) < 0.5f) { chosen = i; flipping[i] = true; carTarget = Mathf.RoundToInt(carCenter); PlayAt(sndFlip); }
                         else carTarget += (off > 0f ? 1 : -1);
                     }
-                    else if (RevealAll && flipT[i] >= 0.999f)
+                    else if (RevealAll)
                     {
-                        // Reveal-all: clicking ANY revealed card picks it AND brings it to center, so the
-                        // Embrace button always tracks the card the player last clicked.
-                        if (i != chosen) { chosen = i; PlayAt(sndPulse); }
-                        carTarget = Mathf.RoundToInt(carCenter + off);
+                        if (flipT[i] >= 0.999f)
+                        {
+                            // Clicking ANY revealed card picks it AND brings it to center, so the
+                            // Embrace button always tracks the card the player last clicked.
+                            if (i != chosen) { chosen = i; PlayAt(sndPulse); }
+                            carTarget = Mathf.RoundToInt(carCenter + off);
+                        }
+                        else if (!flipping[i] && Mathf.Abs(off) < 0.5f)
+                        {
+                            // Face-down cards are turned BY HAND, one at a time: center it, then click to flip.
+                            flipping[i] = true;
+                            carTarget = Mathf.RoundToInt(carCenter);
+                            PlayAt(sndFlip);
+                        }
+                        else if (!flipping[i]) carTarget += (off > 0f ? 1 : -1);   // side card: scroll it toward center
                     }
                     else carTarget += (off > 0f ? 1 : -1);   // default mode after a pick: just scroll
                 }
@@ -416,7 +407,7 @@ namespace PsycastSynergies
         {
             switch (tier)
             {
-                case 2: return "A pilgrimage fulfilled. Turn one of the five cards to reveal a new path.";
+                case 2: return "A pilgrimage fulfilled. Turn one of the cards to reveal a new path.";
                 case 3: return "The mind burns bright - turn one card; any path may answer the call.";
                 default: return "Long meditation has unlocked a latent gift. Turn one card to reveal the path it calls them to.";
             }

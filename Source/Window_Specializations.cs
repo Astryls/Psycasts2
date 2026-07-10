@@ -807,8 +807,12 @@ namespace PsycastSynergies
                 Vector2 size = __instance.Size;
                 var d = GameComponent_PsycastSynergies.Instance?.GetSpec(pawn, create: true);
 
-                float leftW = Mathf.Min(size.x * 0.3f, 320f);
-                Rect r = new Rect(leftW - 98f, 18f, 92f, 26f);
+                // Right-aligned FLUSH to the left (pawn-info) card's content edge: card at x=14,
+                // 14px inner padding, width from ModernUIBridge.LeftCardWidth (Modern UI's card is
+                // a fixed 340px — deriving from size.x drifts short at narrow tab widths).
+                const float x0 = 14f, pad = 14f;
+                float panelW = ModernUIBridge.LeftCardWidth(size.x);
+                Rect r = new Rect(x0 + panelW - pad - 92f, 18f, 92f, 26f);
 
                 Palette.DrawCard(r);
                 if ((d?.points ?? 0) > 0)

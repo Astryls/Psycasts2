@@ -35,9 +35,10 @@ namespace PsycastSynergies
             var prevF = Text.Font; var prevA = Text.Anchor; var prevC = GUI.color;
 
             // Align with the tab's left (pawn-info) card: both VPE's tab and Modern Psycasts UI
-            // inset that card 14px from the tab edge. Rows are centered within the card's width.
+            // inset that card 14px from the tab edge. Rows are centered within the card's width
+            // (Modern UI's card is a fixed 340px — see ModernUIBridge.LeftCardWidth).
             const float x0 = 14f, pad = 14f, h = 28f, gap = 8f;
-            float panelW = Mathf.Min(size.x * 0.3f, 340f);
+            float panelW = ModernUIBridge.LeftCardWidth(size.x);
             float rowW = panelW - pad * 2f;
             float rowX = x0 + (panelW - rowW) / 2f;   // centered on the card
             float bw = (rowW - gap) / 2f;

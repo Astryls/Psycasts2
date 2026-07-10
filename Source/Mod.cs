@@ -73,7 +73,8 @@ namespace PsycastSynergies
         public bool empirePsylinkIntegrate = true;       // external psylink (Empire/anima) triggers our Awakening instead
         public bool gateUntieredPsylinks = true;         // strip a generated psylink from any pawn without an Awakened+ tier
         public float awakenedSpawnChance = 0.05f;        // chance ANY eligible pawn spawns as a fresh Awakened+ psycaster
-        public bool cardRevealAll = false;               // awakening cards: flipping one reveals ALL cards and lets you re-pick any
+        public bool cardRevealAll = false;               // awakening cards: the other cards can be turned by hand and any revealed card re-picked
+        public int cardPickCount = 0;                    // cards dealt per tier-up pick: 0 = auto (3, or 5 at Tier II), 1-8 = fixed
         public float enlightenmentChance = 0.02f;        // base hourly Enlightenment chance while meditating
         public float enlightenmentStreakBonus = 0.015f;  // +chance per consecutive hour meditated
         public float transcendBreakthroughCurve = 0.15f; // each Transcendent tier (>3) multiplies breakthrough chance by +this (still hard-capped at 0.6)
@@ -154,6 +155,7 @@ namespace PsycastSynergies
             Scribe_Values.Look(ref gateUntieredPsylinks, "gateUntieredPsylinks", true);
             Scribe_Values.Look(ref awakenedSpawnChance, "awakenedSpawnChance", 0.05f);
             Scribe_Values.Look(ref cardRevealAll, "cardRevealAll", false);
+            Scribe_Values.Look(ref cardPickCount, "cardPickCount", 0);
             Scribe_Values.Look(ref enlightenmentChance, "enlightenmentChance", 0.02f);
             Scribe_Values.Look(ref enlightenmentStreakBonus, "enlightenmentStreakBonus", 0.015f);
             Scribe_Values.Look(ref transcendBreakthroughCurve, "transcendBreakthroughCurve", 0.15f);
@@ -446,7 +448,9 @@ namespace PsycastSynergies
                 FS(l, $"   Chance a random pawn spawns Awakened+: {s.awakenedSpawnChance * 100f:F0}%", ref s.awakenedSpawnChance, 0f, 1f,
                     "Each eligible pawn (age 13+) of any faction has this chance to generate as a proper Awakened psycaster - a psylink, a path and a tier (mostly Tier I, occasionally higher), created from scratch if needed. Everyone else who would have generated with a psylink loses it. 0% = no random psycasters spawn.");
             CB(l, "Reveal all cards and allow re-picking", ref s.cardRevealAll,
-                "On: turning one awakening card reveals them all and the centered card becomes your live selection, so you can re-pick before embracing. Off (default): only the card you turn is revealed, and that path is committed.");
+                "On: after turning your first awakening card you may turn the remaining cards by hand, one at a time, and re-pick any revealed card before embracing. Off (default): only the card you turn is revealed, and that path is committed.");
+            IS(l, "Cards per tier-up: " + (s.cardPickCount <= 0 ? "auto (3; Tier II deals 5)" : s.cardPickCount.ToString()), ref s.cardPickCount, 0, 8,
+                "How many face-down cards every tier-up event deals. Auto (0) keeps the classic spread: 3 cards, or 5 at a Tier II pilgrimage. 1-8 forces that many cards at every tier-up. The deal can never exceed the paths the pawn hasn't unlocked yet.");
 
             Head(l, "Transcendence (Beyond Illuminated)");
             CB(l, "Enable Transcendent tiers", ref s.transcendEnabled,

@@ -15,6 +15,13 @@ namespace PsycastSynergies
     {
         internal static bool Wired;
 
+        // Width of the psycast tab's left pawn-info card. Modern Psycasts UI draws it at a FIXED
+        // 340px (x=14, 14px inner padding) regardless of tab width; VPE's own tab scales it with
+        // the tab. Everything we draw into that card (spec/tier buttons, the footer tool block)
+        // must anchor off THIS, not size.x, or it drifts at narrow tab widths.
+        internal static float LeftCardWidth(float tabWidth) =>
+            Wired ? 340f : UnityEngine.Mathf.Min(tabWidth * 0.3f, 340f);
+
         internal static void TryWire()
         {
             try
