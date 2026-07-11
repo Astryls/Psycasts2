@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+
+  <!-- Enlightenment tier names (a TieringOverrideDef reskin still takes priority over these) -->
+  <PS_Tier_Awakened>Awakened</PS_Tier_Awakened>
+  <PS_Tier_Enlightened>Enlightened</PS_Tier_Enlightened>
+  <PS_Tier_Illuminated>Illuminated</PS_Tier_Illuminated>
+  <PS_TierTranscendent>Transcendent {0}</PS_TierTranscendent>
+
+  <!-- Awakening / enlightenment letters and messages -->
+  <PS_LetterAwakeningLabel>Psychic awakening</PS_LetterAwakeningLabel>
+  <PS_LetterAwakenMeditationText>{0} has awakened as a psycaster through deep meditation. Choose the first path to walk.</PS_LetterAwakenMeditationText>
+  <PS_LetterAwakenExternalText>{0} has awakened as a psycaster - an outside gift stirred a latent path to the surface. Choose the first path to walk.</PS_LetterAwakenExternalText>
+  <PS_LetterAwakenSurgeText>{0} has awakened as a psycaster - a surge of psychic power stirred a latent path to the surface. Choose the first path to walk.</PS_LetterAwakenSurgeText>
+  <PS_LetterEnlightenment>Enlightenment: {0}</PS_LetterEnlightenment>
+  <PS_LetterElevatedSilent>{0} has been elevated to {1}. New psychic paths and power settle into them unbidden.</PS_LetterElevatedSilent>
+  <PS_LetterElevatedTowardText>{0} has been elevated toward {1}. A new psycast path manifests for them to claim.</PS_LetterElevatedTowardText>
+  <PS_LetterTranscendence>Transcendence: {0}</PS_LetterTranscendence>
+  <PS_LetterTranscendText>{0} has transcended to {1}, a tier of enlightenment beyond Illuminated. Their psychic potential deepens further, and a new psycast path manifests for them to claim.</PS_LetterTranscendText>
+  <PS_LetterFlowLabel>A flow of ancient knowledge</PS_LetterFlowLabel>
+  <PS_LetterFlowText>{0} was filled by a flow of ancient knowledge while meditating - a sudden surge of psychic mastery worth a full level.</PS_LetterFlowText>
+  <PS_LetterOverloadLabel>Psychic overload</PS_LetterOverloadLabel>
+  <PS_LetterOverloadText>{0} pushed their meditation too far and collapsed into a psychic coma for {1}.</PS_LetterOverloadText>
+  <PS_MsgStirring>{0} felt a stirring of ancient knowledge during meditation.</PS_MsgStirring>
+  <PS_MsgPsychicStirring>{0} felt a psychic stirring, but nothing awakened.</PS_MsgPsychicStirring>
+  <PS_CannotAwaken>cannot awaken: already at this enlightenment tier, or ineligible</PS_CannotAwaken>
+
+  <!-- Awakening card pick window -->
+  <PS_CardTitleT1>{0} awakens as a psycaster</PS_CardTitleT1>
+  <PS_CardTitleT2>{0} ascends - Enlightenment II</PS_CardTitleT2>
+  <PS_CardTitleT3>{0} transcends - Enlightenment III</PS_CardTitleT3>
+  <PS_CardPromptT1>Long meditation has unlocked a latent gift. Turn one card to reveal the path it calls them to.</PS_CardPromptT1>
+  <PS_CardPromptT2>A pilgrimage fulfilled. Turn one of the cards to reveal a new path.</PS_CardPromptT2>
+  <PS_CardPromptT3>The mind burns bright - turn one card; any path may answer the call.</PS_CardPromptT3>
+  <PS_CardSubRevealAll>Turn the other cards to reveal them - the centered revealed card is the pick. Embrace when ready.</PS_CardSubRevealAll>
+  <PS_CardSubCommitted>The cards are cast. This path is now theirs.</PS_CardSubCommitted>
+  <PS_CardEmbrace>Embrace the {0} path</PS_CardEmbrace>
+  <PS_CardForgo>Forgo: +{0} specialization points</PS_CardForgo>
+  <PS_CardForgoAll>Forgo the cards: +{0} specialization points</PS_CardForgoAll>
+  <PS_CardReroll>Keep meditating - reroll the cards (coma risk)</PS_CardReroll>
+  <PS_CardChooseLater>Choose later</PS_CardChooseLater>
+  <PS_CardChooseLaterTip>Set the cards aside without choosing. They return while this colonist meditates - or reopen them anytime from the "Psycast path awaits" alert.</PS_CardChooseLaterTip>
+  <PS_MsgCardsAside>{0} set the cards aside for now - they return during meditation, or via the alert.</PS_MsgCardsAside>
+  <PS_MsgDeferReroll>{0} sets the cards aside to meditate further - the omens will shift.</PS_MsgDeferReroll>
+  <PS_MsgForgo>{0} forwent the vision for deeper insight.  (+{1} specialization points)</PS_MsgForgo>
+  <PS_MsgEmbraced>{0} embraced the {1} path.</PS_MsgEmbraced>
+  <PS_MsgEmbracedBonus> (+{0} specialization points)</PS_MsgEmbracedBonus>
+
+  <!-- Pending-pick alert -->
+  <PS_AlertPathAwaits>Psycast path awaits</PS_AlertPathAwaits>
+  <PS_AlertPathAwaitsMulti>Psycast paths await ({0})</PS_AlertPathAwaitsMulti>
+  <PS_AlertPathHeader>These colonists have enlightenment cards waiting to be faced:</PS_AlertPathHeader>
+  <PS_AlertPathFooter>The cards return on their own while the colonist meditates - or click this alert to open the pick right now.</PS_AlertPathFooter>
+
+  <!-- Pilgrimage quests -->
+  <PS_LetterWaveLabel>Ancient psycasters</PS_LetterWaveLabel>
+  <PS_LetterWaveText>The Ancient Psycaster Order has come to test the pilgrim. {0} of them assault from the edge of the map.</PS_LetterWaveText>
+  <PS_PilgrimProgressCap>Meditation: {0}h / {1}h  (today: {2}h / {3}h)  &#183;  waves fired: {4}</PS_PilgrimProgressCap>
+  <PS_PilgrimProgress>Meditation: {0}h / {1}h  &#183;  waves fired: {2}</PS_PilgrimProgress>
+  <PS_AnimaSites>Sites completed: {0} / {1}</PS_AnimaSites>
+  <PS_AnimaHere> &#183; here: {0}h / {1}h</PS_AnimaHere>
+  <PS_AnimaToday> &#183; today: {0}h / {1}h</PS_AnimaToday>
+  <PS_StopMeditatingAt>Stop meditating ({0})</PS_StopMeditatingAt>
+  <PS_MeditateAt>Meditate at {0} (until told to stop)</PS_MeditateAt>
+  <PS_CannotReachSuffix> (cannot reach)</PS_CannotReachSuffix>
+  <PS_NoFreeSpotSuffix> (no free spot)</PS_NoFreeSpotSuffix>
+
+  <!-- Apotheosis / ascension hediff readout -->
+  <PS_AscensionCultivated>Cultivated through Psycasts&#178;. The listed bonuses are already applied to this pawn's psycasts.</PS_AscensionCultivated>
+  <PS_AscensionSpecs>Specializations:</PS_AscensionSpecs>
+
+</LanguageData>

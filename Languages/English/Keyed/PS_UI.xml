@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+
+  <!-- Shared dialog buttons -->
+  <PS_Confirm>Confirm</PS_Confirm>
+  <PS_Cancel>Cancel</PS_Cancel>
+  <PS_Invest>Invest</PS_Invest>
+  <PS_InvestTitle>Invest skill point</PS_InvestTitle>
+  <PS_InvestBodyMulti>Raise {0} from level {1} to {2}?\nThis spends {3} psycast points.</PS_InvestBodyMulti>
+  <PS_InvestBodyOne>Raise {0} to level {1}?\nThis spends 1 psycast point.</PS_InvestBodyOne>
+  <PS_InvestBonus>This skill's bonus: +{0} &#8594; +{1}.\nHold Shift while clicking to skip this confirmation.</PS_InvestBonus>
+
+  <!-- Psycast tab tool block -->
+  <PS_PilgrimUnbound>Unbound</PS_PilgrimUnbound>
+  <PS_PilgrimTrialAltar>Trial of the Altar</PS_PilgrimTrialAltar>
+  <PS_PilgrimWayAnima>Way of the Anima</PS_PilgrimWayAnima>
+  <PS_PilgrimPathBtn>Pilgrim's path: {0}  &#9662;</PS_PilgrimPathBtn>
+  <PS_PilgrimPathTip>The road this seeker will be called to walk toward their next tier of Enlightenment:\n\n&#8226; Trial of the Altar (combat): a single hallowed site, held against waves of the Ancient Psycaster Order.\n&#8226; Way of the Anima (pacifist): a longer pilgrimage among the anima trees, with no bloodshed.\n&#8226; Unbound: let fate (the storyteller) choose either road.\n\nThose who cannot bring themselves to violence always walk the Way of the Anima.</PS_PilgrimPathTip>
+  <PS_MsgNoViolencePilgrim>{0} is incapable of violence, always the anima (pacifist) pilgrimage.</PS_MsgNoViolencePilgrim>
+  <PS_DefaultFocusBtn>Default focus: {0}  &#9662;</PS_DefaultFocusBtn>
+  <PS_DefaultFocusTip>Personal meditation focus preference. Used when this colonist meditates at a focus building that doesn't have its own attunement set.\n\nPriority: building's attunement &#8594; pawn's default &#8594; building's native focus &#8594; unfocused.</PS_DefaultFocusTip>
+  <PS_FocusAny>any</PS_FocusAny>
+  <PS_FocusAnyDefer>Any (defer to building / traits)</PS_FocusAnyDefer>
+  <PS_FocusAnyTrait>Any (trait-weighted)</PS_FocusAnyTrait>
+  <PS_ResetSkills>Reset skills</PS_ResetSkills>
+  <PS_ResetSkillsN>Reset skills ({0})</PS_ResetSkillsN>
+  <PS_ResetSkillsBody>Unlearn every psycast and refund all points spent learning and leveling them? Unlocked paths are kept. (Free.)</PS_ResetSkillsBody>
+  <PS_ResetPath>Reset path</PS_ResetPath>
+  <PS_ResetPathTitle>Reset path - drop a tier</PS_ResetPathTitle>
+  <PS_ResetPathBody>Surrender your highest enlightenment tier? Its path - and the abilities bought within it - are removed, and you must re-earn that tier to choose anew.</PS_ResetPathBody>
+  <PS_MsgNoPsycastsToReset>No learned psycasts to reset.</PS_MsgNoPsycastsToReset>
+  <PS_MsgNoTierToSurrender>No enlightenment tier to surrender.</PS_MsgNoTierToSurrender>
+  <PS_MsgSkillsReset>{0} reset their psycasts - {1} point(s) returned.</PS_MsgSkillsReset>
+  <PS_MsgPsylinkFaded>{0}'s psylink has faded - no longer a psycaster. They must re-awaken through meditation.</PS_MsgPsylinkFaded>
+  <PS_MsgTierSurrendered>{0} surrendered their highest tier{1} - re-earn it to choose anew.</PS_MsgTierSurrendered>
+  <PS_TierSurrenderedPath> (the {0} path)</PS_TierSurrenderedPath>
+
+  <!-- Meditation focus attunement (building comp) and pawn gizmos -->
+  <PS_FocusTypeLabel>Focus type: {0}</PS_FocusTypeLabel>
+  <PS_FocusTypeDesc>Attune this meditation focus to a psychic focus type.\n\nA non-psycaster who meditates facing this focus is steered toward that type's psycast schools among their awakening cards when Enlightenment strikes. Leave it on &#8220;any&#8221; to weight by the meditator's traits instead.</PS_FocusTypeDesc>
+  <PS_FocusStrengthFor>Meditation focus strength for {0}: {1} / day</PS_FocusStrengthFor>
+  <PS_FocusStrength>Meditation focus strength: {0} / day</PS_FocusStrength>
+  <PS_StopMeditating>Stop meditating</PS_StopMeditating>
+  <PS_StopMeditatingDesc>This colonist is meditating continuously ("meditate your ass off"). Click to stop and return to their normal schedule.</PS_StopMeditatingDesc>
+  <PS_AuraLabel>Psychic aura</PS_AuraLabel>
+  <PS_AuraDesc>Toggle the cosmetic Apotheosis aura rendered on this pawn. Purely visual - no effect on the Apotheosis bonuses.</PS_AuraDesc>
+  <PS_ChargesTip>Free-cast charges: {0} / {1}\nFree while &gt;1 remains. The last charge (1&#8594;0) pays full cost and starts the cooldown.</PS_ChargesTip>
+  <PS_AutoStatsNote>Stats grow automatically per level</PS_AutoStatsNote>
+
+  <!-- Specialization window -->
+  <PS_SpecPointsHeader>&#9733; {0} points</PS_SpecPointsHeader>
+  <PS_SpecPanHint>Drag to pan &#8226; scroll to zoom</PS_SpecPanHint>
+  <PS_SpecBonuses>Bonuses and perks</PS_SpecBonuses>
+  <PS_SpecAvailable>Available points: {0}</PS_SpecAvailable>
+  <PS_SpecPending>{0} perk(s), {1} pts  &#8594;  {2} left</PS_SpecPending>
+  <PS_SpecAllStats>All stats:  +{0}%</PS_SpecAllStats>
+  <PS_SpecSynRecv>Synergy received:  &#215;{0}</PS_SpecSynRecv>
+  <PS_SpecCapBonus>Skill level cap:  +{0}</PS_SpecCapBonus>
+  <PS_SpecNone>No specializations yet.</PS_SpecNone>
+  <PS_SpecPerksN>Perks ({0}):</PS_SpecPerksN>
+  <PS_SpecResetRefund>Reset all - refund {0} &#9733;</PS_SpecResetRefund>
+  <PS_SpecResetAll>Reset all</PS_SpecResetAll>
+  <PS_SpecApplyN>Apply {0} ({1} pts)</PS_SpecApplyN>
+  <PS_SpecApply>Apply</PS_SpecApply>
+  <PS_SpecClear>Clear</PS_SpecClear>
+  <PS_SpecBranchCost>{0}  &#8226;  {1} pts</PS_SpecBranchCost>
+  <PS_SpecRequires>Requires: {0}</PS_SpecRequires>
+  <PS_SpecRequiresAny>Requires any: {0}</PS_SpecRequiresAny>
+  <PS_SpecOwned>&#10003; Owned</PS_SpecOwned>
+  <PS_SpecStaged>&#9670; Staged - click node to unstage</PS_SpecStaged>
+  <PS_SpecLockedApo>Locked - you already chose another Apotheosis path</PS_SpecLockedApo>
+  <PS_SpecLockedExcl>Locked - you already picked one of this exclusive set</PS_SpecLockedExcl>
+  <PS_SpecLockedPrereq>Locked - prerequisites not met</PS_SpecLockedPrereq>
+  <PS_SpecNeedPoints>Need more points</PS_SpecNeedPoints>
+  <PS_SpecClickStage>Click node to stage</PS_SpecClickStage>
+  <PS_MsgOneApo>You can pursue only one Apotheosis path (Tranquil Mind, Transcendence or Umbral Sovereign).</PS_MsgOneApo>
+  <PS_MsgOneMeta>You can pick only one of Overflow, Mastery, Discipline or Attunement.</PS_MsgOneMeta>
+  <PS_MsgPrereqs>Prerequisites not met.</PS_MsgPrereqs>
+  <PS_MsgNoSpecPoints>Not enough specialization points.</PS_MsgNoSpecPoints>
+  <PS_SpecResetTitle>Reset specializations</PS_SpecResetTitle>
+  <PS_SpecResetBody>Refund all specializations? Every spent point returns to your pool, all picks are cleared, and any Apotheosis path is undone. (Free.)</PS_SpecResetBody>
+  <PS_MsgNoChoices>No valid choices available yet (learn more psycasts first).</PS_MsgNoChoices>
+  <PS_SpecTabTip>Specializations - {0} points</PS_SpecTabTip>
+  <PS_TierBadgeTip>Enlightenment: {0} (Tier {1})</PS_TierBadgeTip>
+
+  <!-- Branch / constellation display names -->
+  <PS_Branch_Root>Root</PS_Branch_Root>
+  <PS_Branch_Offense>Offense</PS_Branch_Offense>
+  <PS_Branch_Control>Control</PS_Branch_Control>
+  <PS_Branch_Ward>Ward</PS_Branch_Ward>
+  <PS_Branch_Flow>Flow</PS_Branch_Flow>
+  <PS_Branch_Apex>Apex</PS_Branch_Apex>
+  <PS_Branch_Mod>Mod</PS_Branch_Mod>
+  <PS_Branch_Halcyon>Halcyon</PS_Branch_Halcyon>
+  <PS_Branch_Singularity>Singularity</PS_Branch_Singularity>
+  <PS_Branch_Penumbra>Penumbra</PS_Branch_Penumbra>
+  <PS_Branch_Empyrean>Empyrean</PS_Branch_Empyrean>
+  <PS_Branch_Pandemonium>Pandemonium</PS_Branch_Pandemonium>
+  <PS_Branch_Chronos>Chronos</PS_Branch_Chronos>
+  <PS_Branch_Consonance>Consonance</PS_Branch_Consonance>
+
+  <!-- Skill tooltip -->
+  <PS_TipRecvSuffix> receives bonuses from:</PS_TipRecvSuffix>
+  <PS_Stat_Power>Damage</PS_Stat_Power>
+  <PS_Stat_Radius>Area</PS_Stat_Radius>
+  <PS_Stat_Duration>Duration</PS_Stat_Duration>
+  <PS_Stat_Strength>Effect strength</PS_Stat_Strength>
+  <PS_Stat_Range>Range</PS_Stat_Range>
+  <PS_Stat_Cooldown>Cooldown</PS_Stat_Cooldown>
+  <PS_Stat_Targets>Targets</PS_Stat_Targets>
+  <PS_Stat_Charges>Charges</PS_Stat_Charges>
+  <PS_Stat_Efficiency>Cost</PS_Stat_Efficiency>
+  <PS_Stat_Haste>Cast speed</PS_Stat_Haste>
+  <PS_Stat_Yield>Psyfocus refund</PS_Stat_Yield>
+  <PS_Stat_Insight>Psycast XP</PS_Stat_Insight>
+  <PS_Stat_ProjectileCount>Projectiles</PS_Stat_ProjectileCount>
+  <PS_Stat_SummonCount>Summons</PS_Stat_SummonCount>
+  <PS_PerLevel>{0} per level</PS_PerLevel>
+  <PS_ChargesPerLevel>+{0} charges per level</PS_ChargesPerLevel>
+  <PS_NowParen>  (now {0})</PS_NowParen>
+  <PS_LvCharges>Lv{0} &#8594; +{1} charges</PS_LvCharges>
+  <PS_Lv0Charges>Lv0 &#8594; +{0}/lvl charges</PS_Lv0Charges>
+  <PS_LvValue>Lv{0} &#8594; {1}</PS_LvValue>
+  <PS_AndMore>and {0} more</PS_AndMore>
+  <PS_AlsoEmpowers>{0} also empowers:  {1}</PS_AlsoEmpowers>
+  <PS_EachLevelPrimary>Each level: {0} (primary)</PS_EachLevelPrimary>
+  <PS_TipSkillLevel>Skill level</PS_TipSkillLevel>
+  <PS_TipCurrentEffects>Current effects:</PS_TipCurrentEffects>
+  <PS_TipNoMates>No path-mates that synergize this skill.</PS_TipNoMates>
+  <PS_TipMoreRows>+{0} more&#8230;</PS_TipMoreRows>
+  <PS_TipHoldShift>&#8679;  Hold Shift for synergies and details</PS_TipHoldShift>
+  <PS_TipPsyfocus>psyfocus</PS_TipPsyfocus>
+  <PS_TipHeat>heat</PS_TipHeat>
+  <PS_TipCastCost>Cast cost</PS_TipCastCost>
+  <PS_TipCostPerLevel>Cost / level</PS_TipCostPerLevel>
+  <PS_TipCostPerLevelVal>+{0} psyfocus and heat</PS_TipCostPerLevelVal>
+  <PS_TipMaxLevel>Max level {0} reached</PS_TipMaxLevel>
+  <PS_TipReqLevel>Required level: {0}</PS_TipReqLevel>
+  <PS_TipNotLearned>Not learned - unlock in the tree to start leveling</PS_TipNotLearned>
+  <PS_TipClickInvest>Click to invest  &#8226;  Shift-click skips confirm</PS_TipClickInvest>
+  <PS_TipLockedLevel>Locked - raise your psycaster level</PS_TipLockedLevel>
+  <PS_TipMaxReached>Maximum level reached</PS_TipMaxReached>
+
+  <!-- Live effect rows (skill cards / live values) -->
+  <PS_FxBlastRadius>Blast radius</PS_FxBlastRadius>
+  <PS_FxBlastDamage>Blast damage</PS_FxBlastDamage>
+  <PS_FxRadius>Radius</PS_FxRadius>
+  <PS_FxTiles>{0} tiles</PS_FxTiles>
+  <PS_FxFreeCharges>Free-cast charges</PS_FxFreeCharges>
+  <PS_FxPerCast>{0} per cast (pick when targeting)</PS_FxPerCast>
+  <PS_FxTimeReduction>-{0} time</PS_FxTimeReduction>
+  <PS_FxBonusXp>Bonus psycast XP</PS_FxBonusXp>
+  <PS_FxProjectileDamage>Projectile damage</PS_FxProjectileDamage>
+  <PS_FxUnscaled>{0} (unscaled)</PS_FxUnscaled>
+  <PS_FxTargetSuffers>Target suffers</PS_FxTargetSuffers>
+  <PS_FxCasterGains>Caster gains</PS_FxCasterGains>
+  <PS_FxTargetGains>Target gains</PS_FxTargetGains>
+
+</LanguageData>
