@@ -642,7 +642,7 @@ namespace PsycastSynergies
     {
         static void Postfix()
         {
-            try { if (Current.ProgramState == ProgramState.Playing) { SkillTooltip.DrawFloating(); Patch_DrawAbility.DrawPerfReadout(); } }
+            try { if (Current.ProgramState == ProgramState.Playing) SkillTooltip.DrawFloating(); }
             catch { }
         }
     }

@@ -32,7 +32,6 @@ namespace PsycastSynergies
             var gc = GameComponent_PsycastSynergies.Instance;
             if (gc == null) return;
 
-            long __t0 = System.Diagnostics.Stopwatch.GetTimestamp();
             EnsureFrame(pawn, comp, hediff);
 
             // Synergy highlight: hovering a skill pulses the skills it GAINS power from (its synergy
@@ -141,8 +140,6 @@ namespace PsycastSynergies
                     Find.WindowStack.Add(new Dialog_ConfirmInvest(pawn, hediff, gc, ability, 1));
                 }
             }
-
-            Accumulate(System.Diagnostics.Stopwatch.GetTimestamp() - __t0);
         }
 
         // Per-frame cache: the tab routes EVERY visible icon through this postfix, so doing an
@@ -168,34 +165,6 @@ namespace PsycastSynergies
             if (fLearned == null) fLearned = new HashSet<AbilityDef>(); else fLearned.Clear();
             if (comp?.LearnedAbilities != null)
                 foreach (var a in comp.LearnedAbilities) if (a?.def != null) fLearned.Add(a.def);
-        }
-
-        // Dev-mode perf readout: how long THIS postfix spends per frame, and how many icons routed
-        // through it. If this stays tiny while the tab still feels laggy, the remaining cost is in
-        // VPE/Modern's own rendering, not ours.
-        private static long accumTicks; private static int accumCount, perfFrame = -1;
-        public static double LastMs; public static int LastCount;
-        private static void Accumulate(long ticks)
-        {
-            if (Time.frameCount != perfFrame)
-            {
-                LastMs = accumTicks * 1000.0 / System.Diagnostics.Stopwatch.Frequency;
-                LastCount = accumCount;
-                accumTicks = 0; accumCount = 0; perfFrame = Time.frameCount;
-            }
-            accumTicks += ticks; accumCount++;
-        }
-
-        public static void DrawPerfReadout()
-        {
-            if (!Prefs.DevMode || LastCount <= 0) return;
-            var r = new Rect(8f, 8f, 300f, 22f);
-            GUI.color = new Color(0f, 0f, 0f, 0.55f); GUI.DrawTexture(r, BaseContent.WhiteTex);
-            var pf = Text.Font; var pa = Text.Anchor;
-            Text.Font = GameFont.Tiny; Text.Anchor = TextAnchor.MiddleLeft;
-            GUI.color = LastMs > 3.0 ? new Color(1f, 0.55f, 0.4f) : new Color(0.7f, 1f, 0.7f);
-            Widgets.Label(r.ContractedBy(4f), "PS DrawAbility: " + LastMs.ToString("0.00") + " ms/frame  \u00b7  " + LastCount + " icons");
-            Text.Font = pf; Text.Anchor = pa; GUI.color = Color.white;
         }
 
     }
