@@ -1,4 +1,5 @@
 #nullable disable
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Verse;
@@ -13,6 +14,46 @@ namespace PsycastSynergies
         {
             var gc = GameComponent_PsycastSynergies.Instance;
             return gc == null ? 0 : gc.GetLevel(pawn, def);
+        }
+
+        // ---- External level-bonus extension point (for mods like Itemization Overhaul "oskills") ----
+        // Providers take (pawn, abilityDefName) and return EXTRA effective levels contributed from
+        // outside the skill tree (e.g. an equipped item that grants "+3 Skip"). These add ONLY to the
+        // power/scaling multiplier below - they deliberately do NOT touch invested level (GetLevel),
+        // the per-skill cap (MaxLevel), point refunds, casting cost, or "mastered" FX. That keeps a
+        // maxed 15/15 skill able to reach an effective 18 for scaling while staying 15 invested.
+        private static readonly List<Func<Pawn, string, int>> externalBonusProviders = new List<Func<Pawn, string, int>>();
+
+        public static void RegisterExternalLevelBonus(Func<Pawn, string, int> provider)
+        {
+            if (provider != null && !externalBonusProviders.Contains(provider))
+                externalBonusProviders.Add(provider);
+        }
+
+        public static int ExternalBonus(Pawn pawn, AbilityDef def)
+        {
+            if (pawn == null || def == null || externalBonusProviders.Count == 0) return 0;
+            int sum = 0;
+            for (int i = 0; i < externalBonusProviders.Count; i++)
+            {
+                try { sum += externalBonusProviders[i](pawn, def.defName); }
+                catch { }
+            }
+            return sum;
+        }
+
+        // Does this pawn actually KNOW (have learned) the given ability? External mods use this to decide
+        // whether to boost the real leveled psycast (known -> overlevel via ExternalBonus) or grant their
+        // own fallback ability instead (unknown / not a psycaster).
+        public static bool PawnHasLearnedAbility(Pawn pawn, string abilityDefName)
+        {
+            if (pawn == null || string.IsNullOrEmpty(abilityDefName)) return false;
+            var comp = pawn.GetComp<CompAbilities>();
+            var learned = comp?.LearnedAbilities;
+            if (learned == null) return false;
+            for (int i = 0; i < learned.Count; i++)
+                if (learned[i]?.def != null && learned[i].def.defName == abilityDefName) return true;
+            return false;
         }
 
         // Per-skill max level: base setting + Ascendance bonus, but gated by psycaster level so you
@@ -88,7 +129,7 @@ namespace PsycastSynergies
             {
                 float perLevelMult = 1f, extraLevels = 0f;
                 SpecEffects.OwnAdjust(pawn, target, ref perLevelMult, ref extraLevels);
-                bonus += (gc.GetLevel(pawn, target) + extraLevels) * s.perLevelPct * perLevelMult * CountBoost(stat)
+                bonus += (gc.GetLevel(pawn, target) + extraLevels + ExternalBonus(pawn, target)) * s.perLevelPct * perLevelMult * CountBoost(stat)
                          * PsycastInfo.PrimaryStrength(target);   // hand-tuned primary strength
             }
 
@@ -127,7 +168,7 @@ namespace PsycastSynergies
             if (gc == null || s == null) return 1f;
             float perLevelMult = 1f, extraLevels = 0f;
             SpecEffects.OwnAdjust(pawn, def, ref perLevelMult, ref extraLevels);
-            return 1f + (gc.GetLevel(pawn, def) + extraLevels) * s.perLevelPct * perLevelMult;
+            return 1f + (gc.GetLevel(pawn, def) + extraLevels + ExternalBonus(pawn, def)) * s.perLevelPct * perLevelMult;
         }
 
         // Extra targets a single-strike can pick in the targeting UI, from its Targets ("multi-strike")
