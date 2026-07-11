@@ -158,6 +158,95 @@ namespace PsycastSynergies
             catch (Exception e) { error = e.Message; return false; }
         }
 
+        // OPEN-BETA feedback: export the player's live balance edits as a shareable JSON file,
+        // grouped per psycast tree (with each tree's source mod named) so balancing ideas for
+        // every tree and addon tree are readable at a glance. Pure export: nothing is baked,
+        // cleared, or written into the mod folder. The file path is copied to the clipboard.
+        public static bool ExportPlayerTuning(out string error, out string path, out int count)
+        {
+            error = null; path = null; count = 0;
+            var s = PsycastSynergiesMod.Settings;
+            if (s == null) { error = "settings unavailable"; return false; }
+            try
+            {
+                var prims = new Dictionary<string, List<string>>();
+                var edges = new Dictionary<string, List<string>>();
+                var lists = new Dictionary<string, List<string>>();
+                var meta = new Dictionary<string, VanillaPsycastsExpanded.PsycasterPathDef>();
+
+                string TreeOf(string defName)
+                {
+                    var ab = DefDatabase<VEF.Abilities.AbilityDef>.GetNamedSilentFail(defName);
+                    var p = ab?.GetModExtension<VanillaPsycastsExpanded.AbilityExtension_Psycast>()?.path;
+                    string key = p?.defName ?? "(unknown tree)";
+                    if (p != null && !meta.ContainsKey(key)) meta[key] = p;
+                    return key;
+                }
+                void AddRow(Dictionary<string, List<string>> bag, string tree, string row)
+                { if (!bag.TryGetValue(tree, out var rows)) bag[tree] = rows = new List<string>(); rows.Add(row); }
+                string StatName(int st) => st < 0 ? "none" : ((SynStat)st).ToString();
+
+                foreach (var def in s.tunePrimStat.Keys.Union(s.tunePrimStr.Keys).OrderBy(x => x, StringComparer.Ordinal))
+                {
+                    var row = new StringBuilder("        {\"def\":\"").Append(Esc(def)).Append('"');
+                    if (s.tunePrimStat.TryGetValue(def, out int st)) row.Append(",\"stat\":\"").Append(StatName(st)).Append("\",\"statId\":").Append(st);
+                    if (s.tunePrimStr.TryGetValue(def, out float k)) row.Append(",\"str\":").Append(k.ToString("0.###", CultureInfo.InvariantCulture));
+                    row.Append('}');
+                    AddRow(prims, TreeOf(def), row.ToString()); count++;
+                }
+                foreach (var key in s.tuneEdgeStat.Keys.Union(s.tuneEdgeStr.Keys).OrderBy(x => x, StringComparer.Ordinal))
+                {
+                    int i = key.IndexOf('|');
+                    if (i <= 0) continue;
+                    string src = key.Substring(0, i), tgt = key.Substring(i + 1);
+                    var row = new StringBuilder("        {\"src\":\"").Append(Esc(src)).Append("\",\"tgt\":\"").Append(Esc(tgt)).Append('"');
+                    if (s.tuneEdgeStat.TryGetValue(key, out int st)) row.Append(",\"stat\":\"").Append(StatName(st)).Append("\",\"statId\":").Append(st);
+                    if (s.tuneEdgeStr.TryGetValue(key, out float k)) row.Append(",\"str\":").Append(k.ToString("0.###", CultureInfo.InvariantCulture));
+                    row.Append('}');
+                    AddRow(edges, TreeOf(tgt), row.ToString()); count++;   // edge edits belong to the TARGET's tree
+                }
+                foreach (var kv in s.tuneSrcs.OrderBy(x => x.Key, StringComparer.Ordinal))
+                {
+                    AddRow(lists, TreeOf(kv.Key), "        {\"def\":\"" + Esc(kv.Key) + "\",\"sources\":\"" + Esc(kv.Value) + "\"}");
+                    count++;
+                }
+                if (count == 0) { error = "no edits"; return false; }
+
+                var trees = prims.Keys.Union(edges.Keys).Union(lists.Keys).OrderBy(x => x, StringComparer.Ordinal).ToList();
+                var sb = new StringBuilder();
+                sb.Append("{\n  \"mod\": \"Psycasts\u00b2\",\n  \"exported\": \"")
+                  .Append(DateTime.Now.ToString("yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture))
+                  .Append("\",\n  \"edits\": ").Append(count).Append(",\n  \"trees\": [\n");
+                for (int t = 0; t < trees.Count; t++)
+                {
+                    string tree = trees[t];
+                    meta.TryGetValue(tree, out var p);
+                    sb.Append("    {\n      \"tree\": \"").Append(Esc(tree))
+                      .Append("\",\n      \"label\": \"").Append(Esc(p?.label ?? ""))
+                      .Append("\",\n      \"sourceMod\": \"").Append(Esc(p?.modContentPack?.Name ?? "unknown")).Append('"');
+                    void Section(string name, Dictionary<string, List<string>> bag)
+                    {
+                        if (!bag.TryGetValue(tree, out var rows)) return;
+                        sb.Append(",\n      \"").Append(name).Append("\": [\n").Append(string.Join(",\n", rows)).Append("\n      ]");
+                    }
+                    Section("primaries", prims);
+                    Section("empowerEdges", edges);
+                    Section("sourceLists", lists);
+                    sb.Append("\n    }").Append(t < trees.Count - 1 ? "," : "").Append('\n');
+                }
+                sb.Append("  ]\n}\n");
+
+                string dir = Path.Combine(GenFilePaths.SaveDataFolderPath, "Psycasts2");
+                Directory.CreateDirectory(dir);
+                path = Path.Combine(dir, "BalanceIdeas_" + DateTime.Now.ToString("yyyyMMdd-HHmmss", CultureInfo.InvariantCulture) + ".json");
+                File.WriteAllText(path, sb.ToString());
+                UnityEngine.GUIUtility.systemCopyBuffer = path;   // one paste away from an upload box
+                Log.Message("[Psycasts\u00b2] Exported " + count + " balance edit(s) to " + path);
+                return true;
+            }
+            catch (Exception e) { error = e.Message; return false; }
+        }
+
         private static string PipeToArrow(string key)
         {
             int i = key.IndexOf('|');

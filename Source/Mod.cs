@@ -375,7 +375,20 @@ namespace PsycastSynergies
 
             Head(l, "PS_SetH_BalanceEdits".Translate());
             l.Label("PS_SetBalanceInfo".Translate());
-            if (l.ButtonText(tuned > 0 ? "PS_SetBakeN".Translate(tuned).ToString() : "PS_SetBake".Translate().ToString()))
+            // OPEN BETA: the public button EXPORTS the player's edits as a shareable JSON (grouped per
+            // tree and addon tree) to send the author. Non-destructive; nothing is baked or cleared.
+            if (l.ButtonText(tuned > 0 ? "PS_SetShareN".Translate(tuned).ToString() : "PS_SetShare".Translate().ToString()))
+            {
+                if (tuned == 0)
+                    Messages.Message("PS_MsgNoShare".Translate(), MessageTypeDefOf.RejectInput, false);
+                else if (ManualBalance.ExportPlayerTuning(out string shareErr, out string sharePath, out int shared))
+                    Find.WindowStack.Add(new Dialog_Confirm("PS_SetShareTitle".Translate(),
+                        "PS_SetShareBody".Translate(shared, sharePath), () => { }));
+                else
+                    Messages.Message("PS_MsgShareFailed".Translate(shareErr), MessageTypeDefOf.RejectInput, false);
+            }
+            // Author flow, dev mode only: bake the edits into the mod's ManualBalance.json defaults.
+            if (Prefs.DevMode && l.ButtonText(tuned > 0 ? "PS_SetBakeN".Translate(tuned).ToString() : "PS_SetBake".Translate().ToString()))
             {
                 if (tuned == 0)
                     Messages.Message("PS_MsgNoBake".Translate(), MessageTypeDefOf.RejectInput, false);
@@ -456,6 +469,7 @@ namespace PsycastSynergies
                 "PS_SetRevealAllTip".Translate());
             IS(l, "PS_SetCardCount".Translate(s.cardPickCount <= 0 ? "PS_SetCardCountAuto".Translate().ToString() : s.cardPickCount.ToString()), ref s.cardPickCount, 0, 8,
                 "PS_SetCardCountTip".Translate());
+            l.Label("PS_SetChooseLaterInfo".Translate());
 
             Head(l, "PS_SetH_Transcendence".Translate());
             CB(l, "PS_SetTranscend".Translate(), ref s.transcendEnabled,
