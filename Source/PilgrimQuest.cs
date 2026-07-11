@@ -59,8 +59,8 @@ namespace PsycastSynergies
                 float h = progress / 2500f, req = requiredTicks / 2500f;
                 int capTicks = PsycastSynergiesMod.Settings?.pilgrimDailyMaxTicks ?? 20000;
                 if (capTicks > 0)
-                    return $"Meditation: {h:F1}h / {req:F1}h  (today: {dailyProgress / 2500f:F1}h / {capTicks / 2500f:F1}h)  \u00b7  waves fired: {wavesFired}";
-                return $"Meditation: {h:F1}h / {req:F1}h  \u00b7  waves fired: {wavesFired}";
+                    return "PS_PilgrimProgressCap".Translate(h.ToString("F1"), req.ToString("F1"), (dailyProgress / 2500f).ToString("F1"), (capTicks / 2500f).ToString("F1"), wavesFired);
+                return "PS_PilgrimProgress".Translate(h.ToString("F1"), req.ToString("F1"), wavesFired);
             }
         }
 
@@ -356,8 +356,8 @@ namespace PsycastSynergies
                 }
                 LordMaker.MakeNewLord(fac, new LordJob_AssaultColony(fac, canKidnap: false, canTimeoutOrFlee: false, canSteal: false), map, pawns);
                 wavesFired++;
-                Find.LetterStack.ReceiveLetter("Ancient psycasters",
-                    "The Ancient Psycaster Order has come to test the pilgrim. " + pawns.Count + " of them assault from the edge of the map.",
+                Find.LetterStack.ReceiveLetter("PS_LetterWaveLabel".Translate(),
+                    "PS_LetterWaveText".Translate(pawns.Count),
                     LetterDefOf.ThreatBig, new LookTargets(pawns[0]), fac);
                 if (Prefs.DevMode)
                 {
@@ -549,15 +549,15 @@ namespace PsycastSynergies
                     if (siteProgress[i] >= requiredTicksPerSite) completed++;
                 float reqH = requiredTicksPerSite / 2500f;
                 int capTicks = PsycastSynergiesMod.Settings?.pilgrimDailyMaxTicks ?? 20000;
-                string today = capTicks > 0 ? $" \u00b7 today: {dailyProgress / 2500f:F1}h / {capTicks / 2500f:F1}h" : "";
+                string today = capTicks > 0 ? "PS_AnimaToday".Translate((dailyProgress / 2500f).ToString("F1"), (capTicks / 2500f).ToString("F1")).ToString() : "";
                 string curSite = "";
                 if (pilgrim?.Map?.Parent is Site cs)
                 {
                     int idx = sites.IndexOf(cs);
                     if (idx >= 0 && idx < siteProgress.Count)
-                        curSite = $" \u00b7 here: {siteProgress[idx] / 2500f:F1}h / {reqH:F1}h";
+                        curSite = "PS_AnimaHere".Translate((siteProgress[idx] / 2500f).ToString("F1"), reqH.ToString("F1")).ToString();
                 }
-                return $"Sites completed: {completed} / {sites.Count}{curSite}{today}";
+                return "PS_AnimaSites".Translate(completed, sites.Count) + curSite + today;
             }
         }
 
@@ -861,20 +861,19 @@ namespace PsycastSynergies
             // Already meditating continuously? Offer to stop.
             if (ForcedMeditation.On(selPawn))
             {
-                yield return new FloatMenuOption("Stop meditating (" + selPawn.LabelShort + ")",
-                    () => ForcedMeditation.Stop(selPawn));
+                yield return new FloatMenuOption("PS_StopMeditatingAt".Translate(selPawn.LabelShort), () => ForcedMeditation.Stop(selPawn));
                 yield break;
             }
-            string label = "Meditate at " + parent.LabelShort + " (until told to stop)";
+            string label = "PS_MeditateAt".Translate(parent.LabelShort);
             if (!selPawn.CanReach(parent, PathEndMode.Touch, Danger.Deadly))
             {
-                yield return new FloatMenuOption(label + " (cannot reach)", null);
+                yield return new FloatMenuOption(label + "PS_CannotReachSuffix".Translate(), null);
                 yield break;
             }
             IntVec3 spot = FindMeditationCell(selPawn);
             if (!spot.IsValid)
             {
-                yield return new FloatMenuOption(label + " (no free spot)", null);
+                yield return new FloatMenuOption(label + "PS_NoFreeSpotSuffix".Translate(), null);
                 yield break;
             }
             yield return new FloatMenuOption(label, () =>

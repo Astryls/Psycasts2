@@ -98,7 +98,7 @@ namespace PsycastSynergies
                 var med = GameComponent_PsycastSynergies.Instance?.GetMed(pawn, true);
                 if (med != null && med.pendingPick < tier) med.pendingPick = tier;
                 if (PawnUtility.ShouldSendNotificationAbout(pawn))
-                    Messages.Message(pawn.LabelShortCap + " set the cards aside for now - they return during meditation, or via the alert.",
+                    Messages.Message("PS_MsgCardsAside".Translate(pawn.LabelShortCap),
                         pawn, MessageTypeDefOf.CautionInput, false);
             }
             MeditationSystem.ShowNextPick();   // chain to the next queued awakening, if another pawn awoke at the same time
@@ -144,8 +144,8 @@ namespace PsycastSynergies
             GUI.color = MXStyle.TextDim;
             Widgets.Label(new Rect(0f, 44f, inRect.width, 24f),
                 chosen < 0 ? PromptText()
-                    : (RevealAll ? "Turn the other cards to reveal them - the centered revealed card is the pick. Embrace when ready."
-                                 : "The cards are cast. This path is now theirs."));
+                    : (RevealAll ? "PS_CardSubRevealAll".Translate().ToString()
+                                 : "PS_CardSubCommitted".Translate().ToString()));
             GUI.color = Color.white;
             Text.Anchor = prevAnchor;
 
@@ -158,34 +158,34 @@ namespace PsycastSynergies
             {
                 if (canForgo)
                 {
-                    if (MXStyle.Button(new Rect(inRect.width / 2f - 250f, fy, 244f, 40f), "Embrace the " + options[chosen].label.CapitalizeFirst() + " path", Accept))
+                    if (MXStyle.Button(new Rect(inRect.width / 2f - 250f, fy, 244f, 40f), "PS_CardEmbrace".Translate(options[chosen].label.CapitalizeFirst()), Accept))
                         Confirm();
-                    if (MXStyle.Button(new Rect(inRect.width / 2f + 6f, fy, 244f, 40f), "Forgo: +" + ForgoPoints() + " specialization points"))
+                    if (MXStyle.Button(new Rect(inRect.width / 2f + 6f, fy, 244f, 40f), "PS_CardForgo".Translate(ForgoPoints())))
                         ForgoForPoints();
                 }
                 else
                 {
-                    if (MXStyle.Button(new Rect(inRect.width / 2f - 175f, fy, 350f, 40f), "Embrace the " + options[chosen].label.CapitalizeFirst() + " path", Accept))
+                    if (MXStyle.Button(new Rect(inRect.width / 2f - 175f, fy, 350f, 40f), "PS_CardEmbrace".Translate(options[chosen].label.CapitalizeFirst()), Accept))
                         Confirm();
                 }
             }
             else if (chosen < 0 && canForgo)
             {
-                if (MXStyle.Button(new Rect(inRect.width / 2f - 200f, fy, 400f, 40f), "Forgo the cards: +" + ForgoPoints() + " specialization points"))
+                if (MXStyle.Button(new Rect(inRect.width / 2f - 200f, fy, 400f, 40f), "PS_CardForgoAll".Translate(ForgoPoints())))
                     ForgoForPoints();
             }
             else if (chosen < 0 && tier >= 2)
             {
                 // Tier II/III may defer the choice and meditate for a fresh draw - at rising coma risk.
-                if (MXStyle.Button(new Rect(inRect.width / 2f - 195f, fy, 390f, 40f), "Keep meditating - reroll the cards (coma risk)"))
+                if (MXStyle.Button(new Rect(inRect.width / 2f - 195f, fy, 390f, 40f), "PS_CardReroll".Translate()))
                     DeferReroll();
             }
 
             // Bottom-right escape hatch (Esc is disabled): close WITHOUT deciding. PostClose requeues
             // the pick (pendingPick) and Alert_PendingCardPick keeps it one click away.
             var rLater = new Rect(inRect.width - 158f, fy, 152f, 40f);
-            TooltipHandler.TipRegion(rLater, "Set the cards aside without choosing. They return while this colonist meditates - or reopen them anytime from the \"Psycast path awaits\" alert.");
-            if (MXStyle.Button(rLater, "Choose later"))
+            TooltipHandler.TipRegion(rLater, "PS_CardChooseLaterTip".Translate());
+            if (MXStyle.Button(rLater, "PS_CardChooseLater".Translate()))
                 Close();
 
             Text.Font = prevFont;
@@ -417,9 +417,9 @@ namespace PsycastSynergies
         {
             switch (tier)
             {
-                case 2: return pawn.LabelShortCap + " ascends - Enlightenment II";
-                case 3: return pawn.LabelShortCap + " transcends - Enlightenment III";
-                default: return pawn.LabelShortCap + " awakens as a psycaster";
+                case 2: return "PS_CardTitleT2".Translate(pawn.LabelShortCap);
+                case 3: return "PS_CardTitleT3".Translate(pawn.LabelShortCap);
+                default: return "PS_CardTitleT1".Translate(pawn.LabelShortCap);
             }
         }
 
@@ -427,9 +427,9 @@ namespace PsycastSynergies
         {
             switch (tier)
             {
-                case 2: return "A pilgrimage fulfilled. Turn one of the cards to reveal a new path.";
-                case 3: return "The mind burns bright - turn one card; any path may answer the call.";
-                default: return "Long meditation has unlocked a latent gift. Turn one card to reveal the path it calls them to.";
+                case 2: return "PS_CardPromptT2".Translate();
+                case 3: return "PS_CardPromptT3".Translate();
+                default: return "PS_CardPromptT1".Translate();
             }
         }
 
@@ -518,7 +518,7 @@ namespace PsycastSynergies
             var med = GameComponent_PsycastSynergies.Instance?.GetMed(pawn, true);
             if (med != null) { med.pendingPick = tier; med.rerollCount++; }
             if (PawnUtility.ShouldSendNotificationAbout(pawn))
-                Messages.Message(pawn.LabelShortCap + " sets the cards aside to meditate further - the omens will shift.",
+                Messages.Message("PS_MsgDeferReroll".Translate(pawn.LabelShortCap),
                     pawn, MessageTypeDefOf.NeutralEvent, false);
             Close();
         }
@@ -538,7 +538,7 @@ namespace PsycastSynergies
             if (med != null) { med.rerollCount = 0; med.pendingPick = 0; }
             SoundDefOf.Quest_Accepted.PlayOneShotOnCamera();
             if (PawnUtility.ShouldSendNotificationAbout(pawn))
-                Messages.Message(pawn.LabelShortCap + " forwent the vision for deeper insight.  (+" + pts + " specialization points)",
+                Messages.Message("PS_MsgForgo".Translate(pawn.LabelShortCap, pts),
                     pawn, MessageTypeDefOf.PositiveEvent, false);
             Close();
         }
@@ -561,8 +561,8 @@ namespace PsycastSynergies
             {
                 var s = PsycastSynergiesMod.Settings;
                 int bonus = tier == 2 ? (s?.tier2SpecPoints ?? 0) : tier == 3 ? (s?.tier3SpecPoints ?? 0) : tier >= 4 ? 3 : 0;
-                string msg = pawn.LabelShortCap + " embraced the " + path.label.CapitalizeFirst() + " path.";
-                if (bonus > 0) msg += " (+" + bonus + " specialization points)";
+                string msg = "PS_MsgEmbraced".Translate(pawn.LabelShortCap, path.label.CapitalizeFirst());
+                if (bonus > 0) msg += "PS_MsgEmbracedBonus".Translate(bonus);
                 Messages.Message(msg, pawn, MessageTypeDefOf.PositiveEvent, false);
             }
             Close();

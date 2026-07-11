@@ -28,12 +28,12 @@ namespace PsycastSynergies
                 var gc = GameComponent_PsycastSynergies.Instance;
                 var sp = gc?.GetSpec(pawn);
                 var sb = new StringBuilder();
-                sb.AppendLine("Cultivated through Psycasts². The listed bonuses are already applied to this pawn's psycasts.");
+                sb.AppendLine("PS_AscensionCultivated".Translate());
 
                 if (sp != null && sp.owned.Count > 0)
                 {
                     sb.AppendLine();
-                    sb.AppendLine("Specializations:");
+                    sb.AppendLine("PS_AscensionSpecs".Translate());
                     foreach (var id in sp.owned)
                     {
                         var s = Specs.Get(id);

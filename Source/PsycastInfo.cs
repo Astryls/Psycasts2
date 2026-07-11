@@ -578,7 +578,7 @@ namespace PsycastSynergies
                 if (s.scaleRadius && expl.explosionRadius > 0f)
                 {
                     float r = expl.explosionRadius * SkillSystem.StatMultiplier(pawn, def, SynStat.Radius);
-                    list.Add(new Effect("Blast radius", Num(r) + " tiles", SynStat.Radius));
+                    list.Add(new Effect("PS_FxBlastRadius".Translate(), "PS_FxTiles".Translate(Num(r)), SynStat.Radius));
                 }
                 if (s.scalePower)
                 {
@@ -588,7 +588,7 @@ namespace PsycastSynergies
                     if (baseAmt > 0)
                     {
                         float dmg = baseAmt * SkillSystem.StatMultiplier(pawn, def, SynStat.Power);
-                        list.Add(new Effect("Blast damage", Mathf.RoundToInt(dmg).ToString(), SynStat.Power));
+                        list.Add(new Effect("PS_FxBlastDamage".Translate(), Mathf.RoundToInt(dmg).ToString(), SynStat.Power));
                     }
                 }
             }
@@ -596,70 +596,70 @@ namespace PsycastSynergies
             if (s.scalePower && expl == null && def.power != 0f)
             {
                 float p = inst != null ? inst.GetPowerForPawn() : def.power * SkillSystem.StatMultiplier(pawn, def, SynStat.Power);
-                list.Add(new Effect("Damage", Num(p), SynStat.Power));
+                list.Add(new Effect("PS_Stat_Power".Translate(), Num(p), SynStat.Power));
             }
 
             if (s.scaleRadius && expl == null && def.radius > 0f)
             {
                 float r = inst != null ? inst.GetRadiusForPawn() : def.radius * SkillSystem.StatMultiplier(pawn, def, SynStat.Radius);
-                list.Add(new Effect("Radius", Num(r) + " tiles", SynStat.Radius));
+                list.Add(new Effect("PS_FxRadius".Translate(), "PS_FxTiles".Translate(Num(r)), SynStat.Radius));
             }
 
             if (s.scaleDuration && def.durationTime > 0)
             {
                 int d = inst != null ? inst.GetDurationForPawn() : Mathf.RoundToInt(def.durationTime * SkillSystem.StatMultiplier(pawn, def, SynStat.Duration));
-                if (d > 0) list.Add(new Effect("Duration", d.ToStringTicksToPeriod(), SynStat.Duration));
+                if (d > 0) list.Add(new Effect("PS_Stat_Duration".Translate(), d.ToStringTicksToPeriod(), SynStat.Duration));
             }
 
             if (def.range > 0f)
             {
                 float rng = inst != null ? inst.GetRangeForPawn() : def.range * SkillSystem.StatMultiplier(pawn, def, SynStat.Range);
-                if (rng > 0f && rng < 500f) list.Add(new Effect("Range", Num(rng) + " tiles", SynStat.Range));
+                if (rng > 0f && rng < 500f) list.Add(new Effect("PS_Stat_Range".Translate(), "PS_FxTiles".Translate(Num(rng)), SynStat.Range));
             }
             if (def.cooldownTime > 0)
             {
                 int cd = inst != null ? inst.GetCooldownForPawn() : def.cooldownTime;
-                if (cd > 0) list.Add(new Effect("Cooldown", cd.ToStringTicksToPeriod(), SynStat.Cooldown));
+                if (cd > 0) list.Add(new Effect("PS_Stat_Cooldown".Translate(), cd.ToStringTicksToPeriod(), SynStat.Cooldown));
             }
 
             // Meta / universal types active on this skill (from its own type OR fed by neighbours).
             string PctS(float f) => (f * 100f).ToString("0.#") + "%";
             int chMax = ChargeStore.Max(pawn, def);
-            if (chMax > 0) list.Add(new Effect("Free-cast charges", chMax + " / " + ChargeStore.Cap, null));
+            if (chMax > 0) list.Add(new Effect("PS_FxFreeCharges".Translate(), chMax + " / " + ChargeStore.Cap, null));
             if (HasStat(def, SynStat.Targets) || def.targetCount > 1)
             {
                 int total = def.targetCount + SkillSystem.ExtraTargets(pawn, def);
-                if (total > 1) list.Add(new Effect("Targets", total + " per cast (pick when targeting)", null));
+                if (total > 1) list.Add(new Effect("PS_Stat_Targets".Translate(), "PS_FxPerCast".Translate(total), null));
             }
             if (HasStat(def, SynStat.ProjectileCount))
             {
                 float pc = SkillSystem.StatMultiplier(pawn, def, SynStat.ProjectileCount);
-                if (pc > 1.001f) list.Add(new Effect("Projectiles", "\u00d7" + Num(pc), SynStat.ProjectileCount));
+                if (pc > 1.001f) list.Add(new Effect("PS_Stat_ProjectileCount".Translate(), "\u00d7" + Num(pc), SynStat.ProjectileCount));
             }
             if (HasStat(def, SynStat.SummonCount))
             {
                 float sc = SkillSystem.StatMultiplier(pawn, def, SynStat.SummonCount);
-                if (sc > 1.001f) list.Add(new Effect("Summons", "\u00d7" + Num(sc), SynStat.SummonCount));
+                if (sc > 1.001f) list.Add(new Effect("PS_Stat_SummonCount".Translate(), "\u00d7" + Num(sc), SynStat.SummonCount));
             }
             float eff = SkillSystem.StatMultiplier(pawn, def, SynStat.Efficiency) - 1f;
-            if (eff > 0f) list.Add(new Effect("Cost", "-" + PctS(Mathf.Min(eff, 0.7f)), null));
+            if (eff > 0f) list.Add(new Effect("PS_Stat_Efficiency".Translate(), "-" + PctS(Mathf.Min(eff, 0.7f)), null));
             float hst = SkillSystem.StatMultiplier(pawn, def, SynStat.Haste) - 1f;
-            if (hst > 0f) list.Add(new Effect("Cast speed", "-" + PctS(Mathf.Min(hst, 0.7f)) + " time", null));
+            if (hst > 0f) list.Add(new Effect("PS_Stat_Haste".Translate(), "PS_FxTimeReduction".Translate(PctS(Mathf.Min(hst, 0.7f))), null));
             float yld = SkillSystem.StatMultiplier(pawn, def, SynStat.Yield) - 1f;
-            if (yld > 0f) list.Add(new Effect("Psyfocus refund", PctS(Mathf.Min(yld, 0.9f)), null));
+            if (yld > 0f) list.Add(new Effect("PS_Stat_Yield".Translate(), PctS(Mathf.Min(yld, 0.9f)), null));
             float ins = SkillSystem.StatMultiplier(pawn, def, SynStat.Insight) - 1f;
-            if (ins > 0f) list.Add(new Effect("Bonus psycast XP", "+" + PctS(Mathf.Min(ins, 2f)), null));
+            if (ins > 0f) list.Add(new Effect("PS_FxBonusXp".Translate(), "+" + PctS(Mathf.Min(ins, 2f)), null));
 
             var proj = def.GetModExtension<AbilityExtension_Projectile>();
             if (proj?.projectile?.projectile != null)
             {
                 int pd = proj.projectile.projectile.GetDamageAmount((Thing)null);
-                if (pd > 0) list.Add(new Effect("Projectile damage", pd + " (unscaled)", null, false));
+                if (pd > 0) list.Add(new Effect("PS_FxProjectileDamage".Translate(), "PS_FxUnscaled".Translate(pd), null, false));
             }
 
             var hed = def.GetModExtension<AbilityExtension_Hediff>();
             if (hed != null && s.scaleBuffStrength && hed.severity > 0f)
-                list.Add(new Effect("Effect strength", "×" + Num(SkillSystem.StatMultiplier(pawn, def, SynStat.Strength)), SynStat.Strength));
+                list.Add(new Effect("PS_Stat_Strength".Translate(), "×" + Num(SkillSystem.StatMultiplier(pawn, def, SynStat.Strength)), SynStat.Strength));
 
             return list;
         }
@@ -671,8 +671,8 @@ namespace PsycastSynergies
             if (hed?.hediff == null) return null;
             string body = DescribeHediff(hed.hediff);
             if (body == null) return null;
-            string verb = (hed.targetOnlyEnemies || hed.hediff.isBad) ? "Target suffers"
-                        : (hed.applyToCaster ? "Caster gains" : "Target gains");
+            string verb = (hed.targetOnlyEnemies || hed.hediff.isBad) ? "PS_FxTargetSuffers".Translate().ToString()
+                        : (hed.applyToCaster ? "PS_FxCasterGains".Translate().ToString() : "PS_FxTargetGains".Translate().ToString());
             return verb + ": " + body;
         }
 

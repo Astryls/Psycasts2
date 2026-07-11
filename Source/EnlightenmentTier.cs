@@ -24,8 +24,8 @@ namespace PsycastSynergies
             if (tier <= 0) return "";
             var custom = TieringControl.TierName(tier);   // a TieringOverrideDef can reskin the whole ladder
             if (custom != null) return custom;
-            if (tier <= 3) return Names[tier];
-            return "Transcendent " + RomanNumerals.ToRoman(tier);   // tier 4+ named by the FULL tier (tier 6 -> "Transcendent VI")
+            if (tier <= 3) return ("PS_Tier_" + Names[tier]).Translate();
+            return "PS_TierTranscendent".Translate(RomanNumerals.ToRoman(tier));   // tier 4+ named by the FULL tier (tier 6 -> "Transcendent VI")
         }
 
         public static int TierOf(Pawn p)

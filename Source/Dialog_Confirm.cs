@@ -15,9 +15,10 @@ namespace PsycastSynergies
 
         public override Vector2 InitialSize => new Vector2(450f, 210f);
 
-        public Dialog_Confirm(string title, string body, Action onConfirm, string confirmLabel = "Confirm")
+        public Dialog_Confirm(string title, string body, Action onConfirm, string confirmLabel = null)
         {
-            this.title = title; this.body = body; this.onConfirm = onConfirm; this.confirmLabel = confirmLabel;
+            this.title = title; this.body = body; this.onConfirm = onConfirm;
+            this.confirmLabel = confirmLabel ?? "PS_Confirm".Translate().ToString();
             doWindowBackground = false;
             drawShadow = false;
             doCloseX = false;
@@ -44,7 +45,7 @@ namespace PsycastSynergies
             float bw = (col.width - 36f) / 2f;
             Rect cancel = new Rect(col.x + 12f, col.yMax - 40f, bw, 30f);
             Rect ok = new Rect(cancel.xMax + 12f, col.yMax - 40f, bw, 30f);
-            if (Btn(cancel, "Cancel", Palette.BGL, Color.white)) Close();
+            if (Btn(cancel, "PS_Cancel".Translate(), Palette.BGL, Color.white)) Close();
             if (Btn(ok, confirmLabel, Palette.Accent, Color.black)) { onConfirm?.Invoke(); Close(); }
 
             Text.Font = pf; Text.Anchor = pa;

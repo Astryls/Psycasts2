@@ -180,7 +180,7 @@ namespace PsycastSynergies
             Rect header = new Rect(inRect.x, inRect.y, inRect.width, 34f);
             Widgets.DrawBoxSolid(header, Palette.BGD);
             Text.Font = GameFont.Small; Text.Anchor = TextAnchor.MiddleRight; GUI.color = Palette.Gold;
-            Widgets.Label(new Rect(header.xMax - 240f, header.y, 198f, header.height), "\u2605 " + d.points + " points");
+            Widgets.Label(new Rect(header.xMax - 240f, header.y, 198f, header.height), "PS_SpecPointsHeader".Translate(d.points));
             Text.Anchor = TextAnchor.UpperLeft; GUI.color = Color.white;
 
             // Split: tree box (clipped) on the left, preview/confirm panel on the right.
@@ -447,7 +447,7 @@ namespace PsycastSynergies
             if (IconButton(new Rect(x + 60f, y, 26f, 24f), ViewResetTex, null, true)) { zoom = 1.45f; panOffset = Vector2.zero; panTarget = Vector2.zero; }
             Text.Font = GameFont.Tiny; GUI.color = Palette.TextDim;
             bool pw = Text.WordWrap; Text.WordWrap = false;
-            Widgets.Label(new Rect(x, y + 28f, box.width, Text.LineHeight), "Drag to pan \u2022 scroll to zoom");
+            Widgets.Label(new Rect(x, y + 28f, box.width, Text.LineHeight), "PS_SpecPanHint".Translate());
             Text.WordWrap = pw;
             GUI.color = Color.white; Text.Font = GameFont.Small;
         }
@@ -500,17 +500,17 @@ namespace PsycastSynergies
             float y = inner.y;
             Text.Font = GameFont.Small; Text.Anchor = TextAnchor.UpperLeft; GUI.color = Palette.Stat;
             float lhS = Text.LineHeight;
-            Widgets.Label(new Rect(inner.x, y, inner.width, lhS), "Bonuses and perks"); y += lhS + 3f;
+            Widgets.Label(new Rect(inner.x, y, inner.width, lhS), "PS_SpecBonuses".Translate()); y += lhS + 3f;
 
             // Points block.
             int pend = PendingCost();
             Text.Font = GameFont.Tiny; float lh = Text.LineHeight; GUI.color = Palette.TextDim;
-            Widgets.Label(new Rect(inner.x, y, inner.width, lh), "Available points: " + d.points); y += lh;
+            Widgets.Label(new Rect(inner.x, y, inner.width, lh), "PS_SpecAvailable".Translate(d.points)); y += lh;
             if (pend > 0)
             {
                 GUI.color = Palette.Accent;
                 Widgets.Label(new Rect(inner.x, y, inner.width, lh),
-                    pending.Count + (pending.Count == 1 ? " perk, " : " perks, ") + pend + " pts  \u2192  " + (d.points - pend) + " left"); y += lh;
+                    "PS_SpecPending".Translate(pending.Count, pend, d.points - pend).ToString()); y += lh;
             }
             GUI.color = new Color(1f, 1f, 1f, 0.12f); Widgets.DrawLineHorizontal(inner.x, y + 3f, inner.width); GUI.color = Color.white; y += 9f;
 
@@ -522,9 +522,9 @@ namespace PsycastSynergies
             int capB = Has(d, "convergence") ? 5 : 0;
             int glob = (Has(d, "overflow") ? 8 : 0) + (Has(d, "convergence") ? 15 : 0);
             Text.Font = GameFont.Tiny; GUI.color = Palette.Good;
-            if (glob > 0) { Widgets.Label(new Rect(inner.x, y, inner.width, lh), "All stats:  +" + glob + "%"); y += lh; }
-            if (synF > 1.001f) { Widgets.Label(new Rect(inner.x, y, inner.width, lh), "Synergy received:  \u00d7" + synF.ToString("0.00")); y += lh; }
-            if (capB > 0) { Widgets.Label(new Rect(inner.x, y, inner.width, lh), "Skill level cap:  +" + capB); y += lh; }
+            if (glob > 0) { Widgets.Label(new Rect(inner.x, y, inner.width, lh), "PS_SpecAllStats".Translate(glob)); y += lh; }
+            if (synF > 1.001f) { Widgets.Label(new Rect(inner.x, y, inner.width, lh), "PS_SpecSynRecv".Translate(synF.ToString("0.00"))); y += lh; }
+            if (capB > 0) { Widgets.Label(new Rect(inner.x, y, inner.width, lh), "PS_SpecCapBonus".Translate(capB)); y += lh; }
             GUI.color = Color.white;
             y += 4f;
 
@@ -532,7 +532,7 @@ namespace PsycastSynergies
             var rows = new List<Spec>();
             foreach (var sp in Specs.All) if (d.Owns(sp.id) || pending.Contains(sp.id)) rows.Add(sp);
             Text.Font = GameFont.Tiny; GUI.color = Palette.TextDim;
-            Widgets.Label(new Rect(inner.x, y, inner.width, lh), rows.Count == 0 ? "No specializations yet." : "Perks (" + rows.Count + "):"); y += lh + 2f;
+            Widgets.Label(new Rect(inner.x, y, inner.width, lh), rows.Count == 0 ? "PS_SpecNone".Translate().ToString() : "PS_SpecPerksN".Translate(rows.Count).ToString()); y += lh + 2f;
             GUI.color = Color.white;
 
             float devH = Prefs.DevMode ? 32f : 0f;
@@ -570,14 +570,14 @@ namespace PsycastSynergies
 
             // Player reset (free): refund every owned spec back to the point pool.
             bool hasOwned = d.owned.Count > 0;
-            if (IconButton(respecRow, RespecTex, hasOwned ? "Reset all - refund " + d.owned.Sum(id => Specs.Get(id)?.cost ?? 0) + " ★" : "Reset all", hasOwned))
+            if (IconButton(respecRow, RespecTex, hasOwned ? "PS_SpecResetRefund".Translate(d.owned.Sum(id => Specs.Get(id)?.cost ?? 0)).ToString() : "PS_SpecResetAll".Translate().ToString(), hasOwned))
                 OpenRespecConfirm(d);
 
             // Apply / Clear (icon buttons).
             float half = (btnRow.width - 6f) / 2f;
             bool any = pending.Count > 0;
-            if (IconButton(new Rect(btnRow.x, btnRow.y, half, btnRow.height), ApplyTex, any ? "Apply " + pending.Count + " (" + pend + " pts)" : "Apply", any)) Apply(d);
-            if (IconButton(new Rect(btnRow.x + half + 6f, btnRow.y, half, btnRow.height), ClearTex, "Clear", any)) ClearPending();
+            if (IconButton(new Rect(btnRow.x, btnRow.y, half, btnRow.height), ApplyTex, any ? "PS_SpecApplyN".Translate(pending.Count, pend).ToString() : "PS_SpecApply".Translate().ToString(), any)) Apply(d);
+            if (IconButton(new Rect(btnRow.x + half + 6f, btnRow.y, half, btnRow.height), ClearTex, "PS_SpecClear".Translate(), any)) ClearPending();
 
             // Dev tools (icon row), relocated here from the tree footer so clicks aren't eaten by pan.
             if (Prefs.DevMode)
@@ -615,7 +615,7 @@ namespace PsycastSynergies
             float lhS = Text.LineHeight;
             Widgets.Label(new Rect(inner.x, y, inner.width, lhS), sp.label); y += lhS + 2f;
             Text.Font = GameFont.Tiny; float lh = Text.LineHeight; GUI.color = Palette.Gold;
-            Widgets.Label(new Rect(inner.x, y, inner.width, lh), sp.branch + "  \u2022  " + sp.cost + " pts"); y += lh + 2f;
+            Widgets.Label(new Rect(inner.x, y, inner.width, lh), "PS_SpecBranchCost".Translate(Specs.BranchLabel(sp.branch), sp.cost)); y += lh + 2f;
             GUI.color = new Color(1f, 1f, 1f, 0.12f); Widgets.DrawLineHorizontal(inner.x, y + 2f, inner.width); GUI.color = Color.white; y += 8f;
 
             GUI.color = Palette.Stat; Text.Font = GameFont.Tiny;
@@ -625,25 +625,25 @@ namespace PsycastSynergies
             if (sp.prereqs.Length > 0)
             {
                 GUI.color = Palette.TextDim;
-                string req = "Requires: " + string.Join(", ", sp.prereqs.Select(p => Specs.Get(p)?.label ?? p));
+                string req = "PS_SpecRequires".Translate(string.Join(", ", sp.prereqs.Select(p => Specs.Get(p)?.label ?? p)));
                 float reqH = Text.CalcHeight(req, inner.width);
                 Widgets.Label(new Rect(inner.x, y, inner.width, reqH), req); y += reqH + 2f;
             }
             if (sp.anyPrereq.Length > 0)
             {
                 GUI.color = Palette.TextDim;
-                string reqA = "Requires any: " + string.Join(", ", sp.anyPrereq.Select(p => Specs.Get(p)?.label ?? p));
+                string reqA = "PS_SpecRequiresAny".Translate(string.Join(", ", sp.anyPrereq.Select(p => Specs.Get(p)?.label ?? p)));
                 float reqAH = Text.CalcHeight(reqA, inner.width);
                 Widgets.Label(new Rect(inner.x, y, inner.width, reqAH), reqA); y += reqAH + 2f;
             }
 
             string status; Color sc;
-            if (owned) { status = "\u2713 Owned"; sc = Palette.Good; }
-            else if (staged) { status = "\u25C6 Staged - click node to unstage"; sc = Palette.Accent; }
-            else if (GroupLocked(d, sp)) { status = sp.exclusiveGroup == "apotheosis" ? "Locked - you already chose another Apotheosis path" : "Locked - you already picked one of this exclusive set"; sc = Palette.Bad; }
-            else if (!met) { status = "Locked - prerequisites not met"; sc = Palette.Bad; }
-            else if (!afford) { status = "Need more points"; sc = Palette.Bad; }
-            else { status = "Click node to stage"; sc = Palette.TextDim; }
+            if (owned) { status = "PS_SpecOwned".Translate(); sc = Palette.Good; }
+            else if (staged) { status = "PS_SpecStaged".Translate(); sc = Palette.Accent; }
+            else if (GroupLocked(d, sp)) { status = sp.exclusiveGroup == "apotheosis" ? "PS_SpecLockedApo".Translate().ToString() : "PS_SpecLockedExcl".Translate().ToString(); sc = Palette.Bad; }
+            else if (!met) { status = "PS_SpecLockedPrereq".Translate(); sc = Palette.Bad; }
+            else if (!afford) { status = "PS_SpecNeedPoints".Translate(); sc = Palette.Bad; }
+            else { status = "PS_SpecClickStage".Translate(); sc = Palette.TextDim; }
             y += 4f; GUI.color = sc; Text.Font = GameFont.Tiny;
             Widgets.Label(new Rect(inner.x, y, inner.width, Text.LineHeight), status);
             GUI.color = Color.white; Text.Anchor = TextAnchor.UpperLeft;
@@ -661,13 +661,13 @@ namespace PsycastSynergies
             if (GroupLocked(d, sp))
             {
                 Messages.Message(sp.exclusiveGroup == "apotheosis"
-                    ? "You can pursue only one Apotheosis path (Tranquil Mind, Transcendence or Umbral Sovereign)."
-                    : "You can pick only one of Overflow, Mastery, Discipline or Attunement.",
+                    ? "PS_MsgOneApo".Translate().ToString()
+                    : "PS_MsgOneMeta".Translate().ToString(),
                     MessageTypeDefOf.RejectInput, false);
                 return;
             }
-            if (!met) { Messages.Message("Prerequisites not met.", MessageTypeDefOf.RejectInput, false); return; }
-            if (!afford) { Messages.Message("Not enough specialization points.", MessageTypeDefOf.RejectInput, false); return; }
+            if (!met) { Messages.Message("PS_MsgPrereqs".Translate(), MessageTypeDefOf.RejectInput, false); return; }
+            if (!afford) { Messages.Message("PS_MsgNoSpecPoints".Translate(), MessageTypeDefOf.RejectInput, false); return; }
             if (sp.pick) OpenPicker(d, sp);
             else Stage(sp);
         }
@@ -712,8 +712,8 @@ namespace PsycastSynergies
 
         private void OpenRespecConfirm(SpecData d)
         {
-            Find.WindowStack.Add(new Dialog_Confirm("Reset specializations",
-                "Refund all specializations? Every spent point returns to your pool, all picks are cleared, and any Apotheosis path is undone. (Free.)",
+            Find.WindowStack.Add(new Dialog_Confirm("PS_SpecResetTitle".Translate(),
+                "PS_SpecResetBody".Translate(),
                 () => RespecAll(d)));
         }
 
@@ -786,7 +786,7 @@ namespace PsycastSynergies
 
             if (opts.Count == 0)
             {
-                Messages.Message("No valid choices available yet (learn more psycasts first).", MessageTypeDefOf.RejectInput, false);
+                Messages.Message("PS_MsgNoChoices".Translate(), MessageTypeDefOf.RejectInput, false);
                 return;
             }
             Find.WindowStack.Add(new FloatMenu(opts));
@@ -826,7 +826,7 @@ namespace PsycastSynergies
                 Text.Font = GameFont.Small; Text.Anchor = TextAnchor.MiddleCenter; GUI.color = Palette.Gold;
                 Widgets.Label(r, "\u2605 " + (d?.points ?? 0));
                 Text.Anchor = TextAnchor.UpperLeft; GUI.color = Color.white;
-                TooltipHandler.TipRegion(r, "Specializations - " + (d?.points ?? 0) + " points");
+                TooltipHandler.TipRegion(r, "PS_SpecTabTip".Translate(d?.points ?? 0));
                 if (Widgets.ButtonInvisible(r) && !Find.WindowStack.IsOpen(typeof(Window_Specializations)))
                     Find.WindowStack.Add(new Window_Specializations(pawn));
 
@@ -840,7 +840,7 @@ namespace PsycastSynergies
                     Palette.DrawCard(tr);
                     if (Mouse.IsOver(tr)) Widgets.DrawHighlight(tr);
                     DrawRoman(tr.ContractedBy(5f), tier, Palette.Accent);
-                    TooltipHandler.TipRegion(tr, "Enlightenment: " + EnlightenmentTier.Name(tier) + " (Tier " + tier + ")");
+                    TooltipHandler.TipRegion(tr, "PS_TierBadgeTip".Translate(EnlightenmentTier.Name(tier), tier));
                 }
             }
             catch { }

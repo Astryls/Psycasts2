@@ -55,7 +55,7 @@ namespace PsycastSynergies
         public override AcceptanceReport CanBeUsedBy(Pawn p)
         {
             if (!AwakeningTrigger.CanFire(p, Ext))
-                return "cannot awaken: already at this enlightenment tier, or ineligible";
+                return "PS_CannotAwaken".Translate().ToString();
             return base.CanBeUsedBy(p);
         }
 
@@ -66,7 +66,7 @@ namespace PsycastSynergies
             if (Rand.Chance(ext?.chance ?? 1f))
                 AwakeningTrigger.Fire(usedBy, ext, "use " + parent.def.defName);
             else if (usedBy.Faction != null && usedBy.Faction.IsPlayer)
-                Messages.Message(usedBy.LabelShortCap + " felt a psychic stirring, but nothing awakened.", usedBy, MessageTypeDefOf.NeutralEvent, false);
+                Messages.Message("PS_MsgPsychicStirring".Translate(usedBy.LabelShortCap), usedBy, MessageTypeDefOf.NeutralEvent, false);
         }
     }
 

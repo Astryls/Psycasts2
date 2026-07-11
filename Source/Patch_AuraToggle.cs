@@ -30,8 +30,8 @@ namespace PsycastSynergies
 
             yield return new Command_Toggle
             {
-                defaultLabel = "Psychic aura",
-                defaultDesc = "Toggle the cosmetic Apotheosis aura rendered on this pawn. Purely visual - no effect on the Apotheosis bonuses.",
+                defaultLabel = "PS_AuraLabel".Translate(),
+                defaultDesc = "PS_AuraDesc".Translate(),
                 icon = Icon ?? BaseContent.BadTex,
                 isActive = () => !d.aurasDisabled,
                 toggleAction = () => d.aurasDisabled = !d.aurasDisabled

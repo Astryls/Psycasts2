@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <!-- Specialization nodes, generated from Specs.cs: PS_Spec_<id> = name, PS_SpecDesc_<id> = description. Missing keys fall back to the authored English in code. -->
+  <PS_Spec_kindling>Kindling</PS_Spec_kindling>
+  <PS_SpecDesc_kindling>Opens the way. +3% to every psycast's primary stat.</PS_SpecDesc_kindling>
+  <PS_Spec_surge>Surge</PS_Spec_surge>
+  <PS_SpecDesc_surge>+15% to all damage / power scaling.</PS_SpecDesc_surge>
+  <PS_Spec_resonance>Resonance</PS_Spec_resonance>
+  <PS_SpecDesc_resonance>+15% radius on every cast.</PS_SpecDesc_resonance>
+  <PS_Spec_lingering>Lingering</PS_Spec_lingering>
+  <PS_SpecDesc_lingering>+15% duration on every timed effect.</PS_SpecDesc_lingering>
+  <PS_Spec_potency>Potency</PS_Spec_potency>
+  <PS_SpecDesc_potency>+15% buff / boon magnitude.</PS_SpecDesc_potency>
+  <PS_Spec_onslaught>Onslaught</PS_Spec_onslaught>
+  <PS_SpecDesc_onslaught>Offensive casts +20% power; synergies from offensive skills count double.</PS_SpecDesc_onslaught>
+  <PS_Spec_dominion>Dominion</PS_Spec_dominion>
+  <PS_SpecDesc_dominion>Control casts +20% radius and duration.</PS_SpecDesc_dominion>
+  <PS_Spec_bulwark>Bulwark</PS_Spec_bulwark>
+  <PS_SpecDesc_bulwark>Boons and shields +20% strength and duration.</PS_SpecDesc_bulwark>
+  <PS_Spec_flow>Flow</PS_Spec_flow>
+  <PS_SpecDesc_flow>Halves the level-based heat and psyfocus cost penalty.</PS_SpecDesc_flow>
+  <PS_Spec_fervor>Fervor</PS_Spec_fervor>
+  <PS_SpecDesc_fervor>Offensive power rises with your current neural heat (up to +25% at maximum).</PS_SpecDesc_fervor>
+  <PS_Spec_abandon>Abandon</PS_Spec_abandon>
+  <PS_SpecDesc_abandon>Reckless: +40% offensive power, but +40% psyfocus and heat cost.</PS_SpecDesc_abandon>
+  <PS_Spec_echo>Echo</PS_Spec_echo>
+  <PS_SpecDesc_echo>20% chance a cast immediately refreshes its cooldown.</PS_SpecDesc_echo>
+  <PS_Spec_wellspring>Wellspring</PS_Spec_wellspring>
+  <PS_SpecDesc_wellspring>Slowly regenerate psyfocus over time.</PS_SpecDesc_wellspring>
+  <PS_Spec_confluence>Confluence</PS_Spec_confluence>
+  <PS_SpecDesc_confluence>Synergy bonuses you receive are doubled.</PS_SpecDesc_confluence>
+  <PS_Spec_tempest>Tempest</PS_Spec_tempest>
+  <PS_SpecDesc_tempest>When a psycast kills, refund half of that cast's heat and psyfocus.</PS_SpecDesc_tempest>
+  <PS_Spec_maelstrom>Maelstrom</PS_Spec_maelstrom>
+  <PS_SpecDesc_maelstrom>Area casts surge outward: +50% radius and +25% duration.</PS_SpecDesc_maelstrom>
+  <PS_Spec_sanctuary>Sanctuary</PS_Spec_sanctuary>
+  <PS_SpecDesc_sanctuary>Bastion of will: boons +50% strength and duration.</PS_SpecDesc_sanctuary>
+  <PS_Spec_conduit>Conduit</PS_Spec_conduit>
+  <PS_SpecDesc_conduit>Synergy bonuses you receive are increased by 50%.</PS_SpecDesc_conduit>
+  <PS_Spec_convergence>Convergence</PS_Spec_convergence>
+  <PS_SpecDesc_convergence>Convergence. +15% to ALL stats and synergies, and +5 to the per-skill level cap. Opens the seven Apotheosis constellations drifting above.</PS_SpecDesc_convergence>
+  <PS_Spec_mastery>Mastery</PS_Spec_mastery>
+  <PS_SpecDesc_mastery>Choose one learned psycast - it gains +100% to its primary stat and ignores cost scaling.\n\nExclusive: only one of Overflow / Mastery / Discipline / Attunement.</PS_SpecDesc_mastery>
+  <PS_Spec_discipline>Discipline</PS_Spec_discipline>
+  <PS_SpecDesc_discipline>Choose a path - its skills gain +50% per-level scaling and start one effective level higher.\n\nExclusive: only one of Overflow / Mastery / Discipline / Attunement.</PS_SpecDesc_discipline>
+  <PS_Spec_attunement>Attunement</PS_Spec_attunement>
+  <PS_SpecDesc_attunement>Choose an element - casts of that damage type gain +25% power and radius.\n\nExclusive: only one of Overflow / Mastery / Discipline / Attunement.</PS_SpecDesc_attunement>
+  <PS_Spec_overflow>Overflow</PS_Spec_overflow>
+  <PS_SpecDesc_overflow>+8% to ALL of a skill's stats (not just its primary).\n\nExclusive: only one of Overflow / Mastery / Discipline / Attunement.</PS_SpecDesc_overflow>
+  <PS_Spec_catalyst>Catalyst</PS_Spec_catalyst>
+  <PS_SpecDesc_catalyst>Your psycasts are cast 25% faster.</PS_SpecDesc_catalyst>
+  <PS_Spec_siphon>Siphon</PS_Spec_siphon>
+  <PS_SpecDesc_siphon>Psycast kills restore 25% of that cast's psyfocus.</PS_SpecDesc_siphon>
+  <PS_Spec_tm_gate>Stillness</PS_Spec_tm_gate>
+  <PS_SpecDesc_tm_gate>Begin the Halcyon path.\n\nNeural heat builds 20% slower and recovers 25% faster.</PS_SpecDesc_tm_gate>
+  <PS_Spec_tm_mid>Serenity</PS_Spec_tm_mid>
+  <PS_SpecDesc_tm_mid>Neural heat builds 35% slower and recovers 50% faster.</PS_SpecDesc_tm_mid>
+  <PS_Spec_tm_cap>Halcyon</PS_Spec_tm_cap>
+  <PS_SpecDesc_tm_cap>Perfect serenity.\n\n\u2022 Neural heat builds 55% slower, recovers 90% faster.\n\u2022 Immune to ALL mental breaks.</PS_SpecDesc_tm_cap>
+  <PS_Spec_ar_gate>Event Horizon</PS_Spec_ar_gate>
+  <PS_SpecDesc_ar_gate>Begin the Singularity path.\n\n\u22125% psyfocus cost, +10% psychic sensitivity.</PS_SpecDesc_ar_gate>
+  <PS_Spec_ar_l>Logic Engine</PS_Spec_ar_l>
+  <PS_SpecDesc_ar_l>\u221210% psyfocus cost, +18% psychic sensitivity.</PS_SpecDesc_ar_l>
+  <PS_Spec_ar_r>Datum</PS_Spec_ar_r>
+  <PS_SpecDesc_ar_r>\u221215% psyfocus cost, +25% psychic sensitivity, slow passive psyfocus regen.</PS_SpecDesc_ar_r>
+  <PS_Spec_ar_cap>Singularity</PS_Spec_ar_cap>
+  <PS_SpecDesc_ar_cap>Verge on the archotech.\n\n\u2022 \u221220% psyfocus cost.\n\u2022 +35% psychic sensitivity.\n\u2022 Steady passive psyfocus regeneration.</PS_SpecDesc_ar_cap>
+  <PS_Spec_um_gate>Umbral Veil</PS_Spec_um_gate>
+  <PS_SpecDesc_um_gate>Begin the Penumbra path.\n\nPsychic shadow steels the mind. +8% psychic sensitivity.</PS_SpecDesc_um_gate>
+  <PS_Spec_um_a>Shade</PS_Spec_um_a>
+  <PS_SpecDesc_um_a>The shadow deepens. +14% psychic sensitivity.</PS_SpecDesc_um_a>
+  <PS_Spec_um_b>Gloaming</PS_Spec_um_b>
+  <PS_SpecDesc_um_b>The shadow spreads. +20% psychic sensitivity.</PS_SpecDesc_um_b>
+  <PS_Spec_um_c>Eclipse</PS_Spec_um_c>
+  <PS_SpecDesc_um_c>The shadow consumes. +27% psychic sensitivity.</PS_SpecDesc_um_c>
+  <PS_Spec_um_cap>Penumbra</PS_Spec_um_cap>
+  <PS_SpecDesc_um_cap>Sovereign of shadow.\n\n\u2022 +34% psychic sensitivity.\n\u2022 Immune to mental breaks, berserk and mind control.\n\u2022 Aura: hostile psycasters within 9 tiles lose 50% psychic sensitivity.</PS_SpecDesc_um_cap>
+  <PS_Spec_em_gate>Stargazer</PS_Spec_em_gate>
+  <PS_SpecDesc_em_gate>Begin the Empyrean path.\n\nThe mind reaches into the void between the stars. +10% psychic sensitivity; immune to the psychic drone.</PS_SpecDesc_em_gate>
+  <PS_Spec_em_a>Farsight</PS_Spec_em_a>
+  <PS_SpecDesc_em_a>The mind's eye opens onto far horizons. +18% psychic sensitivity.</PS_SpecDesc_em_a>
+  <PS_Spec_em_b>Constellate</PS_Spec_em_b>
+  <PS_SpecDesc_em_b>Scattered thoughts align like distant stars. +24% psychic sensitivity.</PS_SpecDesc_em_b>
+  <PS_Spec_em_c>Starlit</PS_Spec_em_c>
+  <PS_SpecDesc_em_c>Lit from within by far-off suns. +30% psychic sensitivity.</PS_SpecDesc_em_c>
+  <PS_Spec_em_cap>Empyrean</PS_Spec_em_cap>
+  <PS_SpecDesc_em_cap>The mind joins the stars.\n\n\u2022 +30% psychic sensitivity.\n\u2022 Starlight aura: every nearby ally is bathed in borrowed starlight, their psychic sense sharpened.</PS_SpecDesc_em_cap>
+  <PS_Spec_cr_gate>Hourglass</PS_Spec_cr_gate>
+  <PS_SpecDesc_cr_gate>Begin the Chronos path.\n\n+10% meditation focus; a slow passive psyfocus regen.</PS_SpecDesc_cr_gate>
+  <PS_Spec_cr_waist>Dilation</PS_Spec_cr_waist>
+  <PS_SpecDesc_cr_waist>+20% meditation focus; stronger psyfocus regen.</PS_SpecDesc_cr_waist>
+  <PS_Spec_cr_a>Eddy</PS_Spec_cr_a>
+  <PS_SpecDesc_cr_a>+8% psychic sensitivity.</PS_SpecDesc_cr_a>
+  <PS_Spec_cr_b>Rewind</PS_Spec_cr_b>
+  <PS_SpecDesc_cr_b>+14% psychic sensitivity.</PS_SpecDesc_cr_b>
+  <PS_Spec_cr_cap>Chronos</PS_Spec_cr_cap>
+  <PS_SpecDesc_cr_cap>Master of moments.\n\n\u2022 +30% meditation focus.\n\u2022 Strong steady passive psyfocus regeneration.</PS_SpecDesc_cr_cap>
+  <PS_Spec_pn_gate>Spark</PS_Spec_pn_gate>
+  <PS_SpecDesc_pn_gate>Begin the Pandemonium path.\n\nThe mind runs wild. +8% psychic sensitivity.</PS_SpecDesc_pn_gate>
+  <PS_Spec_pn_a>Fracture</PS_Spec_pn_a>
+  <PS_SpecDesc_pn_a>+15% psychic sensitivity.</PS_SpecDesc_pn_a>
+  <PS_Spec_pn_b>Frenzy</PS_Spec_pn_b>
+  <PS_SpecDesc_pn_b>+15% psychic sensitivity.</PS_SpecDesc_pn_b>
+  <PS_Spec_pn_c>Riot</PS_Spec_pn_c>
+  <PS_SpecDesc_pn_c>+21% psychic sensitivity.</PS_SpecDesc_pn_c>
+  <PS_Spec_pn_cap>Pandemonium</PS_Spec_pn_cap>
+  <PS_SpecDesc_pn_cap>Unbound chaos.\n\n\u2022 +26% psychic sensitivity.\n\u2022 Immune to mind control - no will commands the storm.</PS_SpecDesc_pn_cap>
+  <PS_Spec_cn_gate>Resonate</PS_Spec_cn_gate>
+  <PS_SpecDesc_cn_gate>Begin the Consonance path.\n\nYour mind hums in sympathy with every psyche around it. +8% psychic sensitivity.</PS_SpecDesc_cn_gate>
+  <PS_Spec_cn_a>Attune</PS_Spec_cn_a>
+  <PS_SpecDesc_cn_a>Your mind tunes itself to those nearby. +14% psychic sensitivity.</PS_SpecDesc_cn_a>
+  <PS_Spec_cn_b>Chord</PS_Spec_cn_b>
+  <PS_SpecDesc_cn_b>Many minds, struck as one note. +20% psychic sensitivity.</PS_SpecDesc_cn_b>
+  <PS_Spec_cn_d>Accord</PS_Spec_cn_d>
+  <PS_SpecDesc_cn_d>Wills settle into agreement. +14% psychic sensitivity.</PS_SpecDesc_cn_d>
+  <PS_Spec_cn_c>Harmony</PS_Spec_cn_c>
+  <PS_SpecDesc_cn_c>The chorus swells. +20% psychic sensitivity.</PS_SpecDesc_cn_c>
+  <PS_Spec_cn_cap>Consonance</PS_Spec_cn_cap>
+  <PS_SpecDesc_cn_cap>One voice in many.\n\n\u2022 +24% psychic sensitivity.\n\u2022 Resonant chord: nearby allied psycasters fall into harmony with you, their psychic sense amplified.</PS_SpecDesc_cn_cap>
+</LanguageData>

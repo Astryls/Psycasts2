@@ -314,7 +314,7 @@ namespace PsycastSynergies
                     psy.GainExperience(need * s.enlightenmentFrac, false);
                     med.medSaturation += 2f;   // a full-level breakthrough sates the mind; the next one is much rarer
                     Fx(p);
-                    Notify(p, "A flow of ancient knowledge", p.LabelShortCap + " was filled by a flow of ancient knowledge while meditating - a sudden surge of psychic mastery worth a full level.");
+                    Notify(p, "PS_LetterFlowLabel".Translate(), "PS_LetterFlowText".Translate(p.LabelShortCap));
                 }
                 return;
             }
@@ -331,7 +331,7 @@ namespace PsycastSynergies
             }
             else if (!med.awakened)
             {
-                Messages.Message(p.LabelShortCap + " felt a stirring of ancient knowledge during meditation.", p, MessageTypeDefOf.PositiveEvent, false);
+                Messages.Message("PS_MsgStirring".Translate(p.LabelShortCap), p, MessageTypeDefOf.PositiveEvent, false);
             }
         }
 
@@ -364,8 +364,7 @@ namespace PsycastSynergies
         private static void Awaken(Pawn p, MeditationData med)
         {
             var psy = EnsurePsycaster(p);
-            Notify(p, "Psychic awakening",
-                p.LabelShortCap + " has awakened as a psycaster through deep meditation. Choose the first path to walk.");
+            Notify(p, "PS_LetterAwakeningLabel".Translate(), "PS_LetterAwakenMeditationText".Translate(p.LabelShortCap));
             if (psy == null) return;
             OpenPick(p, 1);
         }
@@ -391,8 +390,7 @@ namespace PsycastSynergies
                 }
             }
             if (psy == null) return;
-            Notify(p, "Psychic awakening",
-                p.LabelShortCap + " has awakened as a psycaster - an outside gift stirred a latent path to the surface. Choose the first path to walk.");
+            Notify(p, "PS_LetterAwakeningLabel".Translate(), "PS_LetterAwakenExternalText".Translate(p.LabelShortCap));
             OpenPick(p, 1);
         }
 
@@ -421,10 +419,9 @@ namespace PsycastSynergies
             EnlightenmentTier.SetTier(p, nextTier, true);
             OpenPick(p, nextTier);
             if (PawnUtility.ShouldSendNotificationAbout(p))
-                Find.LetterStack.ReceiveLetter("Transcendence: " + EnlightenmentTier.Name(nextTier),
-                    p.LabelShortCap + " has transcended to " + EnlightenmentTier.Name(nextTier)
-                    + ", a tier of enlightenment beyond Illuminated. Their psychic potential deepens further, and a new "
-                    + "psycast path manifests for them to claim.", LetterDefOf.PositiveEvent, p);
+                Find.LetterStack.ReceiveLetter("PS_LetterTranscendence".Translate(EnlightenmentTier.Name(nextTier)),
+                    "PS_LetterTranscendText".Translate(p.LabelShortCap, EnlightenmentTier.Name(nextTier)),
+                    LetterDefOf.PositiveEvent, p);
         }
 
         public static void OpenPick(Pawn p, int tier)
@@ -648,8 +645,7 @@ namespace PsycastSynergies
             p.health.AddHediff(h);
             var disappears = (h as HediffWithComps)?.TryGetComp<HediffComp_Disappears>();
             if (disappears != null) disappears.ticksToDisappear = dur;
-            Notify(p, "Psychic overload",
-                p.LabelShortCap + " pushed their meditation too far and collapsed into a psychic coma for " + dur.ToStringTicksToPeriod() + ".");
+            Notify(p, "PS_LetterOverloadLabel".Translate(), "PS_LetterOverloadText".Translate(p.LabelShortCap, dur.ToStringTicksToPeriod()));
         }
 
         private static void Fx(Pawn p)

@@ -110,9 +110,9 @@ namespace PsycastSynergies
                 Patch_EnemyTiers.GrantAscension(p);
 
             if (player && PawnUtility.ShouldSendNotificationAbout(p))
-                Find.LetterStack.ReceiveLetter("Enlightenment: " + EnlightenmentTier.Name(tier),
-                    p.LabelShortCap + " has been elevated to " + EnlightenmentTier.Name(tier)
-                    + ". New psychic paths and power settle into them unbidden.", LetterDefOf.PositiveEvent, p);
+                Find.LetterStack.ReceiveLetter("PS_LetterEnlightenment".Translate(EnlightenmentTier.Name(tier)),
+                    "PS_LetterElevatedSilent".Translate(p.LabelShortCap, EnlightenmentTier.Name(tier)),
+                    LetterDefOf.PositiveEvent, p);
             return true;
         }
 
@@ -120,11 +120,11 @@ namespace PsycastSynergies
         {
             if (!PawnUtility.ShouldSendNotificationAbout(p)) return;
             string label = !ext.letterLabel.NullOrEmpty() ? ext.letterLabel.Replace("{PAWN}", p.LabelShortCap)
-                : tier <= 1 ? "Psychic awakening" : "Enlightenment: " + EnlightenmentTier.Name(tier);
+                : tier <= 1 ? "PS_LetterAwakeningLabel".Translate().ToString() : "PS_LetterEnlightenment".Translate(EnlightenmentTier.Name(tier)).ToString();
             string text = !ext.letterText.NullOrEmpty() ? ext.letterText.Replace("{PAWN}", p.LabelShortCap)
                 : tier <= 1
-                    ? p.LabelShortCap + " has awakened as a psycaster - a surge of psychic power stirred a latent path to the surface. Choose the first path to walk."
-                    : p.LabelShortCap + " has been elevated toward " + EnlightenmentTier.Name(tier) + ". A new psycast path manifests for them to claim.";
+                    ? "PS_LetterAwakenSurgeText".Translate(p.LabelShortCap).ToString()
+                    : "PS_LetterElevatedTowardText".Translate(p.LabelShortCap, EnlightenmentTier.Name(tier)).ToString();
             Find.LetterStack.ReceiveLetter(label, text, LetterDefOf.PositiveEvent, p);
         }
 

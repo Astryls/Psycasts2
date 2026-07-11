@@ -49,7 +49,7 @@ namespace PsycastSynergies
                 GUI.DrawTexture(new Rect(hr.x + 6f, hr.y + 6f, 18f, 18f), ability.icon);
             }
             Text.Font = GameFont.Small; Text.Anchor = TextAnchor.MiddleLeft; GUI.color = Palette.Accent;
-            Widgets.Label(new Rect(hr.x + 28f, hr.y, hr.width - 32f, hr.height), "Invest skill point");
+            Widgets.Label(new Rect(hr.x + 28f, hr.y, hr.width - 32f, hr.height), "PS_InvestTitle".Translate());
             Text.Anchor = TextAnchor.UpperLeft; GUI.color = Color.white;
 
             int lvl = gc.GetLevel(pawn, ability);
@@ -59,21 +59,21 @@ namespace PsycastSynergies
             float y = hr.yMax + 10f;
             GUI.color = Palette.Stat;
             string body = amount > 1
-                ? $"Raise {ability.LabelCap} from level {lvl} to {newLvl}?\nThis spends {amount} psycast points."
-                : $"Raise {ability.LabelCap} to level {newLvl}?\nThis spends 1 psycast point.";
+                ? "PS_InvestBodyMulti".Translate(ability.LabelCap, lvl, newLvl, amount).ToString()
+                : "PS_InvestBodyOne".Translate(ability.LabelCap, newLvl).ToString();
             Widgets.Label(new Rect(col.x + 12f, y, col.width - 24f, 44f), body);
             y += 48f;
 
             Text.Font = GameFont.Tiny; GUI.color = Palette.TextDim;
             Widgets.Label(new Rect(col.x + 12f, y, col.width - 24f, 34f),
-                $"This skill's bonus: +{Pct(lvl * s.perLevelPct)} → +{Pct(newLvl * s.perLevelPct)}.\nHold Shift while clicking to skip this confirmation.");
+                "PS_InvestBonus".Translate(Pct(lvl * s.perLevelPct), Pct(newLvl * s.perLevelPct)).ToString());
             Text.Font = GameFont.Small; GUI.color = Color.white;
 
             float bw = (col.width - 36f) / 2f;
             Rect cancel = new Rect(col.x + 12f, col.yMax - 40f, bw, 30f);
             Rect ok = new Rect(cancel.xMax + 12f, col.yMax - 40f, bw, 30f);
-            if (Button(cancel, "Cancel", Palette.BGL, Color.white)) Close();
-            if (Button(ok, "Invest", Palette.Accent, Color.black))
+            if (Button(cancel, "PS_Cancel".Translate(), Palette.BGL, Color.white)) Close();
+            if (Button(ok, "PS_Invest".Translate(), Palette.Accent, Color.black))
             {
                 if (hediff.points >= amount)
                 {

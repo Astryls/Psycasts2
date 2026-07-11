@@ -54,17 +54,17 @@ namespace PsycastSynergies
 
         public override string CompInspectStringExtra()
         {
-            string typeLine = "Focus type: " + (selectedFocus != null ? selectedFocus.LabelCap.ToString() : "any");
+            string typeLine = "PS_FocusTypeLabel".Translate(selectedFocus != null ? selectedFocus.LabelCap.ToString() : "PS_FocusAny".Translate().ToString());
             var med = parent.TryGetComp<CompMeditationFocus>();
             if (med == null) return typeLine;
             var user = med.LastUser;
             if (user != null)
-                cachedFocusStr = "Meditation focus strength for " + user.LabelShort + ": "
-                    + parent.GetStatValueForPawn(StatDefOf.MeditationFocusStrength, user).ToStringPercent() + " / day";
+                cachedFocusStr = "PS_FocusStrengthFor".Translate(user.LabelShort,
+                    parent.GetStatValueForPawn(StatDefOf.MeditationFocusStrength, user).ToStringPercent());
             else if (cachedFocusStr.NullOrEmpty())
             {
                 float v = parent.GetStatValue(StatDefOf.MeditationFocusStrength);
-                if (v > 0f) cachedFocusStr = "Meditation focus strength: " + v.ToStringPercent() + " / day";
+                if (v > 0f) cachedFocusStr = "PS_FocusStrength".Translate(v.ToStringPercent());
             }
             // While vanilla is showing its live line (user != null) don't duplicate the strength.
             return user == null && !cachedFocusStr.NullOrEmpty() ? typeLine + "\n" + cachedFocusStr : typeLine;
@@ -81,8 +81,8 @@ namespace PsycastSynergies
 
             yield return new Command_Action
             {
-                defaultLabel = selectedFocus != null ? "Focus type: " + selectedFocus.LabelCap : "Focus type: any",
-                defaultDesc = "Attune this meditation focus to a psychic focus type.\n\nA non-psycaster who meditates facing this focus is steered toward that type's psycast schools among their awakening cards when Enlightenment strikes. Leave it on \u201cany\u201d to weight by the meditator's traits instead.",
+                defaultLabel = "PS_FocusTypeLabel".Translate(selectedFocus != null ? selectedFocus.LabelCap.ToString() : "PS_FocusAny".Translate().ToString()),
+                defaultDesc = "PS_FocusTypeDesc".Translate(),
                 icon = FocusIcon(selectedFocus) ?? GizmoIcon,
                 action = OpenMenu
             };
@@ -94,7 +94,7 @@ namespace PsycastSynergies
             return string.IsNullOrEmpty(p) ? null : ContentFinder<Texture2D>.Get(p, false);
         }
 
-        private void OpenMenu() => OpenMenuFor(f => selectedFocus = f, "Any (trait-weighted)");
+        private void OpenMenu() => OpenMenuFor(f => selectedFocus = f, "PS_FocusAnyTrait".Translate());
 
         internal static void OpenMenuFor(System.Action<MeditationFocusDef> setter, string nullLabel)
         {
@@ -128,8 +128,8 @@ namespace PsycastSynergies
             {
                 yield return new Command_Action
                 {
-                    defaultLabel = "Stop meditating",
-                    defaultDesc = "This colonist is meditating continuously (\"meditate your ass off\"). Click to stop and return to their normal schedule.",
+                    defaultLabel = "PS_StopMeditating".Translate(),
+                    defaultDesc = "PS_StopMeditatingDesc".Translate(),
                     icon = CompSchoolFocus.GizmoIcon,
                     action = () => ForcedMeditation.Stop(__instance)
                 };

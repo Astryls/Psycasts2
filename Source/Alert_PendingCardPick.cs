@@ -17,7 +17,7 @@ namespace PsycastSynergies
 
         public Alert_PendingCardPick()
         {
-            defaultLabel = "Psycast path awaits";
+            defaultLabel = "PS_AlertPathAwaits".Translate();
             defaultPriority = AlertPriority.High;
         }
 
@@ -36,16 +36,16 @@ namespace PsycastSynergies
         }
 
         public override string GetLabel() =>
-            pending.Count > 1 ? "Psycast paths await (" + pending.Count + ")" : "Psycast path awaits";
+            pending.Count > 1 ? "PS_AlertPathAwaitsMulti".Translate(pending.Count).ToString() : "PS_AlertPathAwaits".Translate().ToString();
 
         public override TaggedString GetExplanation()
         {
             var sb = new StringBuilder();
-            sb.AppendLine("These colonists have enlightenment cards waiting to be faced:");
+            sb.AppendLine("PS_AlertPathHeader".Translate());
             sb.AppendLine();
             for (int i = 0; i < pending.Count; i++) sb.AppendLine("  - " + pending[i].LabelShortCap);
             sb.AppendLine();
-            sb.Append("The cards return on their own while the colonist meditates - or click this alert to open the pick right now.");
+            sb.Append("PS_AlertPathFooter".Translate());
             return sb.ToString();
         }
 

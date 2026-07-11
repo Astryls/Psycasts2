@@ -76,17 +76,13 @@ namespace PsycastSynergies
                 bool canFight = !pawn.WorkTagIsDisabled(WorkTags.Violent);
                 var med = GameComponent_PsycastSynergies.Instance?.GetMed(pawn, true);
                 int pstyle = canFight ? (med != null ? med.pilgrimStyle : 0) : 2;
-                string[] pl = { "Unbound", "Trial of the Altar", "Way of the Anima" };
+                string[] pl = { "PS_PilgrimUnbound".Translate(), "PS_PilgrimTrialAltar".Translate(), "PS_PilgrimWayAnima".Translate() };
                 var rp = new Rect(rowX, yPilgrim, rowW, h);
-                TooltipHandler.TipRegion(rp, "The road this seeker will be called to walk toward their next tier of Enlightenment:\n\n"
-                    + "\u2022 Trial of the Altar (combat): a single hallowed site, held against waves of the Ancient Psycaster Order.\n"
-                    + "\u2022 Way of the Anima (pacifist): a longer pilgrimage among the anima trees, with no bloodshed.\n"
-                    + "\u2022 Unbound: let fate (the storyteller) choose either road.\n\n"
-                    + "Those who cannot bring themselves to violence always walk the Way of the Anima.");
-                if (MXStyle.Button(rp, "Pilgrim's path: " + pl[pstyle] + "  \u25be"))
+                TooltipHandler.TipRegion(rp, "PS_PilgrimPathTip".Translate());
+                if (MXStyle.Button(rp, "PS_PilgrimPathBtn".Translate(pl[pstyle])))
                 {
                     if (!canFight)
-                        Messages.Message(pawn.LabelShortCap + " is incapable of violence \u2014 always the anima (pacifist) pilgrimage.",
+                        Messages.Message("PS_MsgNoViolencePilgrim".Translate(pawn.LabelShortCap),
                             MessageTypeDefOf.RejectInput, false);
                     else if (med != null)
                     {
@@ -112,27 +108,27 @@ namespace PsycastSynergies
                     MeditationFocusDef cur = string.IsNullOrEmpty(medF.defaultFocus) ? null
                         : DefDatabase<MeditationFocusDef>.GetNamedSilentFail(medF.defaultFocus);
                     var rf = new Rect(rowX, yFocus, rowW, h);
-                    TooltipHandler.TipRegion(rf, "Personal meditation focus preference. Used when this colonist meditates at a focus building that doesn't have its own attunement set.\n\nPriority: building's attunement \u2192 pawn's default \u2192 building's native focus \u2192 unfocused.");
-                    if (MXStyle.Button(rf, "Default focus: " + (cur != null ? cur.LabelCap.ToString() : "any") + "  \u25be"))
-                        CompSchoolFocus.OpenMenuFor(f => medF.defaultFocus = f?.defName, "Any (defer to building / traits)");
+                    TooltipHandler.TipRegion(rf, "PS_DefaultFocusTip".Translate());
+                    if (MXStyle.Button(rf, "PS_DefaultFocusBtn".Translate(cur != null ? cur.LabelCap.ToString() : "PS_FocusAny".Translate().ToString())))
+                        CompSchoolFocus.OpenMenuFor(f => medF.defaultFocus = f?.defName, "PS_FocusAnyDefer".Translate());
                 }
             }
 
-            if (MXStyle.Button(r1, learnedPsycasts > 0 ? "Reset skills (" + learnedPsycasts + ")" : "Reset skills"))
+            if (MXStyle.Button(r1, learnedPsycasts > 0 ? "PS_ResetSkillsN".Translate(learnedPsycasts).ToString() : "PS_ResetSkills".Translate().ToString()))
             {
                 if (learnedPsycasts > 0)
-                    Find.WindowStack.Add(new Dialog_Confirm("Reset skills",
-                        "Unlearn every psycast and refund all points spent learning and leveling them? Unlocked paths are kept. (Free.)",
+                    Find.WindowStack.Add(new Dialog_Confirm("PS_ResetSkills".Translate(),
+                        "PS_ResetSkillsBody".Translate(),
                         () => SkillRespec(pawn, psy)));
-                else Messages.Message("No learned psycasts to reset.", MessageTypeDefOf.RejectInput, false);
+                else Messages.Message("PS_MsgNoPsycastsToReset".Translate(), MessageTypeDefOf.RejectInput, false);
             }
-            if (MXStyle.Button(r2, "Reset path"))
+            if (MXStyle.Button(r2, "PS_ResetPath".Translate()))
             {
                 if (tier >= 1)
-                    Find.WindowStack.Add(new Dialog_Confirm("Reset path - drop a tier",
-                        "Surrender your highest enlightenment tier? Its path - and the abilities bought within it - are removed, and you must re-earn that tier to choose anew.",
+                    Find.WindowStack.Add(new Dialog_Confirm("PS_ResetPathTitle".Translate(),
+                        "PS_ResetPathBody".Translate(),
                         () => CardRespec(pawn, psy)));
-                else Messages.Message("No enlightenment tier to surrender.", MessageTypeDefOf.RejectInput, false);
+                else Messages.Message("PS_MsgNoTierToSurrender".Translate(), MessageTypeDefOf.RejectInput, false);
             }
 
             Text.Font = prevF; Text.Anchor = prevA; GUI.color = prevC;
@@ -149,12 +145,12 @@ namespace PsycastSynergies
                 foreach (var a in comp.LearnedAbilities)
                     if (a?.def?.GetModExtension<AbilityExtension_Psycast>() != null)
                         refund += Mathf.Max(1, gc.GetLevel(pawn, a.def));
-            if (refund <= 0) { Messages.Message("No learned psycasts to reset.", MessageTypeDefOf.RejectInput, false); return; }
+            if (refund <= 0) { Messages.Message("PS_MsgNoPsycastsToReset".Translate(), MessageTypeDefOf.RejectInput, false); return; }
             psy.points += refund;
             gc.ClearPawn(pawn);
             comp?.LearnedAbilities.RemoveAll(a => a?.def?.GetModExtension<AbilityExtension_Psycast>() != null);   // un-learn psycasts (paths kept) -> 0/10
             SoundDefOf.Quest_Accepted.PlayOneShotOnCamera();
-            Messages.Message(pawn.LabelShortCap + " reset their psycasts - " + refund + " point" + (refund == 1 ? "" : "s") + " returned.",
+            Messages.Message("PS_MsgSkillsReset".Translate(pawn.LabelShortCap, refund),
                 pawn, MessageTypeDefOf.PositiveEvent, false);
         }
 
@@ -182,7 +178,7 @@ namespace PsycastSynergies
                     if (psylink != null) pawn.health.RemoveHediff(psylink);               // the psylink itself
                 }
                 SoundDefOf.Quest_Accepted.PlayOneShotOnCamera();
-                Messages.Message(pawn.LabelShortCap + "'s psylink has faded - no longer a psycaster. They must re-awaken through meditation.",
+                Messages.Message("PS_MsgPsylinkFaded".Translate(pawn.LabelShortCap),
                     pawn, MessageTypeDefOf.NeutralEvent, false);
                 return;
             }
@@ -213,8 +209,8 @@ namespace PsycastSynergies
             }
             EnlightenmentTier.SetTier(pawn, tier - 1, false);
             SoundDefOf.Quest_Accepted.PlayOneShotOnCamera();
-            Messages.Message(pawn.LabelShortCap + " surrendered their highest tier"
-                + (drop != null ? " (the " + drop.LabelCap + " path)" : "") + " - re-earn it to choose anew.",
+            Messages.Message("PS_MsgTierSurrendered".Translate(pawn.LabelShortCap,
+                drop != null ? "PS_TierSurrenderedPath".Translate(drop.LabelCap).ToString() : ""),
                 pawn, MessageTypeDefOf.NeutralEvent, false);
         }
     }

@@ -112,7 +112,7 @@ namespace PsycastSynergies
                 Text.Font = GameFont.Small; Text.Anchor = TextAnchor.MiddleCenter;
                 GUI.color = cur > 0 ? new Color(0.6f, 0.9f, 1f) : new Color(0.6f, 0.6f, 0.6f);
                 Widgets.Label(chip, cur.ToString());
-                TooltipHandler.TipRegion(chip, "Free-cast charges: " + cur + " / " + max + "\nFree while >1 remains. The last charge (1\u21920) pays full cost and starts the cooldown.");
+                TooltipHandler.TipRegion(chip, "PS_ChargesTip".Translate(cur, max));
                 Text.Anchor = TextAnchor.UpperLeft; GUI.color = Color.white;
             }
             catch { }

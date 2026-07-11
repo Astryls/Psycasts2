@@ -80,7 +80,7 @@ namespace PsycastSynergies
             if (string.IsNullOrEmpty(label) || !label.Contains(ps)) return true;
             var pf = Text.Font; var pa = Text.Anchor; var pc = GUI.color;
             Text.Font = GameFont.Tiny; Text.Anchor = TextAnchor.MiddleCenter; GUI.color = new Color(0.62f, 0.65f, 0.7f);
-            Widgets.Label(r, "Stats grow automatically per level");
+            Widgets.Label(r, "PS_AutoStatsNote".Translate());
             Text.Font = pf; Text.Anchor = pa; GUI.color = pc;
             __result = false;   // not clicked, not drawn as a button
             return false;

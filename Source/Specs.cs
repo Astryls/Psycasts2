@@ -24,8 +24,10 @@ namespace PsycastSynergies
         public Spec(string id, string label, int cost, string branch, float col, float row, string desc,
             string[] prereqs = null, string[] anyPrereq = null, bool pick = false, string exclusive = null)
         {
-            this.id = id; this.label = label; this.cost = cost; this.branch = branch;
-            this.col = col; this.row = row; this.desc = desc;
+            // Keyed-translation lookup with the authored English as fallback: translators override via
+            // PS_Spec_<id> / PS_SpecDesc_<id> in Languages/<lang>/Keyed; missing keys keep the code text.
+            this.id = id; this.label = Specs.TranslateOr("PS_Spec_" + id, label); this.cost = cost; this.branch = branch;
+            this.col = col; this.row = row; this.desc = Specs.TranslateOr("PS_SpecDesc_" + id, desc);
             this.prereqs = prereqs ?? new string[0];
             this.anyPrereq = anyPrereq ?? new string[0];
             this.pick = pick;
@@ -40,6 +42,14 @@ namespace PsycastSynergies
         public static readonly Dictionary<string, Spec> ById = new Dictionary<string, Spec>();
 
         public static readonly string[] Capstones = { "tempest", "maelstrom", "sanctuary", "conduit" };
+
+        // Translate a key when it exists, else keep the fallback (no missing-key diacritics, no log spam).
+        internal static string TranslateOr(string key, string fallback)
+            => key.TryTranslate(out var t) ? t.ToString() : fallback;
+
+        // Display name for a branch/constellation tag ("Offense", "Halcyon", ...) - translatable via PS_Branch_<tag>.
+        public static string BranchLabel(string branch)
+            => string.IsNullOrEmpty(branch) ? branch : TranslateOr("PS_Branch_" + branch, branch);
 
         static Specs()
         {

@@ -21,7 +21,7 @@ namespace PsycastSynergies
         private const float Pad = 8f;
         private const float Row = 20f;
         private const int MaxList = 12;
-        private const string RecvSuffix = " receives bonuses from:";
+        private static string RecvSuffix => "PS_TipRecvSuffix".Translate();
 
         private static Pawn pawn;
         private static AbilityDef ability;
@@ -73,20 +73,20 @@ namespace PsycastSynergies
         {
             switch (stat)
             {
-                case SynStat.Power: return "Damage";
-                case SynStat.Radius: return "Area";
-                case SynStat.Duration: return "Duration";
-                case SynStat.Strength: return "Effect strength";
-                case SynStat.Range: return "Range";
-                case SynStat.Cooldown: return "Cooldown";
-                case SynStat.Targets: return "Targets";
-                case SynStat.Charges: return "Charges";
-                case SynStat.Efficiency: return "Cost";
-                case SynStat.Haste: return "Cast speed";
-                case SynStat.Yield: return "Psyfocus refund";
-                case SynStat.Insight: return "Psycast XP";
-                case SynStat.ProjectileCount: return "Projectiles";
-                case SynStat.SummonCount: return "Summons";
+                case SynStat.Power: return "PS_Stat_Power".Translate();
+                case SynStat.Radius: return "PS_Stat_Radius".Translate();
+                case SynStat.Duration: return "PS_Stat_Duration".Translate();
+                case SynStat.Strength: return "PS_Stat_Strength".Translate();
+                case SynStat.Range: return "PS_Stat_Range".Translate();
+                case SynStat.Cooldown: return "PS_Stat_Cooldown".Translate();
+                case SynStat.Targets: return "PS_Stat_Targets".Translate();
+                case SynStat.Charges: return "PS_Stat_Charges".Translate();
+                case SynStat.Efficiency: return "PS_Stat_Efficiency".Translate();
+                case SynStat.Haste: return "PS_Stat_Haste".Translate();
+                case SynStat.Yield: return "PS_Stat_Yield".Translate();
+                case SynStat.Insight: return "PS_Stat_Insight".Translate();
+                case SynStat.ProjectileCount: return "PS_Stat_ProjectileCount".Translate();
+                case SynStat.SummonCount: return "PS_Stat_SummonCount".Translate();
                 default: return "";
             }
         }
@@ -131,11 +131,11 @@ namespace PsycastSynergies
             switch (stat)
             {
                 case SynStat.Cooldown: case SynStat.Efficiency: case SynStat.Haste:
-                    return "-" + Pct(rate) + " " + lab + " per level";
+                    return "PS_PerLevel".Translate("-" + Pct(rate) + " " + lab);
                 case SynStat.Targets: case SynStat.Charges: case SynStat.ProjectileCount: case SynStat.SummonCount:
-                    return "+" + (rate / PsycastSynergiesMod.Settings.perLevelPct).ToString("0.#") + " " + lab + " per level";
+                    return "PS_PerLevel".Translate("+" + (rate / PsycastSynergiesMod.Settings.perLevelPct).ToString("0.#") + " " + lab);
                 default:
-                    return "+" + Pct(rate) + " " + lab + " per level";
+                    return "PS_PerLevel".Translate("+" + Pct(rate) + " " + lab);
             }
         }
 
@@ -158,9 +158,9 @@ namespace PsycastSynergies
         {
             string txt;
             if (r.stat == SynStat.Charges)
-                txt = "+" + (0.5f * r.str).ToString("0.#") + " charges per level";
+                txt = "PS_ChargesPerLevel".Translate((0.5f * r.str).ToString("0.#"));
             else if (r.raw > 0.0001f)
-                txt = RawPerLevelStr(r.stat, r.raw) + " per level";   // raw amount (Damage/Area/Range/Duration)
+                txt = "PS_PerLevel".Translate(RawPerLevelStr(r.stat, r.raw));   // raw amount (Damage/Area/Range/Duration)
             else
                 txt = PerLevelSyn(r.stat, r.rate);                    // % for multiplier stats with no raw base
             if (alt && r.lvl > 0)
@@ -169,7 +169,7 @@ namespace PsycastSynergies
                 if (r.stat == SynStat.Charges) total = "+" + (ChargeStore.SourceCharges(r.lvl) * r.str).ToString("0.#");
                 else if (r.raw > 0.0001f)       total = RawValueOnly(r.stat, r.raw * r.lvl);
                 else                            total = SynValueOnly(r.stat, r.pct);
-                txt += "  (now " + total + ")";
+                txt += "PS_NowParen".Translate(total);
             }
             return txt;
         }
@@ -184,11 +184,11 @@ namespace PsycastSynergies
             // the %-derived value - keeps the synergy line consistent with the actual charge count.
             if (r.stat == SynStat.Charges)
                 return r.lvl > 0
-                    ? "Lv" + r.lvl + " \u2192 +" + (ChargeStore.SourceCharges(r.lvl) * r.str).ToString("0.#") + " charges"
-                    : "Lv0 \u2192 +" + (0.5f * r.str).ToString("0.#") + "/lvl charges";
+                    ? "PS_LvCharges".Translate(r.lvl, (ChargeStore.SourceCharges(r.lvl) * r.str).ToString("0.#")).ToString()
+                    : "PS_Lv0Charges".Translate((0.5f * r.str).ToString("0.#")).ToString();
             return r.lvl > 0
-                ? "Lv" + r.lvl + " \u2192 " + FormatSyn(r.stat, r.pct, false)
-                : "Lv0 \u2192 " + FormatSyn(r.stat, r.rate, true);
+                ? "PS_LvValue".Translate(r.lvl, FormatSyn(r.stat, r.pct, false)).ToString()
+                : "PS_LvValue".Translate(0, FormatSyn(r.stat, r.rate, true)).ToString();
         }
         private struct Emp { public AbilityDef def; public SynStat stat; public float str; }
 
@@ -198,12 +198,12 @@ namespace PsycastSynergies
         {
             if (e.stat == SynStat.Charges)
                 return thisLvl > 0
-                    ? "Lv" + thisLvl + " \u2192 +" + (ChargeStore.SourceCharges(thisLvl) * e.str).ToString("0.#") + " charges"
-                    : "Lv0 \u2192 +" + (0.5f * e.str).ToString("0.#") + "/lvl charges";
+                    ? "PS_LvCharges".Translate(thisLvl, (ChargeStore.SourceCharges(thisLvl) * e.str).ToString("0.#")).ToString()
+                    : "PS_Lv0Charges".Translate((0.5f * e.str).ToString("0.#")).ToString();
             float rate = SkillSystem.SynergyRate(e.stat) * e.str;
             return thisLvl > 0
-                ? "Lv" + thisLvl + " \u2192 " + FormatSyn(e.stat, thisLvl * rate, false)
-                : "Lv0 \u2192 " + FormatSyn(e.stat, rate, true);
+                ? "PS_LvValue".Translate(thisLvl, FormatSyn(e.stat, thisLvl * rate, false)).ToString()
+                : "PS_LvValue".Translate(0, FormatSyn(e.stat, rate, true)).ToString();
         }
 
         private class Model
@@ -301,8 +301,8 @@ namespace PsycastSynergies
                 foreach (var e in empowers) { string n = e.def.LabelCap; if (!names.Contains(n)) names.Add(n); }
                 const int capN = 10;
                 string joined = string.Join("  \u00b7  ", names.GetRange(0, Mathf.Min(capN, names.Count)).ToArray());
-                if (names.Count > capN) joined += "  \u00b7  and " + (names.Count - capN) + " more";
-                empowersLine = def.LabelCap + " also empowers:  " + joined;
+                if (names.Count > capN) joined += "  \u00b7  " + "PS_AndMore".Translate(names.Count - capN);
+                empowersLine = "PS_AlsoEmpowers".Translate(def.LabelCap, joined);
             }
 
             SynStat? prim = PsycastInfo.PrimaryStat(def);
@@ -370,8 +370,8 @@ namespace PsycastSynergies
             if (m.primaryLabel != null)
             {
                 string eachW = m.primaryHasRaw
-                    ? "Each level: " + RawPerLevelStr(m.primaryStat.Value, m.primaryRaw) + " (primary)"
-                    : "Each level: +" + Pct(m.primaryPct) + " " + m.primaryLabel + " (primary)";
+                    ? "PS_EachLevelPrimary".Translate(RawPerLevelStr(m.primaryStat.Value, m.primaryRaw)).ToString()
+                    : "PS_EachLevelPrimary".Translate("+" + Pct(m.primaryPct) + " " + m.primaryLabel).ToString();
                 w = Mathf.Max(w, Text.CalcSize(eachW).x + 20f);
             }
             w = Mathf.Max(w, Text.CalcSize(m.def.LabelCap + RecvSuffix).x + 20f);
@@ -504,18 +504,18 @@ namespace PsycastSynergies
             }
 
             Divider(col, ref y);
-            KeyVal(col, ref y, "Skill level", m.lvl + " / " + m.absCap,
+            KeyVal(col, ref y, "PS_TipSkillLevel".Translate(), m.lvl + " / " + m.absCap,
                 !m.owned ? Palette.TextDim : (m.lvl >= m.absCap ? Palette.Gold : Palette.Stat));
             if (m.primaryStat.HasValue)
             {
                 string each = m.primaryHasRaw
-                    ? "Each level: " + RawPerLevelStr(m.primaryStat.Value, m.primaryRaw) + " (primary)"
-                    : "Each level: " + FormatSyn(m.primaryStat.Value, m.primaryPct, false) + " (primary)";
+                    ? "PS_EachLevelPrimary".Translate(RawPerLevelStr(m.primaryStat.Value, m.primaryRaw)).ToString()
+                    : "PS_EachLevelPrimary".Translate(FormatSyn(m.primaryStat.Value, m.primaryPct, false)).ToString();
                 Label(col.x + 8f, ref y, innerW, each, Palette.Accent, 18f);
             }
             if (m.effects.Count > 0)
             {
-                Label(col.x + 8f, ref y, innerW, "Current effects:", Palette.TextDim, 18f);
+                Label(col.x + 8f, ref y, innerW, "PS_TipCurrentEffects".Translate(), Palette.TextDim, 18f);
                 foreach (var e in m.effects)
                 {
                     Color vc = e.isPrimary ? Palette.Accent : (e.scaled ? Palette.Good : Palette.TextDim);
@@ -528,7 +528,7 @@ namespace PsycastSynergies
                 Divider(col, ref y);
                 Label(col.x + 8f, ref y, innerW, m.def.LabelCap + RecvSuffix, Palette.TextDim, 18f);
                 if (m.received.Count == 0)
-                    Label(col.x + 8f, ref y, innerW, "No path-mates that synergize this skill.", Palette.TextDim, Row);
+                    Label(col.x + 8f, ref y, innerW, "PS_TipNoMates".Translate(), Palette.TextDim, Row);
                 else
                 {
                     int shown = Mathf.Min(m.received.Count, MaxList);
@@ -538,7 +538,7 @@ namespace PsycastSynergies
                         SkillRow(col, ref y, r.def, RecvLine(r, m.alt), r.lvl > 0 ? Palette.Good : Palette.TextDim);
                     }
                     if (m.received.Count > shown)
-                        Label(col.x + 8f, ref y, innerW, "+" + (m.received.Count - shown) + " more…", Palette.TextDim, Row);
+                        Label(col.x + 8f, ref y, innerW, "PS_TipMoreRows".Translate(m.received.Count - shown), Palette.TextDim, Row);
                 }
 
                 if (!m.empowersLine.NullOrEmpty())
@@ -556,7 +556,7 @@ namespace PsycastSynergies
                 Widgets.DrawBoxSolid(fr, Palette.BGD);
                 GUI.color = Palette.Accent; Widgets.DrawBox(fr, 1); GUI.color = Color.white;
                 Text.Font = GameFont.Tiny; Text.Anchor = TextAnchor.MiddleCenter; GUI.color = Palette.Accent;
-                Widgets.Label(fr, "\u21e7  Hold Shift for synergies and details");
+                Widgets.Label(fr, "PS_TipHoldShift".Translate());
                 Text.Anchor = TextAnchor.UpperLeft; GUI.color = Color.white;
                 y += 26f;
             }
@@ -564,19 +564,19 @@ namespace PsycastSynergies
             if (m.psyfocusCost > 0f || m.entropyCost > 0f)
             {
                 string cc = "";
-                if (m.psyfocusCost > 0f) cc += Pct(m.psyfocusCost) + " Psyfocus";
-                if (m.entropyCost > 0f) cc += (cc.Length > 0 ? "  \u2022  " : "") + m.entropyCost.ToString("0.#") + " Heat";
-                KeyVal(col, ref y, "Cast cost", cc, Palette.Stat);
+                if (m.psyfocusCost > 0f) cc += Pct(m.psyfocusCost) + " " + "PS_TipPsyfocus".Translate();
+                if (m.entropyCost > 0f) cc += (cc.Length > 0 ? "  \u2022  " : "") + m.entropyCost.ToString("0.#") + " " + "PS_TipHeat".Translate();
+                KeyVal(col, ref y, "PS_TipCastCost".Translate(), cc, Palette.Stat);
             }
-            KeyVal(col, ref y, "Cost / level", "+" + Pct(m.costPct) + " psyfocus and heat", Palette.Bad);
+            KeyVal(col, ref y, "PS_TipCostPerLevel".Translate(), "PS_TipCostPerLevelVal".Translate(Pct(m.costPct)), Palette.Bad);
 
             // Diablo-2-style required-level line, anchored at the bottom. Red when your psycaster
             // level is below it.
             Divider(col, ref y);
             if (m.lvl >= m.absCap)
-                Label(col.x + 8f, ref y, innerW, "Max level " + m.absCap + " reached", Palette.Gold, 20f);
+                Label(col.x + 8f, ref y, innerW, "PS_TipMaxLevel".Translate(m.absCap), Palette.Gold, 20f);
             else
-                Label(col.x + 8f, ref y, innerW, "Required level: " + m.nextReq, m.psyLevel >= m.nextReq ? Palette.Stat : Palette.Bad, 20f);
+                Label(col.x + 8f, ref y, innerW, "PS_TipReqLevel".Translate(m.nextReq), m.psyLevel >= m.nextReq ? Palette.Stat : Palette.Bad, 20f);
 
             Text.Font = GameFont.Tiny; Text.Anchor = TextAnchor.MiddleLeft; GUI.color = Palette.TextDim;
             bool pwF = Text.WordWrap; Text.WordWrap = false;
@@ -601,10 +601,10 @@ namespace PsycastSynergies
 
         private static string FooterText(Model m)
         {
-            if (!m.owned) return "Not learned - unlock in the tree to start leveling";
-            if (m.lvl < m.cap) return "Click to invest  •  Shift-click skips confirm";
-            if (m.lvl < m.absCap) return "Locked - raise your psycaster level";
-            return "Maximum level reached";
+            if (!m.owned) return "PS_TipNotLearned".Translate();
+            if (m.lvl < m.cap) return "PS_TipClickInvest".Translate();
+            if (m.lvl < m.absCap) return "PS_TipLockedLevel".Translate();
+            return "PS_TipMaxReached".Translate();
         }
 
         private static void Label(float x, ref float y, float w, string text, Color color, float h)
