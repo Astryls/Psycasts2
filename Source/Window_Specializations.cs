@@ -364,13 +364,14 @@ namespace PsycastSynergies
             if (NodeRingTex != null) GUI.DrawTexture(r, NodeRingTex);
             else Widgets.DrawBoxSolid(r, new Color(bc.r * 0.2f, bc.g * 0.2f, bc.b * 0.2f, 0.96f));
 
-            // Capstone frame: a layered gold border marks culminating nodes apart from normal skills.
-            if (Specs.IsCapstone(sp.id))
+            // Capstone halo: layered gold RINGS mark culminating nodes apart from normal skills.
+            // Rings, never boxes - constellation nodes are round (rectangular frames looked pasted on).
+            if (Specs.IsCapstone(sp.id) && NodeRingTex != null)
             {
                 GUI.color = new Color(Palette.Gold.r, Palette.Gold.g, Palette.Gold.b, owned ? 1f : 0.62f);
-                Widgets.DrawBox(r.ExpandedBy(3f), 2);
+                GUI.DrawTexture(r.ExpandedBy(3f), NodeRingTex);
                 GUI.color = new Color(Palette.Gold.r, Palette.Gold.g, Palette.Gold.b, owned ? 0.55f : 0.30f);
-                Widgets.DrawBox(r.ExpandedBy(6f), 1);
+                GUI.DrawTexture(r.ExpandedBy(7f), NodeRingTex);
                 GUI.color = Color.white;
             }
 

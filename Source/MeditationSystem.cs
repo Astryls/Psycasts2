@@ -125,6 +125,27 @@ namespace PsycastSynergies
             if (h != null) h.GainExperience(Hediff_PsycastAbilities.ExperienceRequiredForLevel(h.level + 1), false);
         }
 
+        // One-click mastery: every learned psycast jumps to the ABSOLUTE cap (10 / 15 with
+        // Convergence) so the mastered-tree gold glow + sparkles can be verified without
+        // hundreds of psycaster levels. State-only (no invest bursts - those are player-path FX).
+        [DebugAction("Psycasts²", "Max all psycast skills (absolute cap)", actionType = DebugActionType.ToolMapForPawns, allowedGameStates = AllowedGameStates.PlayingOnMap)]
+        private static void Debug_MaxAllSkills(Pawn p)
+        {
+            var gc = GameComponent_PsycastSynergies.Instance;
+            var comp = p?.GetComp<VEF.Abilities.CompAbilities>();
+            if (gc == null || comp?.LearnedAbilities == null) return;
+            var s = PsycastSynergiesMod.Settings;
+            int absCap = (s?.maxSkillLevel ?? 10) + SpecEffects.LevelCapBonus(p);
+            int n = 0;
+            foreach (var ab in comp.LearnedAbilities)
+            {
+                if (ab?.def == null || ab.def.GetModExtension<AbilityExtension_Psycast>() == null) continue;
+                gc.SetLevel(p, ab.def, absCap);
+                n++;
+            }
+            Messages.Message(p.LabelShortCap + ": " + n + " psycast(s) set to level " + absCap + ".", p, MessageTypeDefOf.NeutralEvent, false);
+        }
+
         [DebugAction("Psycasts²", "Force Enlightened (Tier II)", actionType = DebugActionType.ToolMapForPawns, allowedGameStates = AllowedGameStates.PlayingOnMap)]
         private static void Debug_ForceTier2(Pawn p)
         {
