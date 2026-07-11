@@ -73,6 +73,7 @@ namespace PsycastSynergies
             carTarget = n / 2;
             forcePause = true;
             closeOnClickedOutside = false;
+            closeOnCancel = false;   // Esc must not dismiss the pick - the "Choose later" button is the only way to set it aside
             doCloseX = false;
             absorbInputAroundWindow = true;
             doWindowBackground = false;   // Modern-suite: draw our own backdrop, no vanilla border
@@ -179,6 +180,13 @@ namespace PsycastSynergies
                 if (MXStyle.Button(new Rect(inRect.width / 2f - 195f, fy, 390f, 40f), "Keep meditating - reroll the cards (coma risk)"))
                     DeferReroll();
             }
+
+            // Bottom-right escape hatch (Esc is disabled): close WITHOUT deciding. PostClose requeues
+            // the pick (pendingPick) and Alert_PendingCardPick keeps it one click away.
+            var rLater = new Rect(inRect.width - 158f, fy, 152f, 40f);
+            TooltipHandler.TipRegion(rLater, "Set the cards aside without choosing. They return while this colonist meditates - or reopen them anytime from the \"Psycast path awaits\" alert.");
+            if (MXStyle.Button(rLater, "Choose later"))
+                Close();
 
             Text.Font = prevFont;
             Text.Anchor = prevAnchor;
