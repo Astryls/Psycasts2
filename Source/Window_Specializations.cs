@@ -282,6 +282,11 @@ namespace PsycastSynergies
 
             foreach (var sp in Specs.All) DrawNode(d, sp);
 
+            // Commit celebration bursts (SkillFx) - after the node loop so sparks sit on top of
+            // neighbors; inside the clip group so they pan/zoom with the tree.
+            if (SkillFx.AnyActive)
+                foreach (var sp in Specs.All) SkillFx.Draw(NodeRect(sp), SkillFx.KeySpec(pawn, sp.id));
+
             Rect viewCtrl = new Rect(8f, 8f, 186f, 60f);
             DrawViewControls(viewCtrl);
             HandlePanZoom(d, local, viewCtrl);
@@ -731,7 +736,15 @@ namespace PsycastSynergies
             if (pending.Count == 0) return;
             // Did this commit finish a spoke? (any of the four branch capstones, which open Convergence)
             bool capstoneDone = false;
-            foreach (var id in pending) if (Specs.Capstones.Contains(id)) { capstoneDone = true; break; }
+            bool majorDone = false;
+            foreach (var id in pending)
+            {
+                if (Specs.Capstones.Contains(id)) capstoneDone = true;
+                if (Specs.IsCapstone(id)) majorDone = true;
+                // Node burst: gold + grandiose for capstones/Convergence/ascension capstones, blue pop otherwise.
+                SkillFx.Trigger(SkillFx.KeySpec(pawn, id),
+                    Specs.IsCapstone(id) ? SkillFx.Grade.SpecCapstone : SkillFx.Grade.SpecNode);
+            }
             d.points -= PendingCost();
             d.owned.UnionWith(pending);
             if (pendMastery != null) d.masteryDef = pendMastery;
@@ -739,6 +752,7 @@ namespace PsycastSynergies
             if (pendAttune != null) d.attuneDamage = pendAttune;
             pending.Clear(); pendMastery = null; pendDiscipline = null; pendAttune = null;
             SoundDefOf.Quest_Accepted.PlayOneShotOnCamera();   // satisfying confirm chime
+            if (majorDone) SkillFx.MinorPulse(pawn);           // psychic pulse at the pawn for capstones
             // Finishing a spoke opens Convergence (the synergized apex) - pan the camera to it.
             if (capstoneDone) PanTo(Specs.Get("convergence"));
         }

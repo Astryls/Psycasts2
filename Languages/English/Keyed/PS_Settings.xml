@@ -28,6 +28,8 @@
   <PS_SetMaxSkillLevelTip>The hard level cap for any single psycast. The Convergence specialization raises a pawn's effective cap by a further +5.</PS_SetMaxSkillLevelTip>
   <PS_SetPsyLevelsPerSkill>Psycaster levels required per allowed skill level: {0}</PS_SetPsyLevelsPerSkill>
   <PS_SetPsyLevelsPerSkillTip>Gating: a skill can only be raised as high as your psycaster level supports. Higher values mean leveling skills demands a higher psycaster level first.</PS_SetPsyLevelsPerSkillTip>
+  <PS_SetSkillFx>Level-up bursts and sounds</PS_SetSkillFx>
+  <PS_SetSkillFxTip>Celebration effects when investing skill levels: a sparkle burst and soft psychic whoosh per level, a grand gold flare with a map-side shimmer when a psycast reaches its absolute maximum level, and node bursts when specialization picks are committed (gold for capstones and Convergence). Turn off to keep the old minimal click feedback.</PS_SetSkillFxTip>
   <PS_SetH_WhatScales>What scales</PS_SetH_WhatScales>
   <PS_SetScalePower>Scale power / damage</PS_SetScalePower>
   <PS_SetScalePowerTip>Scale an ability's power, such as melee and explosion damage, with its level and synergies.</PS_SetScalePowerTip>

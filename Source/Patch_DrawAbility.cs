@@ -107,6 +107,9 @@ namespace PsycastSynergies
                 Text.Font = pf;
                 Text.Anchor = pa;
                 GUI.color = pc;
+
+                // Level-up / mastery celebration burst (SkillFx) - drawn last so sparks sit on top.
+                SkillFx.Draw(inRect, SkillFx.KeySkill(pawn, ability));
             }
 
             // Styled floating breakdown card (True RPG Inventory look) on hover; we also
@@ -130,8 +133,8 @@ namespace PsycastSynergies
                 else if (Event.current.shift)
                 {
                     hediff.SpentPoints(1);
-                    gc.AddLevel(pawn, ability, 1);
-                    SoundDefOf.Tick_High.PlayOneShotOnCamera();
+                    int nl = gc.AddLevel(pawn, ability, 1);
+                    SkillFx.OnSkillInvest(pawn, ability, nl);
                 }
                 else
                 {

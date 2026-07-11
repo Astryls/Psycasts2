@@ -15,6 +15,7 @@ namespace PsycastSynergies
         public float synergyPct = 0.015f;
         // Hard cap on how many levels a single ability can hold (gated by psycaster level below).
         public int maxSkillLevel = 10;
+        public bool skillFx = true;
         // Temporarily boost the caster's Psychic Sensitivity during a cast so effects that derive
         // from it (very common in addons that hardcode radius/damage as X*sensitivity) also scale.
         public bool scaleViaSensitivity = true;
@@ -118,6 +119,7 @@ namespace PsycastSynergies
             Scribe_Values.Look(ref perLevelPct, "perLevelPct", 0.05f);
             Scribe_Values.Look(ref synergyPct, "synergyPct", 0.015f);
             Scribe_Values.Look(ref maxSkillLevel, "maxSkillLevel", 10);
+            Scribe_Values.Look(ref skillFx, "skillFx", true);
             Scribe_Values.Look(ref scaleViaSensitivity, "scaleViaSensitivity", true);
             Scribe_Values.Look(ref scalePower, "scalePower", true);
             Scribe_Values.Look(ref scaleRadius, "scaleRadius", true);
@@ -322,6 +324,7 @@ namespace PsycastSynergies
                 "PS_SetMaxSkillLevelTip".Translate());
             IS(l, "PS_SetPsyLevelsPerSkill".Translate(s.psyLevelsPerSkillLevel), ref s.psyLevelsPerSkillLevel, 1, 10,
                 "PS_SetPsyLevelsPerSkillTip".Translate());
+            CB(l, "PS_SetSkillFx".Translate(), ref s.skillFx, "PS_SetSkillFxTip".Translate());
 
             Head(l, "PS_SetH_WhatScales".Translate());
             CB(l, "PS_SetScalePower".Translate(), ref s.scalePower, "PS_SetScalePowerTip".Translate());

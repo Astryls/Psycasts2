@@ -31,6 +31,7 @@
   <PS_MsgNoPsycastsToReset>No learned psycasts to reset.</PS_MsgNoPsycastsToReset>
   <PS_MsgNoTierToSurrender>No enlightenment tier to surrender.</PS_MsgNoTierToSurrender>
   <PS_MsgSkillsReset>{0} reset their psycasts - {1} point(s) returned.</PS_MsgSkillsReset>
+  <PS_MsgSkillMastered>{0} has fully mastered {1} (level {2}).</PS_MsgSkillMastered>
   <PS_MsgPsylinkFaded>{0}'s psylink has faded - no longer a psycaster. They must re-awaken through meditation.</PS_MsgPsylinkFaded>
   <PS_MsgTierSurrendered>{0} surrendered their highest tier{1} - re-earn it to choose anew.</PS_MsgTierSurrendered>
   <PS_TierSurrenderedPath> (the {0} path)</PS_TierSurrenderedPath>

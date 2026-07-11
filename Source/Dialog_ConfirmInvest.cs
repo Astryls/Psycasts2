@@ -78,8 +78,8 @@ namespace PsycastSynergies
                 if (hediff.points >= amount)
                 {
                     hediff.SpentPoints(amount);
-                    gc.AddLevel(pawn, ability, amount);
-                    SoundDefOf.Tick_High.PlayOneShotOnCamera();
+                    int nl = gc.AddLevel(pawn, ability, amount);
+                    SkillFx.OnSkillInvest(pawn, ability, nl);
                 }
                 else
                 {
