@@ -52,8 +52,13 @@ namespace PsycastSynergies
         // value while it's shown, and keep displaying it (or the intrinsic strength) once vanilla hides it.
         private string cachedFocusStr;
 
+        // Vanilla walls (and natural rock) ship a CompProperties_MeditationFocus (Minimal, 22%), so our
+        // comp-add patch picks them up. Don't decorate every wall segment with our focus readout / gizmo.
+        private bool ParentIsWall => parent.def.graphicData != null && parent.def.graphicData.linkFlags.HasFlag(LinkFlags.Wall);
+
         public override string CompInspectStringExtra()
         {
+            if (ParentIsWall) return null;
             string typeLine = "PS_FocusTypeLabel".Translate(selectedFocus != null ? selectedFocus.LabelCap.ToString() : "PS_FocusAny".Translate().ToString());
             var med = parent.TryGetComp<CompMeditationFocus>();
             if (med == null) return typeLine;
@@ -74,10 +79,8 @@ namespace PsycastSynergies
         {
             foreach (var g in base.CompGetGizmosExtra()) yield return g;
             if (parent.Faction != null && parent.Faction != Faction.OfPlayer) yield break;
-            // Don't offer the focus-type selector on walls. Some mods tag walls / natural rock as a
-            // "Natural" meditation focus, which my comp-add patch would otherwise pick up — putting the
-            // attune gizmo on every wall segment. Meditation spots, thrones and real foci aren't wall-linked.
-            if (parent.def.graphicData != null && parent.def.graphicData.linkFlags.HasFlag(LinkFlags.Wall)) yield break;
+            // Don't offer the focus-type selector on walls (they carry a vanilla Minimal focus comp).
+            if (ParentIsWall) yield break;
 
             yield return new Command_Action
             {
