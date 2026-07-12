@@ -254,4 +254,22 @@
     </stages>
   </HediffDef>
 
+  <!-- Invisible bookkeeping hediff: tracks psycasts/implant granted by Itemization Overhaul "oskill" gear
+       so they can be cleanly removed when the gear is unequipped (OSkillReconcile.cs). -->
+  <HediffDef>
+    <defName>PS_OSkillGrant</defName>
+    <hediffClass>HediffWithComps</hediffClass>
+    <label>skill master attunement</label>
+    <description>Psycasts granted by equipped gear.</description>
+    <isBad>false</isBad>
+    <maxSeverity>1</maxSeverity>
+    <scenarioCanAdd>false</scenarioCanAdd>
+    <comps>
+      <li Class="PsycastSynergies.HediffCompProperties_OSkillGrant"/>
+    </comps>
+    <stages>
+      <li><becomeVisible>false</becomeVisible></li>
+    </stages>
+  </HediffDef>
+
 </Defs>

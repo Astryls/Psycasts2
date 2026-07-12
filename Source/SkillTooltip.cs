@@ -211,7 +211,7 @@ namespace PsycastSynergies
             public AbilityDef def;
             public bool owned;
             public bool full;     // Shift held - show all synergies both directions
-            public int lvl, cap, absCap, psyLevel, nextReq; public bool atCap;
+            public int lvl, cap, absCap, psyLevel, nextReq, bonus; public bool atCap;
             public string roleLabel; public Color roleColor;
             public string description, effectSummary;
             public string empowersLine;
@@ -312,6 +312,7 @@ namespace PsycastSynergies
                 def = def,
                 owned = owned,
                 lvl = lvl, cap = SkillSystem.MaxLevel(pawn, def),
+                bonus = SkillSystem.ExternalBonus(pawn, def),
                 absCap = s.maxSkillLevel + SpecEffects.LevelCapBonus(pawn),
                 psyLevel = pawn.Psycasts()?.level ?? 0,
                 nextReq = SkillSystem.LevelReq(def, lvl + 1),
@@ -504,8 +505,10 @@ namespace PsycastSynergies
             }
 
             Divider(col, ref y);
-            KeyVal(col, ref y, "PS_TipSkillLevel".Translate(), m.lvl + " / " + m.absCap,
-                !m.owned ? Palette.TextDim : (m.lvl >= m.absCap ? Palette.Gold : Palette.Stat));
+            int shownLvl = m.lvl + m.bonus;
+            string lvlStr = (m.bonus > 0) ? (shownLvl + " / " + m.absCap + "  (+" + m.bonus + " gear)") : (m.lvl + " / " + m.absCap);
+            KeyVal(col, ref y, "PS_TipSkillLevel".Translate(), lvlStr,
+                !m.owned ? Palette.TextDim : ((shownLvl >= m.absCap || m.bonus > 0) ? Palette.Gold : Palette.Stat));
             if (m.primaryStat.HasValue)
             {
                 string each = m.primaryHasRaw

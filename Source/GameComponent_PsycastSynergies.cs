@@ -239,6 +239,13 @@ namespace PsycastSynergies
             return n;
         }
 
+        // Has this pawn invested any real (spent-point) skill levels? Used by the oskill reconciler to
+        // decide whether it's safe to tear down an implant it granted (never strip a real psycaster).
+        public bool HasAnyInvestedLevels(Pawn pawn)
+        {
+            return pawn != null && levels.TryGetValue(pawn, out var d) && d != null && d.Count > 0;
+        }
+
         // Total levels invested across every ability that shares this path.
         public int PathInvested(Pawn pawn, PsycasterPathDef path)
         {
