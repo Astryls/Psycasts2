@@ -37,6 +37,11 @@ namespace PsycastSynergies
             int extra = SkillSystem.ExtraTargets(pawn, def);
             if (extra <= 0) return;
             int n = def.targetCount + extra;
+            // Paired-target abilities (VPE Skip-style: currentlyCastingTargets is [thing, destination]
+            // pairs iterated i+=2) MUST keep an even targetCount or their cast loop indexes out of bounds.
+            // Preserve the authored parity - drop a lone odd extra rather than crash.
+            if (def.targetCount % 2 == 0 && n % 2 != 0) n--;
+            if (n <= def.targetCount) return;
             Pad(def, n);
             __instance.currentTargets = new GlobalTargetInfo[n];   // resize to the padded count
         }

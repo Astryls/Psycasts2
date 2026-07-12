@@ -35,6 +35,9 @@ namespace PsycastSynergies
                 float m = SkillSystem.StatMultiplier(pawn, def, SynStat.Targets);
                 int extra = Mathf.Clamp(Mathf.RoundToInt((m - 1f) / PsycastSynergiesMod.Settings.perLevelPct), 0, 10);
                 int newCount = orig + extra;
+                // Paired-target abilities (Skip-style, iterated i+=2) need an even targetCount or the cast
+                // loop indexes out of range; preserve the authored parity.
+                if (orig % 2 == 0 && newCount % 2 != 0) newCount--;
                 def.targetCount = newCount;
 
                 if (def.targetModes != null)
