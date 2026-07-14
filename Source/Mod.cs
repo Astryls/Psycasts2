@@ -330,11 +330,16 @@ namespace PsycastSynergies
         void TabSkills(Listing_Standard l)
         {
             var s = Settings;
+            // Snapshot every toggle-gated row's visibility at the START of the draw. A RimWorld checkbox
+            // flips its bool mid-frame (on MouseUp); if a conditional slider below it were gated on the
+            // LIVE bool, the control set would differ between IMGUI passes, corrupting GUI state and
+            // blanking a chunk of the tab. Reading a frame-start snapshot keeps the control set stable.
+            bool synOn = !s.disableSynergies, showCostRow = s.scaleCost, showCapRow = s.overrideVpeLevelCap;
             Head(l, "PS_SetH_SkillLeveling".Translate());
             FS(l, "PS_SetPerLevel".Translate((s.perLevelPct * 100f).ToString("F0")), ref s.perLevelPct, 0f, 0.25f,
                 "PS_SetPerLevelTip".Translate());
             CB(l, "PS_SetDisableSynergies".Translate(), ref s.disableSynergies, "PS_SetDisableSynergiesTip".Translate());
-            if (!s.disableSynergies)
+            if (synOn)
                 FS(l, "PS_SetSynergyPct".Translate((s.synergyPct * 100f).ToString("F0")), ref s.synergyPct, 0f, 0.10f,
                     "PS_SetSynergyPctTip".Translate());
             IS(l, "PS_SetMaxSkillLevel".Translate(s.maxSkillLevel), ref s.maxSkillLevel, 1, 30,
@@ -354,10 +359,10 @@ namespace PsycastSynergies
 
             Head(l, "PS_SetH_CostCaps".Translate());
             CB(l, "PS_SetScaleCost".Translate(), ref s.scaleCost, "PS_SetScaleCostTip".Translate());
-            if (s.scaleCost)
+            if (showCostRow)
                 FS(l, "PS_SetCostPerLevel".Translate((s.costPerLevelPct * 100f).ToString("F0")), ref s.costPerLevelPct, 0f, 0.25f, "PS_SetCostPerLevelTip".Translate());
             CB(l, "PS_SetLevelCap".Translate(), ref s.overrideVpeLevelCap, "PS_SetLevelCapTip".Translate());
-            if (s.overrideVpeLevelCap)
+            if (showCapRow)
                 IS(l, "PS_SetLevelCapVal".Translate(s.vpeLevelCap), ref s.vpeLevelCap, 30, 500, "PS_SetLevelCapValTip".Translate());
             CB(l, "PS_SetIsekai".Translate(), ref s.suppressIsekaiPsycastStats, "PS_SetIsekaiTip".Translate());
             CB(l, "PS_SetAutoStats".Translate(), ref s.autoPsycasterStats,
@@ -474,6 +479,8 @@ namespace PsycastSynergies
         void TabMeditation(Listing_Standard l)
         {
             var s = Settings;
+            // Frame-start snapshots (see TabSkills) so a checkbox flip can't reshape the control set mid-draw.
+            bool showBreak = s.enlightenmentEnabled, showGate = s.gateUntieredPsylinks, showTrans = s.transcendEnabled;
             Head(l, "PS_SetH_PsycastXp".Translate());
             FS(l, "PS_SetCastXp".Translate(s.castXpPerTier.ToString("F0"), (s.castXpPerTier * 3f).ToString("F0")), ref s.castXpPerTier, 0f, 60f,
                 "PS_SetCastXpTip".Translate(), true);
@@ -487,7 +494,7 @@ namespace PsycastSynergies
                 "PS_SetBreakthroughsTip".Translate());
             if (TieringControl.MeditationAwakeningDisabled)
                 ModOverrideNote(l, "PS_Ovr_MedAwaken".Translate());
-            if (s.enlightenmentEnabled)
+            if (showBreak)
             {
                 FS(l, "PS_SetBreakSize".Translate((s.enlightenmentFrac * 100f).ToString("F0")), ref s.enlightenmentFrac, 0.2f, 1.5f,
                     "PS_SetBreakSizeTip".Translate());
@@ -516,10 +523,10 @@ namespace PsycastSynergies
                 ModOverrideNote(l, "PS_Ovr_PsylinkGate".Translate());
             else if (TieringControl.RandomAwakenedSpawnsDisabled)
                 ModOverrideNote(l, "PS_Ovr_RandomSpawns".Translate());
-            if (s.gateUntieredPsylinks)
+            if (showGate)
                 FS(l, "PS_SetSpawnChance".Translate((s.awakenedSpawnChance * 100f).ToString("F0")), ref s.awakenedSpawnChance, 0f, 1f,
                     "PS_SetSpawnChanceTip".Translate());
-            if (s.gateUntieredPsylinks)
+            if (showGate)
                 CB(l, "PS_SetNoStartAwakened".Translate(), ref s.noAwakenedStartingPawns,
                     "PS_SetNoStartAwakenedTip".Translate());
             CB(l, "PS_SetRevealAll".Translate(), ref s.cardRevealAll,
@@ -533,7 +540,7 @@ namespace PsycastSynergies
                 "PS_SetTranscendTip".Translate());
             if (TieringControl.TranscendenceDisabled)
                 ModOverrideNote(l, "PS_Ovr_Transcend".Translate());
-            if (s.transcendEnabled)
+            if (showTrans)
             {
                 FS(l, "PS_SetTransBase".Translate(s.transcendBaseHours.ToString("F0")), ref s.transcendBaseHours, 12f, 200f,
                     "PS_SetTransBaseTip".Translate(), true);
@@ -591,12 +598,13 @@ namespace PsycastSynergies
         void TabEnemies(Listing_Standard l)
         {
             var s = Settings;
+            bool showEnemy = s.enemyTiersEnabled;   // frame-start snapshot (see TabSkills)
             Head(l, "PS_SetH_Enemies".Translate());
             CB(l, "PS_SetEnemyTiers".Translate(), ref s.enemyTiersEnabled,
                 "PS_SetEnemyTiersTip".Translate());
             if (TieringControl.EnemyTiersDisabled)
                 ModOverrideNote(l, "PS_Ovr_EnemyTiers".Translate());
-            if (s.enemyTiersEnabled)
+            if (showEnemy)
             {
                 CB(l, "PS_SetEnemyT1".Translate(), ref s.enemyTier1, "PS_SetEnemyT1Tip".Translate());
                 CB(l, "PS_SetEnemyT2".Translate(), ref s.enemyTier2, "PS_SetEnemyT2Tip".Translate());

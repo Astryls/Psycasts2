@@ -65,6 +65,23 @@ namespace PsycastSynergies
                 Log.Message("[Psycasts²] disableGeneRequirements: cleared the gene gate on " + cleared + " path(s).");
             }
 
+            // Compat with our lockPathsToEnlightenment scheme: that forces PsycasterPathDef.CanPawnUnlock
+            // to return false for player pawns (so paths unlock ONLY via the awakening cards). VPE's
+            // AbilityExtension_Psycast.IsEnabledForPawn ALSO gates ability USE on CanPawnUnlock - but only
+            // for paths whose ignoreLockRestrictionsForNeurotrainers is false. Almost every VPE path leaves
+            // that true (so their learned abilities stay castable), but a few (e.g. Hemosage) set it false,
+            // which made their LEARNED abilities show "Disabled:" with an empty reason (we'd also nulled
+            // lockedReason). Force it true on every path so a learned ability is never disabled by our
+            // card-based unlock gate. The tab's Unlock buttons stay blocked via CanPawnUnlock itself.
+            if (PsycastSynergiesMod.Settings?.lockPathsToEnlightenment == true)
+            {
+                int freed = 0;
+                foreach (var path in DefDatabase<PsycasterPathDef>.AllDefs)
+                    if (!path.ignoreLockRestrictionsForNeurotrainers) { path.ignoreLockRestrictionsForNeurotrainers = true; freed++; }
+                if (freed > 0)
+                    Log.Message("[Psycasts²] lockPathsToEnlightenment: freed ability-use on " + freed + " lock-restricted path(s) (e.g. Hemosage).");
+            }
+
             // Dev: write the HTML skill compendium + the icon-rich field manual. The manual needs
             // ability ICONS, which load in a deferred LongEvent after PostLoad - generate it after
             // that finishes (and after Specs' own static ctor) so every icon is actually loaded.
