@@ -42,7 +42,7 @@
   <PS_FocusStrengthFor>Meditation focus strength for {0}: {1} / day</PS_FocusStrengthFor>
   <PS_FocusStrength>Meditation focus strength: {0} / day</PS_FocusStrength>
   <PS_StopMeditating>Stop meditating</PS_StopMeditating>
-  <PS_StopMeditatingDesc>This colonist is meditating continuously ("meditate your ass off"). Click to stop and return to their normal schedule.</PS_StopMeditatingDesc>
+  <PS_StopMeditatingDesc>This colonist is meditating continuously. Click to stop and return to their normal schedule.</PS_StopMeditatingDesc>
   <PS_AuraLabel>Psychic aura</PS_AuraLabel>
   <PS_AuraDesc>Toggle the cosmetic Apotheosis aura rendered on this pawn. Purely visual - no effect on the Apotheosis bonuses.</PS_AuraDesc>
   <PS_ChargesTip>Free-cast charges: {0} / {1}\nFree while &gt;1 remains. The last charge (1&#8594;0) pays full cost and starts the cooldown.</PS_ChargesTip>
