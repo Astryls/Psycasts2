@@ -24,6 +24,11 @@ namespace PsycastSynergies
             var psy = pawn?.Psycasts();
             if (psy == null) return;
 
+            // Modern Psycasts UI's "Psysets" view replaces the whole left panel with its own editor
+            // (Back button + Create psyset). Our footer tool block would draw right over those, so
+            // yield the panel to it while that view is open.
+            if (ModernUIBridge.PsysetPanelOpen) return;
+
             int learnedPsycasts = 0;
             var comp0 = pawn.GetComp<CompAbilities>();
             if (comp0 != null)

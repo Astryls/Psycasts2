@@ -15,6 +15,27 @@ namespace PsycastSynergies
     {
         internal static bool Wired;
 
+        // Soft read of Modern Psycasts UI's left-panel mode. When its "Psysets" editor is open
+        // (psysetMode != 0) the left panel is REPLACED by its psyset list/editor (Back button +
+        // "Create psyset"), so our footer tool block must NOT draw there or it covers those buttons.
+        private static FieldInfo psysetModeField;
+        private static bool psysetModeResolved;
+        internal static bool PsysetPanelOpen
+        {
+            get
+            {
+                if (!psysetModeResolved)
+                {
+                    psysetModeResolved = true;
+                    var t = GenTypes.GetTypeInAnyAssembly("ModernPsycastsUI.ModernPsycastsDrawer");
+                    psysetModeField = t?.GetField("psysetMode", BindingFlags.NonPublic | BindingFlags.Static);
+                }
+                if (psysetModeField == null) return false;   // Modern Psycasts UI absent / field renamed
+                try { return (int)psysetModeField.GetValue(null) != 0; }
+                catch { return false; }
+            }
+        }
+
         // Width of the psycast tab's left pawn-info card. Modern Psycasts UI draws it at a FIXED
         // 340px (x=14, 14px inner padding) regardless of tab width; VPE's own tab scales it with
         // the tab. Everything we draw into that card (spec/tier buttons, the footer tool block)

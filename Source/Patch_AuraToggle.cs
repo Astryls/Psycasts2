@@ -9,6 +9,7 @@ namespace PsycastSynergies
 {
     // Adds a per-pawn toggle to enable/disable the cosmetic ascension aura. Shown only on player
     // colonists who currently carry one of the ascension hediffs.
+    [StaticConstructorOnStartup]   // has a static Texture2D field; must load on the main thread
     [HarmonyPatch(typeof(Pawn), nameof(Pawn.GetGizmos))]
     public static class Patch_AuraToggleGizmo
     {

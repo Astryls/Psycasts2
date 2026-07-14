@@ -651,9 +651,14 @@ namespace PsycastSynergies
             if (ins > 0f) list.Add(new Effect("PS_FxBonusXp".Translate(), "+" + PctS(Mathf.Min(ins, 2f)), null));
 
             var proj = def.GetModExtension<AbilityExtension_Projectile>();
-            if (proj?.projectile?.projectile != null)
+            var projProps = proj?.projectile?.projectile;
+            // Only read the damage when the projectile carries its own damageDef. Probing GetDamageAmount on a
+            // damageless carrier projectile (no damageDef - the ability's own power/hediff does the work, e.g.
+            // Hemosage's Blood Shard) makes vanilla Log.ErrorOnce "Failed to find sane damage amount".
+            // (damageAmountBase is private, so we can't check it directly - but such projectiles set damageDef.)
+            if (projProps?.damageDef != null)
             {
-                int pd = proj.projectile.projectile.GetDamageAmount((Thing)null);
+                int pd = projProps.GetDamageAmount((Thing)null);
                 if (pd > 0) list.Add(new Effect("PS_FxProjectileDamage".Translate(), "PS_FxUnscaled".Translate(pd), null, false));
             }
 
