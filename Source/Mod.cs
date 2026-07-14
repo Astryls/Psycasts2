@@ -1,5 +1,6 @@
 #nullable disable
 using System.Collections.Generic;
+using System.IO;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -16,6 +17,13 @@ namespace PsycastSynergies
         // Hard cap on how many levels a single ability can hold (gated by psycaster level below).
         public int maxSkillLevel = 10;
         public bool skillFx = true;
+        // Fog of war: hide the identity of every un-learned psycast on the tree behind a "?" cover
+        // until it is unlocked. Off by default.
+        public bool fogOfWar = false;
+        // Turn off the whole cross-ability synergy / empower system: skills scale from their OWN
+        // invested levels only, and the tooltip/hover no longer show "receives from" / "empowers".
+        // Off by default (synergies stay on).
+        public bool disableSynergies = false;
         // Temporarily boost the caster's Psychic Sensitivity during a cast so effects that derive
         // from it (very common in addons that hardcode radius/damage as X*sensitivity) also scale.
         public bool scaleViaSensitivity = true;
@@ -120,6 +128,8 @@ namespace PsycastSynergies
             Scribe_Values.Look(ref synergyPct, "synergyPct", 0.015f);
             Scribe_Values.Look(ref maxSkillLevel, "maxSkillLevel", 10);
             Scribe_Values.Look(ref skillFx, "skillFx", true);
+            Scribe_Values.Look(ref fogOfWar, "fogOfWar", false);
+            Scribe_Values.Look(ref disableSynergies, "disableSynergies", false);
             Scribe_Values.Look(ref scaleViaSensitivity, "scaleViaSensitivity", true);
             Scribe_Values.Look(ref scalePower, "scalePower", true);
             Scribe_Values.Look(ref scaleRadius, "scaleRadius", true);
@@ -318,13 +328,16 @@ namespace PsycastSynergies
             Head(l, "PS_SetH_SkillLeveling".Translate());
             FS(l, "PS_SetPerLevel".Translate((s.perLevelPct * 100f).ToString("F0")), ref s.perLevelPct, 0f, 0.25f,
                 "PS_SetPerLevelTip".Translate());
-            FS(l, "PS_SetSynergyPct".Translate((s.synergyPct * 100f).ToString("F0")), ref s.synergyPct, 0f, 0.10f,
-                "PS_SetSynergyPctTip".Translate());
+            CB(l, "PS_SetDisableSynergies".Translate(), ref s.disableSynergies, "PS_SetDisableSynergiesTip".Translate());
+            if (!s.disableSynergies)
+                FS(l, "PS_SetSynergyPct".Translate((s.synergyPct * 100f).ToString("F0")), ref s.synergyPct, 0f, 0.10f,
+                    "PS_SetSynergyPctTip".Translate());
             IS(l, "PS_SetMaxSkillLevel".Translate(s.maxSkillLevel), ref s.maxSkillLevel, 1, 30,
                 "PS_SetMaxSkillLevelTip".Translate());
             IS(l, "PS_SetPsyLevelsPerSkill".Translate(s.psyLevelsPerSkillLevel), ref s.psyLevelsPerSkillLevel, 1, 10,
                 "PS_SetPsyLevelsPerSkillTip".Translate());
             CB(l, "PS_SetSkillFx".Translate(), ref s.skillFx, "PS_SetSkillFxTip".Translate());
+            CB(l, "PS_SetFogOfWar".Translate(), ref s.fogOfWar, "PS_SetFogOfWarTip".Translate());
 
             Head(l, "PS_SetH_WhatScales".Translate());
             CB(l, "PS_SetScalePower".Translate(), ref s.scalePower, "PS_SetScalePowerTip".Translate());
@@ -365,6 +378,12 @@ namespace PsycastSynergies
             CB(l, "PS_SetLockPaths".Translate(), ref s.lockPathsToEnlightenment, "PS_SetLockPathsTip".Translate());
 
             Head(l, "PS_SetH_SynergyGraph".Translate());
+            if (s.disableSynergies)
+            {
+                GUI.color = new Color(1f, 0.72f, 0.35f);
+                l.Label("PS_SetSynDisabledNote".Translate());
+                GUI.color = Color.white;
+            }
             l.Label("PS_SetSynFrozen".Translate());
             int tuned = PlayerTuning.Count;
             l.Label("PS_SetSynRetune".Translate()
@@ -389,6 +408,34 @@ namespace PsycastSynergies
                         "PS_SetShareBody".Translate(shared, sharePath), () => { }));
                 else
                     Messages.Message("PS_MsgShareFailed".Translate(shareErr), MessageTypeDefOf.RejectInput, false);
+            }
+            // Import a shared balance-edits JSON (from another player or a modpack creator) back into
+            // the live overlay. Lists JSON files dropped into the SaveData/Psycasts2 folder.
+            if (l.ButtonText("PS_SetImport".Translate()))
+            {
+                var files = ManualBalance.ListImportableFiles();
+                if (files.Count == 0)
+                    Messages.Message("PS_MsgNoImportFiles".Translate(ManualBalance.ImportFolder), MessageTypeDefOf.RejectInput, false);
+                else
+                {
+                    var opts = new List<FloatMenuOption>();
+                    foreach (var file in files)
+                    {
+                        string fp = file;
+                        opts.Add(new FloatMenuOption(Path.GetFileName(fp), () =>
+                        {
+                            if (ManualBalance.ImportPlayerTuning(fp, out string ierr, out int icount))
+                            {
+                                PsycastSynergiesMod.Instance?.WriteSettings();
+                                Find.WindowStack.Add(new Dialog_Confirm("PS_SetImportTitle".Translate(),
+                                    "PS_SetImportBody".Translate(icount, Path.GetFileName(fp)), () => { }));
+                            }
+                            else
+                                Messages.Message("PS_MsgImportFailed".Translate(ierr), MessageTypeDefOf.RejectInput, false);
+                        }));
+                    }
+                    Find.WindowStack.Add(new FloatMenu(opts));
+                }
             }
             // Author flow, dev mode only: bake the edits into the mod's ManualBalance.json defaults.
             if (Prefs.DevMode && l.ButtonText(tuned > 0 ? "PS_SetBakeN".Translate(tuned).ToString() : "PS_SetBake".Translate().ToString()))

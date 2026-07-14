@@ -30,6 +30,9 @@ namespace PsycastSynergies
         public static bool Loaded { get; private set; }
         public static int OverrideCount => primStat.Count + edgeStat.Count + srcsOf.Count;
 
+        // Where the in-game import button looks for shareable balance-edit JSON files.
+        public static string ImportFolder => Path.Combine(GenFilePaths.SaveDataFolderPath, "Psycasts2");
+
         private static string Key(string src, string tgt) => src + "\u2192" + tgt;
 
         public static void Load()
@@ -39,39 +42,161 @@ namespace PsycastSynergies
             try
             {
                 string root = PsycastSynergiesMod.Instance?.Content?.RootDir;
-                if (string.IsNullOrEmpty(root)) return;
-                string path = Path.Combine(root, "ManualBalance.json");
-                if (!File.Exists(path)) return;
-
-                string text = File.ReadAllText(path);
-                foreach (Match m in Regex.Matches(text, "\\{[^{}]*\\}"))
+                string path = string.IsNullOrEmpty(root) ? null : Path.Combine(root, "ManualBalance.json");
+                if (!string.IsNullOrEmpty(path) && File.Exists(path))
                 {
-                    var f = ParseObj(m.Value);
-                    f.TryGetValue("k", out string kind);
-                    if (kind == "prim")
+                    string text = File.ReadAllText(path);
+                    foreach (Match m in Regex.Matches(text, "\\{[^{}]*\\}"))
                     {
-                        if (!f.TryGetValue("def", out string def) || string.IsNullOrEmpty(def)) continue;
-                        if (f.TryGetValue("stat", out string st) && PInt(st, out int si)) primStat[def] = si;
-                        if (f.TryGetValue("str", out string sr) && PFloat(sr, out float sf)) primStr[def] = sf;
-                    }
-                    else if (kind == "edge")
-                    {
-                        if (!f.TryGetValue("src", out string src) || !f.TryGetValue("tgt", out string tgt)) continue;
-                        if (string.IsNullOrEmpty(src) || string.IsNullOrEmpty(tgt)) continue;
-                        string key = Key(src, tgt);
-                        if (f.TryGetValue("stat", out string st) && PInt(st, out int si)) edgeStat[key] = si;
-                        if (f.TryGetValue("str", out string sr) && PFloat(sr, out float sf)) edgeStr[key] = sf;
-                    }
-                    else if (kind == "srcs")
-                    {
-                        if (!f.TryGetValue("def", out string def) || string.IsNullOrEmpty(def)) continue;
-                        if (f.TryGetValue("list", out string lst)) srcsOf[def] = PlayerTuning.SplitList(lst);
+                        var f = ParseObj(m.Value);
+                        f.TryGetValue("k", out string kind);
+                        if (kind == "prim")
+                        {
+                            if (!f.TryGetValue("def", out string def) || string.IsNullOrEmpty(def)) continue;
+                            if (f.TryGetValue("stat", out string st) && PInt(st, out int si)) primStat[def] = si;
+                            if (f.TryGetValue("str", out string sr) && PFloat(sr, out float sf)) primStr[def] = sf;
+                        }
+                        else if (kind == "edge")
+                        {
+                            if (!f.TryGetValue("src", out string src) || !f.TryGetValue("tgt", out string tgt)) continue;
+                            if (string.IsNullOrEmpty(src) || string.IsNullOrEmpty(tgt)) continue;
+                            string key = Key(src, tgt);
+                            if (f.TryGetValue("stat", out string st) && PInt(st, out int si)) edgeStat[key] = si;
+                            if (f.TryGetValue("str", out string sr) && PFloat(sr, out float sf)) edgeStr[key] = sf;
+                        }
+                        else if (kind == "srcs")
+                        {
+                            if (!f.TryGetValue("def", out string def) || string.IsNullOrEmpty(def)) continue;
+                            if (f.TryGetValue("list", out string lst)) srcsOf[def] = PlayerTuning.SplitList(lst);
+                        }
                     }
                 }
+                // Modpack-creator overrides (shipped BalanceOverrideDefs) layer OVER the baked JSON.
+                ApplyOverrideDefs();
                 Loaded = true;
                 Log.Message($"[Psycasts²] Manual balance overlay: {primStat.Count} primary + {edgeStat.Count} edge + {srcsOf.Count} source-list override(s).");
             }
             catch (Exception e) { Log.Warning("[Psycasts²] Failed to load ManualBalance.json: " + e); }
+        }
+
+        // ---- Modpack-creator XML overrides (BalanceOverrideDef) ----
+        // A modpack/addon author ships one <PsycastSynergies.BalanceOverrideDef> in THEIR own mod and
+        // it merges into this overlay for every player of the pack, sitting under the player's own
+        // in-game edits (PlayerTuning). Later defs win a key over earlier ones (last-wins).
+        private static void ApplyOverrideDefs()
+        {
+            var owners = new List<string>();
+            int n = 0;
+            foreach (var d in DefDatabase<BalanceOverrideDef>.AllDefsListForReading)
+            {
+                if (d.primaries != null)
+                    foreach (var p in d.primaries)
+                    {
+                        if (string.IsNullOrEmpty(p.ability)) continue;
+                        if (TryStatName(p.stat, out int st)) { primStat[p.ability] = st; n++; }
+                        if (!float.IsNaN(p.strength)) { primStr[p.ability] = p.strength; n++; }
+                    }
+                if (d.empowers != null)
+                    foreach (var e in d.empowers)
+                    {
+                        if (string.IsNullOrEmpty(e.source) || string.IsNullOrEmpty(e.target)) continue;
+                        string key = Key(e.source, e.target);
+                        if (TryStatName(e.stat, out int st)) { edgeStat[key] = st; n++; }
+                        if (!float.IsNaN(e.strength)) { edgeStr[key] = e.strength; n++; }
+                    }
+                if (d.sources != null)
+                    foreach (var so in d.sources)
+                    {
+                        if (string.IsNullOrEmpty(so.ability) || so.from == null) continue;
+                        srcsOf[so.ability] = new List<string>(so.from); n++;
+                    }
+                string owner = d.modContentPack?.Name ?? d.defName;
+                if (!owners.Contains(owner)) owners.Add(owner);
+            }
+            if (n > 0)
+                Log.Message($"[Psycasts²] Balance override def(s) applied ({string.Join(", ", owners)}): {n} field(s).");
+        }
+
+        // Parse a synergy stat from an author-friendly string: a SynStat name (case-insensitive),
+        // "none" (-1), or a raw int. Empty/unknown -> not set (returns false).
+        private static bool TryStatName(string s, out int stat)
+        {
+            stat = -1;
+            if (string.IsNullOrEmpty(s)) return false;
+            if (s.Equals("none", StringComparison.OrdinalIgnoreCase)) { stat = -1; return true; }
+            if (Enum.TryParse(s, true, out SynStat v)) { stat = (int)v; return true; }
+            if (PInt(s, out int iv)) { stat = iv; return true; }
+            Log.Warning($"[Psycasts²] BalanceOverrideDef: unknown synergy stat '{s}'.");
+            return false;
+        }
+
+        // ---- In-game JSON import (round-trips the Share export into the player overlay) ----
+        public static List<string> ListImportableFiles()
+        {
+            var list = new List<string>();
+            try
+            {
+                if (Directory.Exists(ImportFolder))
+                    list.AddRange(Directory.GetFiles(ImportFolder, "*.json"));
+                list.Sort((a, b) => File.GetLastWriteTimeUtc(b).CompareTo(File.GetLastWriteTimeUtc(a)));   // newest first
+            }
+            catch { }
+            return list;
+        }
+
+        // Read a shared balance-edits JSON and layer it into the live PlayerTuning overlay. Tolerant
+        // of both formats we emit: the grouped-per-tree Share export (stat name + statId + str) and
+        // the flat baked ManualBalance records (k / stat int). Fields are inferred per leaf object.
+        public static bool ImportPlayerTuning(string path, out string error, out int count)
+        {
+            error = null; count = 0;
+            try
+            {
+                if (!File.Exists(path)) { error = "file not found"; return false; }
+                string text = File.ReadAllText(path);
+                foreach (Match m in Regex.Matches(text, "\\{[^{}]*\\}"))
+                {
+                    var f = ParseObj(m.Value);
+                    bool isSrcs = f.ContainsKey("sources") || (f.TryGetValue("k", out string k0) && k0 == "srcs");
+                    if (isSrcs)
+                    {
+                        if (!f.TryGetValue("def", out string def) || string.IsNullOrEmpty(def)) continue;
+                        string list = f.TryGetValue("sources", out string sv) ? sv : (f.TryGetValue("list", out string lv) ? lv : null);
+                        if (list == null) continue;
+                        PlayerTuning.SetSrcs(def, PlayerTuning.SplitList(list)); count++;
+                    }
+                    else if (f.ContainsKey("src") && f.ContainsKey("tgt"))
+                    {
+                        string src = f["src"], tgt = f["tgt"];
+                        if (string.IsNullOrEmpty(src) || string.IsNullOrEmpty(tgt)) continue;
+                        if (TryEntryStat(f, out int st)) { PlayerTuning.SetEdge(src, tgt, st); count++; }
+                        if (f.TryGetValue("str", out string sr) && PFloat(sr, out float sf)) { PlayerTuning.SetEdgeStr(src, tgt, sf); count++; }
+                    }
+                    else if (f.TryGetValue("def", out string def) && !string.IsNullOrEmpty(def))
+                    {
+                        if (TryEntryStat(f, out int st)) { PlayerTuning.SetPrim(def, st); count++; }
+                        if (f.TryGetValue("str", out string sr) && PFloat(sr, out float sf)) { PlayerTuning.SetPrimStr(def, sf); count++; }
+                    }
+                }
+                if (count == 0) { error = "no recognizable balance edits in file"; return false; }
+                PsycastInfo.ClearCaches();
+                return true;
+            }
+            catch (Exception e) { error = e.Message; return false; }
+        }
+
+        // Stat for an imported leaf: prefer statId (int), else stat (int or SynStat name / "none").
+        private static bool TryEntryStat(Dictionary<string, string> f, out int stat)
+        {
+            stat = -1;
+            if (f.TryGetValue("statId", out string si) && PInt(si, out int iv)) { stat = iv; return true; }
+            if (f.TryGetValue("stat", out string sn) && !string.IsNullOrEmpty(sn))
+            {
+                if (PInt(sn, out int iv2)) { stat = iv2; return true; }
+                if (sn.Equals("none", StringComparison.OrdinalIgnoreCase)) { stat = -1; return true; }
+                if (Enum.TryParse(sn, true, out SynStat ev)) { stat = (int)ev; return true; }
+            }
+            return false;
         }
 
         // Flat objects only (no nested braces): pull every "key": value  (string OR number) pair.

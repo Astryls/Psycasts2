@@ -34,9 +34,18 @@ namespace PsycastSynergies
 
             EnsureFrame(pawn, comp, hediff);
 
+            var settings = PsycastSynergiesMod.Settings;
+            // Un-learned skills still get the styled card (for tree pre-planning) but no level
+            // badge / + / invest-click - VPE keeps its own unlock-click for those.
+            bool owned = fLearned.Contains(ability);
+            // Fog of war: hide an un-learned skill's identity behind a "?" until it is unlocked.
+            bool fog = settings != null && settings.fogOfWar && !owned;
+            bool synergiesOn = settings == null || !settings.disableSynergies;
+
             // Synergy highlight: hovering a skill pulses the skills it GAINS power from (its synergy
-            // sources); holding Left Ctrl pulses the skills it EMPOWERS instead.
-            if (Event.current.type == EventType.Repaint && HoverHighlight.Active && HoverHighlight.def != ability)
+            // sources); holding Left Ctrl pulses the skills it EMPOWERS instead. Off when the synergy
+            // system is disabled, and never on a fogged (hidden) node.
+            if (synergiesOn && !fog && Event.current.type == EventType.Repaint && HoverHighlight.Active && HoverHighlight.def != ability)
             {
                 bool related = HoverHighlight.ctrl
                     ? PsycastInfo.SynergySources(ability).Contains(HoverHighlight.def)      // this is empowered BY the hovered skill
@@ -54,9 +63,6 @@ namespace PsycastSynergies
                 }
             }
 
-            // Un-learned skills still get the styled card (for tree pre-planning) but no level
-            // badge / + / invest-click - VPE keeps its own unlock-click for those.
-            bool owned = fLearned.Contains(ability);
             int cap = SkillSystem.MaxLevel(pawn, ability, fPsy);
             // Learning a psycast IS its first level: the single point spent to unlock it both learns the
             // skill AND moves it 0 -> 1. So a learned skill always reads (at least) 1/x and is castable;
@@ -111,14 +117,38 @@ namespace PsycastSynergies
                 SkillFx.Draw(inRect, SkillFx.KeySkill(pawn, ability));
             }
 
+            // Fog cover: paint over the un-learned icon so its identity stays hidden. Drawn on Repaint
+            // only (no ButtonInvisible), so VPE's own click-to-unlock passes straight through - the
+            // moment the pawn learns it, owned flips true and the cover is gone next frame.
+            if (fog && Event.current.type == EventType.Repaint)
+            {
+                GameFont pf = Text.Font; TextAnchor pa = Text.Anchor;
+                GUI.color = new Color(0.05f, 0.05f, 0.07f, 0.93f);
+                GUI.DrawTexture(inRect, BaseContent.WhiteTex);
+                GUI.color = new Color(0.55f, 0.5f, 0.35f, 0.55f);
+                Widgets.DrawBox(inRect, 1);
+                Text.Font = GameFont.Medium; Text.Anchor = TextAnchor.MiddleCenter;
+                GUI.color = new Color(0.82f, 0.74f, 0.42f, 0.9f);
+                Widgets.Label(inRect, "?");
+                Text.Font = pf; Text.Anchor = pa; GUI.color = Color.white;
+            }
+
             // Styled floating breakdown card (True RPG Inventory look) on hover; we also
             // suppress VPE's own plain tooltip for this exact icon (see Patch_SuppressVpeAbilityTip).
             if (Mouse.IsOver(inRect))
             {
-                HoverHighlight.def = ability;
-                HoverHighlight.frame = Time.frameCount;
-                HoverHighlight.ctrl = Event.current.control;
-                SkillTooltip.NotifyHover(pawn, ability, inRect, owned);
+                if (fog)
+                {
+                    // Suppress VPE's own tooltip so the fogged skill reveals nothing on hover.
+                    SkillTooltip.NotifyFogHover(inRect);
+                }
+                else
+                {
+                    HoverHighlight.def = ability;
+                    HoverHighlight.frame = Time.frameCount;
+                    HoverHighlight.ctrl = Event.current.control;
+                    SkillTooltip.NotifyHover(pawn, ability, inRect, owned);
+                }
             }
 
             // Click an owned, below-cap icon to invest ONE level. Plain click → styled confirm

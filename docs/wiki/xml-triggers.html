@@ -175,6 +175,43 @@
   wins; the first mod supplying <code>tierNames</code>/<code>tierSpecPoints</code> wins those (a log warning
   names any loser). Everything is queryable from C# via <code>PsycastSynergies.TieringControl</code>.</p>
 
+  <h2>9. Shipping your own balance: BalanceOverrideDef</h2>
+  <p>Modpack and addon authors can retune the synergy graph without touching Psycasts²'s files. Ship one def
+  in <i>your own</i> mod's Defs and it folds into the balance overlay for every player of the pack. It layers
+  above the mod's own baked defaults, but <b>under</b> a player's personal in-game Balance-editor edits, so
+  players keep the final say.</p>
+  <pre><code>&lt;PsycastSynergies.BalanceOverrideDef&gt;
+  &lt;defName&gt;MyPack_PsycastBalance&lt;/defName&gt;
+
+  &lt;!-- Per-ability primary: which stat the ability's OWN levels scale, plus a strength multiplier. --&gt;
+  &lt;primaries&gt;
+    &lt;li&gt;&lt;ability&gt;VPE_Firestorm&lt;/ability&gt;&lt;stat&gt;Power&lt;/stat&gt;&lt;strength&gt;1.5&lt;/strength&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;ability&gt;VPE_BladeFocus&lt;/ability&gt;&lt;stat&gt;none&lt;/stat&gt;&lt;/li&gt;      &lt;!-- no primary scaling --&gt;
+  &lt;/primaries&gt;
+
+  &lt;!-- Per-edge empower: how a SOURCE ability feeds a TARGET ability (stat + strength). --&gt;
+  &lt;empowers&gt;
+    &lt;li&gt;&lt;source&gt;VPE_Flame&lt;/source&gt;&lt;target&gt;VPE_Firestorm&lt;/target&gt;&lt;stat&gt;Radius&lt;/stat&gt;&lt;strength&gt;0.5&lt;/strength&gt;&lt;/li&gt;
+  &lt;/empowers&gt;
+
+  &lt;!-- Full replacement of a target ability's synergy-source list. --&gt;
+  &lt;sources&gt;
+    &lt;li&gt;&lt;ability&gt;VPE_Firestorm&lt;/ability&gt;&lt;from&gt;&lt;li&gt;VPE_Flame&lt;/li&gt;&lt;li&gt;VPE_Ignite&lt;/li&gt;&lt;/from&gt;&lt;/li&gt;
+  &lt;/sources&gt;
+&lt;/PsycastSynergies.BalanceOverrideDef&gt;</code></pre>
+  <table class="t">
+    <tr><th>Field</th><th>Effect</th></tr>
+    <tr><td><code>primaries</code></td><td>Per-ability primary stat + strength. <code>ability</code> is the ability defName.</td></tr>
+    <tr><td><code>empowers</code></td><td>Per-edge stat + strength for a <code>source</code>&#8594;<code>target</code> link.</td></tr>
+    <tr><td><code>sources</code></td><td>Replace a target <code>ability</code>'s entire synergy-source list with <code>from</code>.</td></tr>
+    <tr><td><code>stat</code></td><td>Any SynStat name (Power, Radius, Duration, Strength, Range, Cooldown, Targets, Charges, Efficiency, Haste, Yield, ProjectileCount, SummonCount), case-insensitive, or <code>none</code> for no scaling. Omit to leave the auto/baked stat.</td></tr>
+    <tr><td><code>strength</code></td><td>Scaling multiplier (1 = auto). Omit to leave the auto/baked strength.</td></tr>
+  </table>
+  <p>Every field is optional - supply only what you want to change. Later-loading defs win a key over earlier
+  ones (last-wins). Players can also round-trip a shared JSON in-game: <b>mod settings &#8594; Specializations
+  &#8594; Import balance edits (from JSON)</b> reads any file the <b>Share</b> button exported into the
+  <code>Psycasts2</code> save-data folder back into their live overlay.</p>
+
   <div class="pagenav" id="pagenav"></div>
 </article>
 </div>

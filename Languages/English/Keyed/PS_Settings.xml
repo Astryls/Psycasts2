@@ -30,6 +30,10 @@
   <PS_SetPsyLevelsPerSkillTip>Gating: a skill can only be raised as high as your psycaster level supports. Higher values mean leveling skills demands a higher psycaster level first.</PS_SetPsyLevelsPerSkillTip>
   <PS_SetSkillFx>Level-up bursts and sounds</PS_SetSkillFx>
   <PS_SetSkillFxTip>Celebration effects when investing skill levels: a sparkle burst and soft psychic whoosh per level, a grand gold flare with a map-side shimmer when a psycast reaches its absolute maximum level, and node bursts when specialization picks are committed (gold for capstones and Convergence). Turn off to keep the old minimal click feedback.</PS_SetSkillFxTip>
+  <PS_SetDisableSynergies>Disable synergies and empowers</PS_SetDisableSynergies>
+  <PS_SetDisableSynergiesTip>Turn off the whole cross-ability synergy system. Each psycast still grows with its OWN invested levels, but leveling other psycasts of the same path no longer feeds it, and the skill card and hover no longer show "gains power from" or "empowers" links. Off by default.</PS_SetDisableSynergiesTip>
+  <PS_SetFogOfWar>Fog of war (hide unlearned psycasts)</PS_SetFogOfWar>
+  <PS_SetFogOfWarTip>Hide the identity of every psycast you have not learned yet behind a "?" on the tree, so you discover each skill only when you unlock it. The tree layout stays visible; click a hidden node to learn it and reveal it. Off by default.</PS_SetFogOfWarTip>
   <PS_SetH_WhatScales>What scales</PS_SetH_WhatScales>
   <PS_SetScalePower>Scale power / damage</PS_SetScalePower>
   <PS_SetScalePowerTip>Scale an ability's power, such as melee and explosion damage, with its level and synergies.</PS_SetScalePowerTip>
@@ -73,6 +77,7 @@
   <PS_SetLockPaths>Lock paths to Enlightenment</PS_SetLockPaths>
   <PS_SetLockPathsTip>Paths unlock ONLY through the awakening cards; the tab's normal Unlock buttons are disabled. Dev mode still bypasses this.</PS_SetLockPathsTip>
   <PS_SetH_SynergyGraph>Synergy graph</PS_SetH_SynergyGraph>
+  <PS_SetSynDisabledNote>The synergy and empower system is currently disabled (Skills tab). These settings still edit the stored graph, but it has no effect in-game until you re-enable synergies.</PS_SetSynDisabledNote>
   <PS_SetSynFrozen>Synergies are frozen the first time they are generated and never change afterward, even if you add psycast addons later.</PS_SetSynFrozen>
   <PS_SetSynRetune>To retune skill effects, synergies and empowers, enable dev mode and open the Balance editor from the psycast tab.</PS_SetSynRetune>
   <PS_SetSynEditsActive>You have {0} personal edit(s) active.</PS_SetSynEditsActive>
@@ -90,6 +95,11 @@
 The file path was copied to the clipboard. Send this file to the mod author with your balancing ideas - addon trees are included and named.</PS_SetShareBody>
   <PS_MsgNoShare>No balance edits to share yet - tune some numbers in the Balance editor first.</PS_MsgNoShare>
   <PS_MsgShareFailed>Export failed: {0}</PS_MsgShareFailed>
+  <PS_SetImport>Import balance edits (from JSON)</PS_SetImport>
+  <PS_SetImportTitle>Balance edits imported</PS_SetImportTitle>
+  <PS_SetImportBody>Imported {0} balance edit(s) from {1} into your live overlay. They apply on top of the mod's defaults and can be shared, discarded, or (in dev mode) baked like any other edit.</PS_SetImportBody>
+  <PS_MsgImportFailed>Import failed: {0}</PS_MsgImportFailed>
+  <PS_MsgNoImportFiles>No balance-edit JSON files found. Drop a shared file (exported with the Share button) into: {0}</PS_MsgNoImportFiles>
   <PS_SetBake>Bake edits into mod defaults</PS_SetBake>
   <PS_SetBakeN>Bake {0} edit(s) into mod defaults</PS_SetBakeN>
   <PS_SetBakeTitle>Bake balance edits</PS_SetBakeTitle>

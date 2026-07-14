@@ -36,6 +36,14 @@ namespace PsycastSynergies
             suppressRect = rect; suppressFrame = Time.frameCount;
         }
 
+        // Fog-of-war hover: suppress VPE's own ability tooltip for this rect WITHOUT arming our own
+        // card (ability = null makes DrawFloating bail), so a hidden skill reveals nothing.
+        public static void NotifyFogHover(Rect rect)
+        {
+            ability = null;
+            suppressRect = rect; suppressFrame = Time.frameCount;
+        }
+
         public static bool ShouldSuppress(Rect rect)
             => suppressFrame == Time.frameCount && rect == suppressRect;
 
@@ -223,6 +231,7 @@ namespace PsycastSynergies
             public bool showCost; public float costPct;
             public float psyfocusCost, entropyCost;
             public bool alt;
+            public bool synergiesOff;   // synergy system disabled: hide receives/empowers sections
         }
 
         private static Model Build(Pawn pawn, AbilityDef def, bool owned)
@@ -269,22 +278,23 @@ namespace PsycastSynergies
             // Sources can be any tier in the path (a bottom skill can feed a capstone).
             SynStat? thisPrim = PsycastInfo.PrimaryStat(def);
             var received = new List<Recv>();
-            foreach (var src in PsycastInfo.SynergySources(def))
-            {
-                SynStat? sp = PsycastInfo.EdgeStat(src, def);
-                if (!sp.HasValue) continue;
-                int sl = gc.GetLevel(pawn, src);
-                float estr = PsycastInfo.EdgeStrength(src, def);
-                float rate = SkillSystem.SynergyRate(sp.Value) * estr;
-                received.Add(new Recv { def = src, lvl = sl, stat = sp.Value, pct = sl * rate, rate = rate, str = estr,
-                                        raw = PrimaryBaseValue(def, inst, sp.Value) * rate });
-            }
+            if (!s.disableSynergies)
+                foreach (var src in PsycastInfo.SynergySources(def))
+                {
+                    SynStat? sp = PsycastInfo.EdgeStat(src, def);
+                    if (!sp.HasValue) continue;
+                    int sl = gc.GetLevel(pawn, src);
+                    float estr = PsycastInfo.EdgeStrength(src, def);
+                    float rate = SkillSystem.SynergyRate(sp.Value) * estr;
+                    received.Add(new Recv { def = src, lvl = sl, stat = sp.Value, pct = sl * rate, rate = rate, str = estr,
+                                            raw = PrimaryBaseValue(def, inst, sp.Value) * rate });
+                }
             received.Sort((a, b) => b.lvl.CompareTo(a.lvl));
 
             // Empowers: the skills that list THIS skill among their synergy sources - each in the
             // type THIS→that link rolled, so the same skill empowers different mates differently.
             var empowers = new List<Emp>();
-            if (ext?.path?.abilities != null)
+            if (!s.disableSynergies && ext?.path?.abilities != null)
                 foreach (var z in ext.path.abilities)
                 {
                     if (z == def) continue;
@@ -329,6 +339,7 @@ namespace PsycastSynergies
                 received = received,
                 empowers = empowers,
                 empowersLine = empowersLine,
+                synergiesOff = s.disableSynergies,
                 showCost = true,
                 costPct = s.scaleCost ? s.costPerLevelPct : 0f,
                 psyfocusCost = ext != null ? ext.GetPsyfocusUsedByPawn(pawn) : 0f,
@@ -403,7 +414,11 @@ namespace PsycastSynergies
             h += 30f;                                      // bottom required-level line + divider
             if (m.effects.Count > 0) h += 18f + m.effects.Count * Row;
 
-            if (m.full)
+            if (m.synergiesOff)
+            {
+                // no receives/empowers section when the synergy system is off
+            }
+            else if (m.full)
             {
                 h += 7f + 18f + (m.received.Count > 0 ? Shown(m.received.Count) : 1) * Row;
                 if (!m.empowersLine.NullOrEmpty()) h += 7f + TextH(m.empowersLine, inner) + 4f;
@@ -526,7 +541,11 @@ namespace PsycastSynergies
                 }
             }
 
-            if (m.full)
+            if (m.synergiesOff)
+            {
+                // synergy system disabled: skills scale from their own levels only
+            }
+            else if (m.full)
             {
                 Divider(col, ref y);
                 Label(col.x + 8f, ref y, innerW, m.def.LabelCap + RecvSuffix, Palette.TextDim, 18f);

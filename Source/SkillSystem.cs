@@ -135,8 +135,9 @@ namespace PsycastSynergies
 
             // Synergy: this skill's FIXED 3-5 synergy sources each contribute a bonus in their OWN
             // type. So a skill receives a small, curated MIX (not the whole path), and a source can
-            // be any tier in the path (a bottom skill can feed a capstone).
-            if (s.synergyPct > 0f)
+            // be any tier in the path (a bottom skill can feed a capstone). Skipped entirely when the
+            // player disables the synergy system (own-level scaling above still applies).
+            if (!s.disableSynergies && s.synergyPct > 0f)
             {
                 float synFactor = SpecEffects.SynergyFactor(pawn);
                 bool offDouble = SpecEffects.OffensiveSourceDoubled(pawn);
