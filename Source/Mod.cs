@@ -24,6 +24,9 @@ namespace PsycastSynergies
         // invested levels only, and the tooltip/hover no longer show "receives from" / "empowers".
         // Off by default (synergies stay on).
         public bool disableSynergies = false;
+        // Hide the player-facing reset buttons (for hardcore / no-take-backs modpacks). Off by default.
+        public bool disableSkillReset = false;   // hides the psycast tab's "Reset skills" button
+        public bool disableSpecReset = false;    // hides the constellation window's "Reset specializations" refund button
         // Temporarily boost the caster's Psychic Sensitivity during a cast so effects that derive
         // from it (very common in addons that hardcode radius/damage as X*sensitivity) also scale.
         public bool scaleViaSensitivity = true;
@@ -130,6 +133,8 @@ namespace PsycastSynergies
             Scribe_Values.Look(ref skillFx, "skillFx", true);
             Scribe_Values.Look(ref fogOfWar, "fogOfWar", false);
             Scribe_Values.Look(ref disableSynergies, "disableSynergies", false);
+            Scribe_Values.Look(ref disableSkillReset, "disableSkillReset", false);
+            Scribe_Values.Look(ref disableSpecReset, "disableSpecReset", false);
             Scribe_Values.Look(ref scaleViaSensitivity, "scaleViaSensitivity", true);
             Scribe_Values.Look(ref scalePower, "scalePower", true);
             Scribe_Values.Look(ref scaleRadius, "scaleRadius", true);
@@ -338,6 +343,7 @@ namespace PsycastSynergies
                 "PS_SetPsyLevelsPerSkillTip".Translate());
             CB(l, "PS_SetSkillFx".Translate(), ref s.skillFx, "PS_SetSkillFxTip".Translate());
             CB(l, "PS_SetFogOfWar".Translate(), ref s.fogOfWar, "PS_SetFogOfWarTip".Translate());
+            CB(l, "PS_SetNoSkillReset".Translate(), ref s.disableSkillReset, "PS_SetNoSkillResetTip".Translate());
 
             Head(l, "PS_SetH_WhatScales".Translate());
             CB(l, "PS_SetScalePower".Translate(), ref s.scalePower, "PS_SetScalePowerTip".Translate());
@@ -371,6 +377,7 @@ namespace PsycastSynergies
                 "PS_SetTier2PointsTip".Translate());
             IS(l, "PS_SetTier3Points".Translate(s.tier3SpecPoints), ref s.tier3SpecPoints, 0, 16,
                 "PS_SetTier3PointsTip".Translate());
+            CB(l, "PS_SetNoSpecReset".Translate(), ref s.disableSpecReset, "PS_SetNoSpecResetTip".Translate());
 
             Head(l, "PS_SetH_PathAccess".Translate());
             CB(l, "PS_SetNoGeneReq".Translate(), ref s.disableGeneRequirements, "PS_SetNoGeneReqTip".Translate());

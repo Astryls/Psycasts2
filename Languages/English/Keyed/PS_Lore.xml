@@ -60,6 +60,8 @@
   <PS_AnimaSites>Sites completed: {0} / {1}</PS_AnimaSites>
   <PS_AnimaHere> &#183; here: {0}h / {1}h</PS_AnimaHere>
   <PS_AnimaToday> &#183; today: {0}h / {1}h</PS_AnimaToday>
+  <PS_ThePilgrim>The pilgrim</PS_ThePilgrim>
+  <PS_MsgPilgrimReform>{0} has completed the pilgrimage and broken through. Reform a caravan at the site to bring them home.</PS_MsgPilgrimReform>
   <PS_StopMeditatingAt>Stop meditating ({0})</PS_StopMeditatingAt>
   <PS_MeditateAt>Meditate at {0} (until told to stop)</PS_MeditateAt>
   <PS_CannotReachSuffix> (cannot reach)</PS_CannotReachSuffix>

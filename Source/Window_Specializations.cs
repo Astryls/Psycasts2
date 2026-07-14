@@ -71,6 +71,7 @@ namespace PsycastSynergies
             absorbInputAroundWindow = false;
             draggable = false;   // body drag pans the constellation instead of moving the window
             preventCameraMotion = false;
+            resizeable = true;   // drag the bottom-right corner to resize
         }
 
         public override void PreClose()
@@ -173,7 +174,6 @@ namespace PsycastSynergies
             var d = Data;
             if (d == null) { Close(); return; }
 
-            resizeable = editMode;
             Palette.DrawCard(inRect);
 
             // Header.
@@ -576,7 +576,8 @@ namespace PsycastSynergies
 
             // Player reset (free): refund every owned spec back to the point pool.
             bool hasOwned = d.owned.Count > 0;
-            if (IconButton(respecRow, RespecTex, hasOwned ? "PS_SpecResetRefund".Translate(d.owned.Sum(id => Specs.Get(id)?.cost ?? 0)).ToString() : "PS_SpecResetAll".Translate().ToString(), hasOwned))
+            bool showSpecReset = PsycastSynergiesMod.Settings == null || !PsycastSynergiesMod.Settings.disableSpecReset;
+            if (showSpecReset && IconButton(respecRow, RespecTex, hasOwned ? "PS_SpecResetRefund".Translate(d.owned.Sum(id => Specs.Get(id)?.cost ?? 0)).ToString() : "PS_SpecResetAll".Translate().ToString(), hasOwned))
                 OpenRespecConfirm(d);
 
             // Apply / Clear (icon buttons).

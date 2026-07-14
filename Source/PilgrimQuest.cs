@@ -383,14 +383,27 @@ namespace PsycastSynergies
             if (firedEnd) return; firedEnd = true;
             try { MeditationSystem.OpenPick(pilgrim, targetTier); }
             catch (System.Exception e) { Log.Warning("[Psycasts²] pilgrim awakening open failed: " + e); }
-            if (site != null && !site.Destroyed) site.Destroy();
+            // Do NOT destroy the site here: tearing down the map while the pilgrim is standing on it
+            // loses them. Leave the map so the player can reform a caravan and travel home - the site
+            // auto-removes once the caravan leaves (Site.ShouldRemoveMapNow). Refresh the timeout so a
+            // stale one can't yank the map before they get a chance to reform.
+            if (site != null && !site.Destroyed && site.HasMap)
+            {
+                site.GetComponent<TimeoutComp>()?.StartTimeout(15 * 60000);
+                Messages.Message("PS_MsgPilgrimReform".Translate(pilgrim?.LabelShortCap ?? "PS_ThePilgrim".Translate()),
+                    pilgrim, MessageTypeDefOf.PositiveEvent, false);
+            }
+            else if (site != null && !site.Destroyed) site.Destroy();   // no map loaded -> safe to clean up now
             quest.End(QuestEndOutcome.Success, sendStandardLetter: true);
         }
 
         private void FireFail()
         {
             if (firedEnd) return; firedEnd = true;
-            if (site != null && !site.Destroyed) site.Destroy();
+            // Spare the site if the pilgrim is still standing on its map (tier-mismatch edge case), so a
+            // fail can't strand them either - let them reform a caravan out.
+            bool pilgrimOnSite = site != null && site.HasMap && pilgrim != null && !pilgrim.Dead && pilgrim.MapHeld == site.Map;
+            if (site != null && !site.Destroyed && !pilgrimOnSite) site.Destroy();
             quest.End(QuestEndOutcome.Fail, sendStandardLetter: true);
         }
 
@@ -647,21 +660,32 @@ namespace PsycastSynergies
             if (firedEnd) return; firedEnd = true;
             try { MeditationSystem.OpenPick(pilgrim, targetTier); }
             catch (System.Exception e) { Log.Warning("[Psycasts²] anima awakening open failed: " + e); }
-            DestroyAllSites();
+            // Keep the site the pilgrim is standing on so the player can reform a caravan home; the
+            // other (already-vacated) sites are cleaned up. The kept site auto-removes when they leave.
+            Site keep = pilgrim?.MapHeld?.Parent as Site;
+            DestroyAllSitesExcept(keep);
+            if (keep != null && !keep.Destroyed && keep.HasMap)
+            {
+                keep.GetComponent<TimeoutComp>()?.StartTimeout(15 * 60000);
+                Messages.Message("PS_MsgPilgrimReform".Translate(pilgrim?.LabelShortCap ?? "PS_ThePilgrim".Translate()),
+                    pilgrim, MessageTypeDefOf.PositiveEvent, false);
+            }
             quest.End(QuestEndOutcome.Success, sendStandardLetter: true);
         }
 
         private void FireFail()
         {
             if (firedEnd) return; firedEnd = true;
-            DestroyAllSites();
+            // Spare the site the pilgrim is standing on (if alive) so a fail can't strand them.
+            Site keep = (pilgrim != null && !pilgrim.Dead) ? pilgrim.MapHeld?.Parent as Site : null;
+            DestroyAllSitesExcept(keep);
             quest.End(QuestEndOutcome.Fail, sendStandardLetter: true);
         }
 
-        private void DestroyAllSites()
+        private void DestroyAllSitesExcept(Site keep)
         {
             if (sites == null) return;
-            foreach (var s in sites) if (s != null && !s.Destroyed) s.Destroy();
+            foreach (var s in sites) if (s != null && !s.Destroyed && s != keep) s.Destroy();
         }
 
         public override void ExposeData()

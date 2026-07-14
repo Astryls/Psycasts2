@@ -34,6 +34,8 @@
   <PS_SetDisableSynergiesTip>Turn off the whole cross-ability synergy system. Each psycast still grows with its OWN invested levels, but leveling other psycasts of the same path no longer feeds it, and the skill card and hover no longer show "gains power from" or "empowers" links. Off by default.</PS_SetDisableSynergiesTip>
   <PS_SetFogOfWar>Fog of war (hide unlearned psycasts)</PS_SetFogOfWar>
   <PS_SetFogOfWarTip>Hide the identity of every psycast you have not learned yet behind a "?" on the tree, so you discover each skill only when you unlock it. The tree layout stays visible; click a hidden node to learn it and reveal it. Off by default.</PS_SetFogOfWarTip>
+  <PS_SetNoSkillReset>Disable skill resets</PS_SetNoSkillReset>
+  <PS_SetNoSkillResetTip>Hide the "Reset skills" button on the psycast tab, so invested skill levels can never be refunded. For hardcore or no-take-backs runs. Off by default.</PS_SetNoSkillResetTip>
   <PS_SetH_WhatScales>What scales</PS_SetH_WhatScales>
   <PS_SetScalePower>Scale power / damage</PS_SetScalePower>
   <PS_SetScalePowerTip>Scale an ability's power, such as melee and explosion damage, with its level and synergies.</PS_SetScalePowerTip>
@@ -69,6 +71,8 @@
   <PS_SetTier2PointsTip>Specialization points granted the moment a pawn reaches Enlightenment Tier II.</PS_SetTier2PointsTip>
   <PS_SetTier3Points>Tier III bonus points: {0}</PS_SetTier3Points>
   <PS_SetTier3PointsTip>Specialization points granted the moment a pawn reaches Enlightenment Tier III.</PS_SetTier3PointsTip>
+  <PS_SetNoSpecReset>Disable specialization resets</PS_SetNoSpecReset>
+  <PS_SetNoSpecResetTip>Hide the "Reset specializations" refund button in the constellation window, so committed specialization points can never be reclaimed. For hardcore or no-take-backs runs. Off by default.</PS_SetNoSpecResetTip>
   <PS_SetH_PathAccess>Path access</PS_SetH_PathAccess>
   <PS_SetNoGeneReq>Disable gene requirements</PS_SetNoGeneReq>
   <PS_SetNoGeneReqTip>Paths that require a specific gene, such as Archon, unlock without needing the gene.</PS_SetNoGeneReqTip>

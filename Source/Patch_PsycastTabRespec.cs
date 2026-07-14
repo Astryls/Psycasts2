@@ -43,8 +43,10 @@ namespace PsycastSynergies
             float rowX = x0 + (panelW - rowW) / 2f;   // centered on the card
             float bw = (rowW - gap) / 2f;
             float y = size.y - h - 10f;
+            bool showSkillReset = PsycastSynergiesMod.Settings == null || !PsycastSynergiesMod.Settings.disableSkillReset;
             var r1 = new Rect(rowX, y, bw, h);
-            var r2 = new Rect(r1.xMax + gap, y, bw, h);
+            // When the skill-reset button is hidden, the path-reset button spans the full row.
+            var r2 = showSkillReset ? new Rect(r1.xMax + gap, y, bw, h) : new Rect(rowX, y, rowW, h);
 
             bool dev = Prefs.DevMode;
             bool ours = pawn.Faction != null && pawn.Faction.IsPlayer;
@@ -114,7 +116,7 @@ namespace PsycastSynergies
                 }
             }
 
-            if (MXStyle.Button(r1, learnedPsycasts > 0 ? "PS_ResetSkillsN".Translate(learnedPsycasts).ToString() : "PS_ResetSkills".Translate().ToString()))
+            if (showSkillReset && MXStyle.Button(r1, learnedPsycasts > 0 ? "PS_ResetSkillsN".Translate(learnedPsycasts).ToString() : "PS_ResetSkills".Translate().ToString()))
             {
                 if (learnedPsycasts > 0)
                     Find.WindowStack.Add(new Dialog_Confirm("PS_ResetSkills".Translate(),
