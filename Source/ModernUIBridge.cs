@@ -36,12 +36,18 @@ namespace PsycastSynergies
             }
         }
 
-        // Width of the psycast tab's left pawn-info card. Modern Psycasts UI draws it at a FIXED
-        // 340px (x=14, 14px inner padding) regardless of tab width; VPE's own tab scales it with
-        // the tab. Everything we draw into that card (spec/tier buttons, the footer tool block)
-        // must anchor off THIS, not size.x, or it drifts at narrow tab widths.
+        // Left inset (x) of the psycast tab's pawn-info panel. Modern Psycasts UI draws its card at
+        // x=14; VPE's native tab insets its whole left panel by 20 (Rect(20, 20, ...)).
+        internal static float LeftCardX => Wired ? 14f : 20f;
+
+        // Width of the psycast tab's left pawn-info panel. Modern Psycasts UI draws it at a FIXED
+        // 340px (x=14) regardless of tab width. VPE's NATIVE tab makes its left panel the full
+        // size.x*0.3 (TakeLeftPart(size.x*0.3) at x=20) - so we must match that exactly (NOT cap it
+        // at 340, which on wide screens left our footer/spec button too narrow and mis-anchored,
+        // exposing VPE's own bottom checkboxes). Everything we draw into the panel (spec/tier
+        // buttons, the footer tool block) anchors off LeftCardX + this, not raw size.x.
         internal static float LeftCardWidth(float tabWidth) =>
-            Wired ? 340f : UnityEngine.Mathf.Min(tabWidth * 0.3f, 340f);
+            Wired ? 340f : tabWidth * 0.3f;
 
         internal static void TryWire()
         {

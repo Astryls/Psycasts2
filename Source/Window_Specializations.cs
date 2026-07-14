@@ -823,10 +823,10 @@ namespace PsycastSynergies
                 Vector2 size = __instance.Size;
                 var d = GameComponent_PsycastSynergies.Instance?.GetSpec(pawn, create: true);
 
-                // Right-aligned FLUSH to the left (pawn-info) card's own edge (card at x=14, width
-                // from ModernUIBridge.LeftCardWidth): 3px inset so we sit just inside the 2px border,
-                // NOT at the 14px-padded content edge — the buttons hug the panel edge itself.
-                const float x0 = 14f;
+                // Right-aligned FLUSH to the left (pawn-info) panel's own edge (x + width from
+                // ModernUIBridge): 3px inset so we sit just inside the border, NOT at the padded
+                // content edge — the buttons hug the panel edge itself, in both VPE and Modern UI.
+                float x0 = ModernUIBridge.LeftCardX;
                 float panelW = ModernUIBridge.LeftCardWidth(size.x);
                 Rect r = new Rect(x0 + panelW - 3f - 92f, 18f, 92f, 26f);
 

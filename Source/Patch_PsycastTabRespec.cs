@@ -39,15 +39,22 @@ namespace PsycastSynergies
             Vector2 size = __instance.Size;
             var prevF = Text.Font; var prevA = Text.Anchor; var prevC = GUI.color;
 
-            // Align with the tab's left (pawn-info) card: both VPE's tab and Modern Psycasts UI
-            // inset that card 14px from the tab edge. Rows are centered within the card's width
-            // (Modern UI's card is a fixed 340px — see ModernUIBridge.LeftCardWidth).
-            const float x0 = 14f, pad = 14f, h = 28f, gap = 8f;
+            // Align with the tab's left (pawn-info) panel. Modern Psycasts UI = fixed 340px card at
+            // x=14; VPE's native tab = the full size.x*0.3 panel at x=20 (see ModernUIBridge). Rows
+            // are centered within the panel width.
+            const float pad = 14f, h = 28f, gap = 8f;
+            float x0 = ModernUIBridge.LeftCardX;
             float panelW = ModernUIBridge.LeftCardWidth(size.x);
             float rowW = panelW - pad * 2f;
             float rowX = x0 + (panelW - rowW) / 2f;   // centered on the card
             float bw = (rowW - gap) / 2f;
-            float y = size.y - h - 10f;
+            // VPE's NATIVE tab packs its own controls into the very bottom of the left panel: it reserves
+            // 30px for the "Use alternative background" checkbox + another 30px for "Dev Mode" (dev only).
+            // Sit our footer FULLY above both, with an ~18px buffer, so the psyset area stays above us and
+            // both checkboxes remain visible/clickable below. Modern Psycasts UI's card is content-sized
+            // with free space below it, so it needs no reserve.
+            float bottomReserve = ModernUIBridge.Wired ? 0f : (58f + (Prefs.DevMode ? 30f : 0f));
+            float y = size.y - h - 10f - bottomReserve;
             bool showSkillReset = PsycastSynergiesMod.Settings == null || !PsycastSynergiesMod.Settings.disableSkillReset;
             var r1 = new Rect(rowX, y, bw, h);
             // When the skill-reset button is hidden, the path-reset button spans the full row.
@@ -64,7 +71,9 @@ namespace PsycastSynergies
             float yFocus = cursor;
             if (dev) cursor -= h + 6f;
             float yDev = cursor;
-            MXStyle.Fill(new Rect(rowX - 6f, cursor - 6f, rowW + 12f, size.y - 4f - cursor + 6f), new Color(0.04f, 0.05f, 0.07f, 0.9f));
+            // Contained to the tool block itself (top of the highest row -> bottom of the reset row), so
+            // it never bleeds over VPE's own controls sitting below it in the reserved strip.
+            MXStyle.Fill(new Rect(rowX - 6f, cursor - 6f, rowW + 12f, y + h - cursor + 12f), new Color(0.06f, 0.07f, 0.09f, 1f));
 
             // The tab's SECOND dev-mode tool (VPE's dev checkbox being the first): the in-game
             // synergy balance editor. Dev-gated, but its edits persist for normal play.
