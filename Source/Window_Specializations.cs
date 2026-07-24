@@ -597,6 +597,7 @@ namespace PsycastSynergies
                     d.points += d.owned.Sum(id => Specs.Get(id)?.cost ?? 0);
                     d.owned.Clear(); d.masteryDef = null; d.disciplinePath = null; d.attuneDamage = null;
                     pending.Clear(); pendMastery = null; pendDiscipline = null; pendAttune = null;
+                    PerfCache.Bump();   // spec state feeds StatMultiplier - invalidate the tick memo
                 } dx += bw + gap;
                 Rect er = new Rect(dx, devRow.y, bw, 24f);
                 if (IconButton(er, DevEditTex, null, true)) editMode = !editMode;
@@ -729,6 +730,7 @@ namespace PsycastSynergies
             d.points += d.owned.Sum(id => Specs.Get(id)?.cost ?? 0);
             d.owned.Clear(); d.masteryDef = null; d.disciplinePath = null; d.attuneDamage = null;
             pending.Clear(); pendMastery = null; pendDiscipline = null; pendAttune = null;
+            PerfCache.Bump();   // spec state feeds StatMultiplier - invalidate the tick memo
             if (pawn != null) AscensionSystem.Sync(pawn, d);   // drop ascension hediffs immediately
             SoundDefOf.Quest_Accepted.PlayOneShotOnCamera();
         }
@@ -753,6 +755,7 @@ namespace PsycastSynergies
             if (pendDiscipline != null) d.disciplinePath = pendDiscipline;
             if (pendAttune != null) d.attuneDamage = pendAttune;
             pending.Clear(); pendMastery = null; pendDiscipline = null; pendAttune = null;
+            PerfCache.Bump();   // owned/mastery/discipline/attunement feed StatMultiplier - invalidate the tick memo
             SoundDefOf.Quest_Accepted.PlayOneShotOnCamera();   // satisfying confirm chime
             if (majorDone) SkillFx.MinorPulse(pawn);           // psychic pulse at the pawn for capstones
             // Finishing a spoke opens Convergence (the synergized apex) - pan the camera to it.

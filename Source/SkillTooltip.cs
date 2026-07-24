@@ -21,7 +21,15 @@ namespace PsycastSynergies
         private const float Pad = 8f;
         private const float Row = 20f;
         private const int MaxList = 12;
-        private static string RecvSuffix => "PS_TipRecvSuffix".Translate();
+        // Fixed labels resolved once per language (Translate() allocates per call; Draw runs per frame).
+        private static readonly PerfCache.LangCache RecvSuffixC = new PerfCache.LangCache("PS_TipRecvSuffix");
+        private static readonly PerfCache.LangCache LblSkillLevel = new PerfCache.LangCache("PS_TipSkillLevel");
+        private static readonly PerfCache.LangCache LblCurrentEffects = new PerfCache.LangCache("PS_TipCurrentEffects");
+        private static readonly PerfCache.LangCache LblNoMates = new PerfCache.LangCache("PS_TipNoMates");
+        private static readonly PerfCache.LangCache LblHoldShift = new PerfCache.LangCache("PS_TipHoldShift");
+        private static readonly PerfCache.LangCache LblCastCost = new PerfCache.LangCache("PS_TipCastCost");
+        private static readonly PerfCache.LangCache LblCostPerLevel = new PerfCache.LangCache("PS_TipCostPerLevel");
+        private static string RecvSuffix => RecvSuffixC.Value;
 
         private static Pawn pawn;
         private static AbilityDef ability;
@@ -232,6 +240,21 @@ namespace PsycastSynergies
             public float psyfocusCost, entropyCost;
             public bool alt;
             public bool synergiesOff;   // synergy system disabled: hide receives/empowers sections
+
+            // Precomputed draw strings (built once per model; the model itself is cached across
+            // frames, so Draw never runs Translate/format/concat while merely hovering).
+            public string lvlValStr;         // "3 / 10" or "5 / 15  (+2 gear)"
+            public string eachLine;          // "Each level: ..." (null when no primary)
+            public string recvHeader;        // "<name> receives bonuses from"
+            public string moreRowsLine;      // "...N more" (null when all shown)
+            public string costLine;          // "12% psyfocus  •  8 heat" (null when free)
+            public string costPerLevelVal;   // formatted cost-per-level value
+            public string reqLine;           // bottom required/max-level line
+            public bool reqIsMax;
+            public string footer;
+            public string[] recvNorm, recvAlt;   // per-received-row text, normal + Alt variants
+            public float roleChipW;              // measured role-chip width (Text.CalcSize per frame otherwise)
+            public float descH, sumH, empH;      // measured wrap heights at the final card width
         }
 
         private static Model Build(Pawn pawn, AbilityDef def, bool owned)
@@ -317,7 +340,7 @@ namespace PsycastSynergies
 
             SynStat? prim = PsycastInfo.PrimaryStat(def);
 
-            return new Model
+            var m = new Model
             {
                 def = def,
                 owned = owned,
@@ -345,6 +368,54 @@ namespace PsycastSynergies
                 psyfocusCost = ext != null ? ext.GetPsyfocusUsedByPawn(pawn) : 0f,
                 entropyCost = ext != null ? ext.GetEntropyUsedByPawn(pawn) : 0f,
             };
+            PrecomputeStrings(m);
+            return m;
+        }
+
+        // Everything Draw would otherwise Translate/format/concat per frame, resolved once per model.
+        private static void PrecomputeStrings(Model m)
+        {
+            int shownLvl = m.lvl + m.bonus;
+            m.lvlValStr = m.bonus > 0
+                ? shownLvl + " / " + m.absCap + "  (+" + m.bonus + " gear)"
+                : m.lvl + " / " + m.absCap;
+
+            if (m.primaryStat.HasValue)
+                m.eachLine = m.primaryHasRaw
+                    ? "PS_EachLevelPrimary".Translate(RawPerLevelStr(m.primaryStat.Value, m.primaryRaw)).ToString()
+                    : "PS_EachLevelPrimary".Translate(FormatSyn(m.primaryStat.Value, m.primaryPct, false)).ToString();
+
+            m.recvHeader = m.def.LabelCap + RecvSuffix;
+            int shown = Mathf.Min(m.received.Count, MaxList);
+            if (m.received.Count > shown) m.moreRowsLine = "PS_TipMoreRows".Translate(m.received.Count - shown);
+            m.recvNorm = new string[shown];
+            m.recvAlt = new string[shown];
+            for (int i = 0; i < shown; i++)
+            {
+                m.recvNorm[i] = RecvLine(m.received[i], false);
+                m.recvAlt[i] = RecvLine(m.received[i], true);
+            }
+
+            if (m.psyfocusCost > 0f || m.entropyCost > 0f)
+            {
+                string cc = "";
+                if (m.psyfocusCost > 0f) cc += Pct(m.psyfocusCost) + " " + "PS_TipPsyfocus".Translate();
+                if (m.entropyCost > 0f) cc += (cc.Length > 0 ? "  \u2022  " : "") + m.entropyCost.ToString("0.#") + " " + "PS_TipHeat".Translate();
+                m.costLine = cc;
+            }
+            m.costPerLevelVal = "PS_TipCostPerLevelVal".Translate(Pct(m.costPct));
+
+            m.reqIsMax = m.lvl >= m.absCap;
+            m.reqLine = m.reqIsMax
+                ? "PS_TipMaxLevel".Translate(m.absCap).ToString()
+                : "PS_TipReqLevel".Translate(m.nextReq).ToString();
+
+            m.footer = FooterText(m);
+
+            GameFont pf = Text.Font;
+            Text.Font = GameFont.Tiny;
+            m.roleChipW = m.roleLabel.NullOrEmpty() ? 0f : Text.CalcSize(m.roleLabel).x + 12f;
+            Text.Font = pf;
         }
 
         private static float TextH(string text, float w)
@@ -373,21 +444,17 @@ namespace PsycastSynergies
                 w = Mathf.Max(w, Mathf.Max(Text.CalcSize(e.label).x / 0.42f, Text.CalcSize(e.value).x / 0.58f) + 16f);
             if (m.full)
             {
-                foreach (var r in m.received)
+                for (int i = 0; i < m.recvAlt.Length; i++)
                 {
-                    string right = RecvLine(r, true);   // size for the Alt (live-total) view so width stays stable
+                    var r = m.received[i];
+                    string right = m.recvAlt[i];   // size for the Alt (live-total) view so width stays stable
                     w = Mathf.Max(w, Mathf.Max((Text.CalcSize(r.def.LabelCap).x + 22f) / 0.40f, Text.CalcSize(right).x / 0.60f) + 16f);
                 }
             }
-            if (m.primaryLabel != null)
-            {
-                string eachW = m.primaryHasRaw
-                    ? "PS_EachLevelPrimary".Translate(RawPerLevelStr(m.primaryStat.Value, m.primaryRaw)).ToString()
-                    : "PS_EachLevelPrimary".Translate("+" + Pct(m.primaryPct) + " " + m.primaryLabel).ToString();
-                w = Mathf.Max(w, Text.CalcSize(eachW).x + 20f);
-            }
-            w = Mathf.Max(w, Text.CalcSize(m.def.LabelCap + RecvSuffix).x + 20f);
-            w = Mathf.Max(w, Text.CalcSize(FooterText(m)).x + 20f);
+            if (m.eachLine != null)
+                w = Mathf.Max(w, Text.CalcSize(m.eachLine).x + 20f);
+            w = Mathf.Max(w, Text.CalcSize(m.recvHeader).x + 20f);
+            w = Mathf.Max(w, Text.CalcSize(m.footer).x + 20f);
 
             // Content-aware: a long description never widens the card on its own (it just wraps), so widen the
             // card here when the description would otherwise wrap into a tall, narrow sliver - fewer, wider lines.
@@ -405,8 +472,13 @@ namespace PsycastSynergies
         {
             float inner = W - 16f;
             float h = 28f + 4f;
-            float dH = TextH(m.description, inner); if (dH > 0f) h += dH + 4f;   // full height - never clip the description
-            float sH = Mathf.Min(54f, TextH(m.effectSummary, inner)); if (sH > 0f) h += sH + 4f;
+            // Wrap heights measured ONCE at the final width and kept on the model - Draw reuses them
+            // (Text.CalcHeight per frame otherwise).
+            m.descH = TextH(m.description, inner);
+            m.sumH = Mathf.Min(54f, TextH(m.effectSummary, inner));
+            m.empH = m.empowersLine.NullOrEmpty() ? 0f : TextH(m.empowersLine, inner);
+            float dH = m.descH; if (dH > 0f) h += dH + 4f;   // full height - never clip the description
+            float sH = m.sumH; if (sH > 0f) h += sH + 4f;
 
             h += 7f;                                       // divider
             h += Row;                                      // skill level
@@ -421,7 +493,7 @@ namespace PsycastSynergies
             else if (m.full)
             {
                 h += 7f + 18f + (m.received.Count > 0 ? Shown(m.received.Count) : 1) * Row;
-                if (!m.empowersLine.NullOrEmpty()) h += 7f + TextH(m.empowersLine, inner) + 4f;
+                if (!m.empowersLine.NullOrEmpty()) h += 7f + m.empH + 4f;
             }
             else
             {
@@ -439,7 +511,7 @@ namespace PsycastSynergies
         // ~25 Text.CalcSize calls plus several list/string allocations; running them per-frame while
         // hovering churned the GC and stuttered the whole tab.
         private static Model cM; private static float cW, cH;
-        private static Pawn cP; private static AbilityDef cA; private static bool cO; private static int cL = -1, cPsy = -1;
+        private static Pawn cP; private static AbilityDef cA; private static bool cO; private static int cL = -1, cPsy = -1, cV = -1;
 
         public static void DrawFloating()
         {
@@ -447,7 +519,11 @@ namespace PsycastSynergies
 
             int lvl = ownedHover ? (GameComponent_PsycastSynergies.Instance?.GetLevel(pawn, ability) ?? 0) : 0;
             int psy = pawn.Psycasts()?.level ?? 0;
-            if (cM == null || cP != pawn || cA != ability || cO != ownedHover || cL != lvl || cPsy != psy)
+            // PerfCache.Version participates in the key: spec commits / balance edits / tier changes
+            // bump it, so the card can never serve pre-edit numbers after a mutation that does not
+            // change (pawn, ability, lvl, psy) - e.g. buying a spec node while this skill stays put.
+            int ver = PerfCache.Version;
+            if (cM == null || cP != pawn || cA != ability || cO != ownedHover || cL != lvl || cPsy != psy || cV != ver)
             {
                 cM = Build(pawn, ability, ownedHover);
                 if (cM != null)
@@ -456,7 +532,7 @@ namespace PsycastSynergies
                     cW = ContentWidth(cM);
                     cH = Mathf.Min(Measure(cM, cW), UI.screenHeight * 0.94f);
                 }
-                cP = pawn; cA = ability; cO = ownedHover; cL = lvl; cPsy = psy;
+                cP = pawn; cA = ability; cO = ownedHover; cL = lvl; cPsy = psy; cV = ver;
             }
             Model m = cM;
             if (m == null) return;
@@ -491,7 +567,7 @@ namespace PsycastSynergies
             if (!m.roleLabel.NullOrEmpty())
             {
                 Text.Font = GameFont.Tiny;
-                float tw = Text.CalcSize(m.roleLabel).x + 12f;
+                float tw = m.roleChipW;   // measured once at model build
                 Rect chip = new Rect(hr.xMax - tw - 6f, hr.y + 6f, tw, 16f);
                 Widgets.DrawBoxSolid(chip, m.roleColor);
                 Text.Anchor = TextAnchor.MiddleCenter; GUI.color = Color.black;
@@ -508,32 +584,26 @@ namespace PsycastSynergies
 
             if (!m.description.NullOrEmpty())
             {
-                float dH = TextH(m.description, innerW);
+                float dH = m.descH;
                 Text.Font = GameFont.Tiny; Text.Anchor = TextAnchor.UpperLeft; Text.WordWrap = true; GUI.color = Palette.TextDim;
                 Widgets.Label(new Rect(col.x + 8f, y, innerW, dH), m.description); y += dH + 4f;
             }
             if (!m.effectSummary.NullOrEmpty())
             {
-                float sH = Mathf.Min(54f, TextH(m.effectSummary, innerW));
+                float sH = m.sumH;
                 Text.Font = GameFont.Tiny; Text.Anchor = TextAnchor.UpperLeft; GUI.color = m.roleColor;
                 Widgets.Label(new Rect(col.x + 8f, y, innerW, sH), m.effectSummary); GUI.color = Color.white; y += sH + 4f;
             }
 
             Divider(col, ref y);
             int shownLvl = m.lvl + m.bonus;
-            string lvlStr = (m.bonus > 0) ? (shownLvl + " / " + m.absCap + "  (+" + m.bonus + " gear)") : (m.lvl + " / " + m.absCap);
-            KeyVal(col, ref y, "PS_TipSkillLevel".Translate(), lvlStr,
+            KeyVal(col, ref y, LblSkillLevel, m.lvlValStr,
                 !m.owned ? Palette.TextDim : ((shownLvl >= m.absCap || m.bonus > 0) ? Palette.Gold : Palette.Stat));
-            if (m.primaryStat.HasValue)
-            {
-                string each = m.primaryHasRaw
-                    ? "PS_EachLevelPrimary".Translate(RawPerLevelStr(m.primaryStat.Value, m.primaryRaw)).ToString()
-                    : "PS_EachLevelPrimary".Translate(FormatSyn(m.primaryStat.Value, m.primaryPct, false)).ToString();
-                Label(col.x + 8f, ref y, innerW, each, Palette.Accent, 18f);
-            }
+            if (m.eachLine != null)
+                Label(col.x + 8f, ref y, innerW, m.eachLine, Palette.Accent, 18f);
             if (m.effects.Count > 0)
             {
-                Label(col.x + 8f, ref y, innerW, "PS_TipCurrentEffects".Translate(), Palette.TextDim, 18f);
+                Label(col.x + 8f, ref y, innerW, LblCurrentEffects, Palette.TextDim, 18f);
                 foreach (var e in m.effects)
                 {
                     Color vc = e.isPrimary ? Palette.Accent : (e.scaled ? Palette.Good : Palette.TextDim);
@@ -548,25 +618,25 @@ namespace PsycastSynergies
             else if (m.full)
             {
                 Divider(col, ref y);
-                Label(col.x + 8f, ref y, innerW, m.def.LabelCap + RecvSuffix, Palette.TextDim, 18f);
+                Label(col.x + 8f, ref y, innerW, m.recvHeader, Palette.TextDim, 18f);
                 if (m.received.Count == 0)
-                    Label(col.x + 8f, ref y, innerW, "PS_TipNoMates".Translate(), Palette.TextDim, Row);
+                    Label(col.x + 8f, ref y, innerW, LblNoMates, Palette.TextDim, Row);
                 else
                 {
-                    int shown = Mathf.Min(m.received.Count, MaxList);
-                    for (int i = 0; i < shown; i++)
+                    var lines = m.alt ? m.recvAlt : m.recvNorm;
+                    for (int i = 0; i < lines.Length; i++)
                     {
                         var r = m.received[i];
-                        SkillRow(col, ref y, r.def, RecvLine(r, m.alt), r.lvl > 0 ? Palette.Good : Palette.TextDim);
+                        SkillRow(col, ref y, r.def, lines[i], r.lvl > 0 ? Palette.Good : Palette.TextDim);
                     }
-                    if (m.received.Count > shown)
-                        Label(col.x + 8f, ref y, innerW, "PS_TipMoreRows".Translate(m.received.Count - shown), Palette.TextDim, Row);
+                    if (m.moreRowsLine != null)
+                        Label(col.x + 8f, ref y, innerW, m.moreRowsLine, Palette.TextDim, Row);
                 }
 
                 if (!m.empowersLine.NullOrEmpty())
                 {
                     Divider(col, ref y);
-                    float eH = TextH(m.empowersLine, innerW);
+                    float eH = m.empH;
                     Text.Font = GameFont.Tiny; Text.Anchor = TextAnchor.UpperLeft; Text.WordWrap = true; GUI.color = Palette.Accent;
                     Widgets.Label(new Rect(col.x + 8f, y, innerW, eH), m.empowersLine); y += eH + 4f;
                     GUI.color = Color.white;
@@ -578,31 +648,26 @@ namespace PsycastSynergies
                 Widgets.DrawBoxSolid(fr, Palette.BGD);
                 GUI.color = Palette.Accent; Widgets.DrawBox(fr, 1); GUI.color = Color.white;
                 Text.Font = GameFont.Tiny; Text.Anchor = TextAnchor.MiddleCenter; GUI.color = Palette.Accent;
-                Widgets.Label(fr, "PS_TipHoldShift".Translate());
+                Widgets.Label(fr, LblHoldShift);
                 Text.Anchor = TextAnchor.UpperLeft; GUI.color = Color.white;
                 y += 26f;
             }
 
-            if (m.psyfocusCost > 0f || m.entropyCost > 0f)
-            {
-                string cc = "";
-                if (m.psyfocusCost > 0f) cc += Pct(m.psyfocusCost) + " " + "PS_TipPsyfocus".Translate();
-                if (m.entropyCost > 0f) cc += (cc.Length > 0 ? "  \u2022  " : "") + m.entropyCost.ToString("0.#") + " " + "PS_TipHeat".Translate();
-                KeyVal(col, ref y, "PS_TipCastCost".Translate(), cc, Palette.Stat);
-            }
-            KeyVal(col, ref y, "PS_TipCostPerLevel".Translate(), "PS_TipCostPerLevelVal".Translate(Pct(m.costPct)), Palette.Bad);
+            if (m.costLine != null)
+                KeyVal(col, ref y, LblCastCost, m.costLine, Palette.Stat);
+            KeyVal(col, ref y, LblCostPerLevel, m.costPerLevelVal, Palette.Bad);
 
             // Diablo-2-style required-level line, anchored at the bottom. Red when your psycaster
             // level is below it.
             Divider(col, ref y);
-            if (m.lvl >= m.absCap)
-                Label(col.x + 8f, ref y, innerW, "PS_TipMaxLevel".Translate(m.absCap), Palette.Gold, 20f);
+            if (m.reqIsMax)
+                Label(col.x + 8f, ref y, innerW, m.reqLine, Palette.Gold, 20f);
             else
-                Label(col.x + 8f, ref y, innerW, "PS_TipReqLevel".Translate(m.nextReq), m.psyLevel >= m.nextReq ? Palette.Stat : Palette.Bad, 20f);
+                Label(col.x + 8f, ref y, innerW, m.reqLine, m.psyLevel >= m.nextReq ? Palette.Stat : Palette.Bad, 20f);
 
             Text.Font = GameFont.Tiny; Text.Anchor = TextAnchor.MiddleLeft; GUI.color = Palette.TextDim;
             bool pwF = Text.WordWrap; Text.WordWrap = false;
-            Widgets.Label(new Rect(col.x + 8f, y + 2f, innerW, 18f), FooterText(m));
+            Widgets.Label(new Rect(col.x + 8f, y + 2f, innerW, 18f), m.footer);
             Text.WordWrap = pwF;
 
             Text.Font = GameFont.Small; Text.Anchor = TextAnchor.UpperLeft; GUI.color = Color.white;

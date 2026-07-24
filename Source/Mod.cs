@@ -44,6 +44,11 @@ namespace PsycastSynergies
         // cast specifies an explicit severity. (Duration of buffs always scales via scaleDuration.)
         public bool scaleBuffStrength = true;
 
+        // Performance: memoize hot math (StatMultiplier, skill caps, charge maxima, tier reads)
+        // within the current tick/frame. Values refresh instantly on any change; turning this off
+        // recomputes everything from scratch on every call (diagnostic escape hatch).
+        public bool perfCaching = true;
+
         // Flat psycaster level cap written to VPE's maxLevel. Enlightenment / Transcendence tiers do NOT affect it.
         public bool overrideVpeLevelCap = true;
         public int vpeLevelCap = 400;
@@ -142,6 +147,7 @@ namespace PsycastSynergies
             Scribe_Values.Look(ref scaleCost, "scaleCost", true);
             Scribe_Values.Look(ref costPerLevelPct, "costPerLevelPct", 0.05f);
             Scribe_Values.Look(ref scaleBuffStrength, "scaleBuffStrength", true);
+            Scribe_Values.Look(ref perfCaching, "perfCaching", true);
             Scribe_Values.Look(ref overrideVpeLevelCap, "overrideVpeLevelCap", true);
             Scribe_Values.Look(ref vpeLevelCap, "vpeLevelCap", 400);
             Scribe_Values.Look(ref suppressIsekaiPsycastStats, "suppressIsekaiPsycastStats", true);
@@ -246,6 +252,9 @@ namespace PsycastSynergies
         {
             base.WriteSettings();
             ApplyVpeLevelCap();
+            // Sliders/toggles feed the multiplier math - drop the tick memo and any cached tooltip
+            // model so the new values show immediately.
+            PerfCache.Bump();
         }
 
         private static readonly Color TabGold = new Color(0.96f, 0.81f, 0.36f);
@@ -367,6 +376,9 @@ namespace PsycastSynergies
             CB(l, "PS_SetIsekai".Translate(), ref s.suppressIsekaiPsycastStats, "PS_SetIsekaiTip".Translate());
             CB(l, "PS_SetAutoStats".Translate(), ref s.autoPsycasterStats,
                 "PS_SetAutoStatsTip".Translate());
+
+            Head(l, "PS_SetH_Performance".Translate());
+            CB(l, "PS_SetPerfCache".Translate(), ref s.perfCaching, "PS_SetPerfCacheTip".Translate());
             ApplyVpeLevelCap();
         }
 

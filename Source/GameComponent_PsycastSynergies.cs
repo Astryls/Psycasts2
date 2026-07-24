@@ -147,6 +147,12 @@ namespace PsycastSynergies
 
         public override void FinalizeInit()
         {
+            // Fresh Game (new or loaded): transient cross-game state must not leak pawns from the
+            // previous session. Charges are documented to start full after a load anyway.
+            ChargeStore.ClearAll();
+            CastScaling.ClearAmplifyWindows();
+            PerfCache.Bump();
+
             // Re-apply the PS_Enlightenment hediff from the mirrored MeditationData.tier so existing colonists
             // keep their enlightenment tier across save/load. Enemies re-roll on spawn, so no migration there.
             foreach (var kv in medData)
@@ -231,7 +237,13 @@ namespace PsycastSynergies
             get
             {
                 var g = Current.Game;
-                if (g == null) return null;
+                if (g == null)
+                {
+                    // Quit-to-menu: drop the refs so the static cache cannot keep the whole old
+                    // Game graph alive while the player sits in the main menu.
+                    cachedGame = null; cachedInstance = null;
+                    return null;
+                }
                 if (!ReferenceEquals(g, cachedGame) || cachedInstance == null)
                 {
                     cachedInstance = g.GetComponent<GameComponent_PsycastSynergies>();

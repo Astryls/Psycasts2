@@ -60,6 +60,9 @@
   <PS_SetIsekaiTip>When ISEKAI RPG Leveling is installed, stop it from raising psychic sensitivity, neural heat limit and recovery, meditation focus and psyfocus, so this mod's own scaling stays authoritative. Takes effect on restart.</PS_SetIsekaiTip>
   <PS_SetAutoStats>Auto psycaster stats (no manual upgrades; cost unaffected)</PS_SetAutoStats>
   <PS_SetAutoStatsTip>When on, VPE's neural-heat limit, neural-heat recovery and psychic sensitivity grow AUTOMATICALLY with each psycaster level, you no longer spend points on them, and the psyfocus cost is left unaffected by leveling. Your points stay free for raising skill levels (this mod's own system); the 'Upgrade Psycaster Stats' button is replaced with a note.</PS_SetAutoStatsTip>
+  <PS_SetH_Performance>Performance</PS_SetH_Performance>
+  <PS_SetPerfCache>High performance caching</PS_SetPerfCache>
+  <PS_SetPerfCacheTip>Caches synergy and skill math for the current tick and frame, so repeated lookups from ability icons, gizmos, tooltips and AI checks cost almost nothing. Values still refresh instantly when anything changes. Leave this on; turn it off only when hunting a suspected display glitch, which makes every value recompute from scratch on every call.</PS_SetPerfCacheTip>
 
   <!-- Specializations tab -->
   <PS_SetH_SpecPoints>Specialization points</PS_SetH_SpecPoints>

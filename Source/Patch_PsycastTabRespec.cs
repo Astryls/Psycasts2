@@ -18,6 +18,62 @@ namespace PsycastSynergies
     [HarmonyPatch(typeof(ITab_Pawn_Psycasts), "FillTab")]
     public static class Patch_PsycastTabRespec
     {
+        // Per-frame snapshot: FillTab runs on every IMGUI pass, and the learned-psycast count is an
+        // O(abilities) extension walk. Compute once per (pawn, frame); every pass reuses it.
+        private static Pawn snapPawn; private static int snapFrame = -1, snapLearned, snapTier;
+
+        // Per-frame label caches (Translate() allocates per call; these labels are stable per
+        // language / per argument value).
+        private static readonly PerfCache.LangCache LblPilgrimTip = new PerfCache.LangCache("PS_PilgrimPathTip");
+        private static readonly PerfCache.LangCache LblFocusTip = new PerfCache.LangCache("PS_DefaultFocusTip");
+        private static readonly PerfCache.LangCache LblResetPath = new PerfCache.LangCache("PS_ResetPath");
+        private static readonly PerfCache.LangCache LblResetSkills = new PerfCache.LangCache("PS_ResetSkills");
+        private static string pilgrimBtnCache; private static int pilgrimBtnStyle = -1; private static LoadedLanguage pilgrimBtnLang;
+        private static string focusBtnCache, focusBtnName = "\u0000"; private static LoadedLanguage focusBtnLang;
+        private static string resetNCache; private static int resetNCount = -1; private static LoadedLanguage resetNLang;
+        private static MeditationFocusDef focusDefCache; private static string focusDefCacheName;
+
+        internal static string[] PilgrimStyleLabels() => new[]
+        {
+            "PS_PilgrimUnbound".Translate().ToString(),
+            "PS_PilgrimTrialAltar".Translate().ToString(),
+            "PS_PilgrimWayAnima".Translate().ToString(),
+        };
+
+        private static string PilgrimBtnLabel(int pstyle)
+        {
+            var lang = LanguageDatabase.activeLanguage;
+            if (pilgrimBtnCache == null || pilgrimBtnStyle != pstyle || !ReferenceEquals(lang, pilgrimBtnLang))
+            {
+                pilgrimBtnStyle = pstyle; pilgrimBtnLang = lang;
+                pilgrimBtnCache = "PS_PilgrimPathBtn".Translate(PilgrimStyleLabels()[pstyle]);
+            }
+            return pilgrimBtnCache;
+        }
+
+        private static string FocusBtnLabel(string focusName)
+        {
+            var lang = LanguageDatabase.activeLanguage;
+            if (focusBtnCache == null || focusBtnName != focusName || !ReferenceEquals(lang, focusBtnLang))
+            {
+                focusBtnName = focusName; focusBtnLang = lang;
+                focusBtnCache = "PS_DefaultFocusBtn".Translate(focusName);
+            }
+            return focusBtnCache;
+        }
+
+        private static string ResetSkillsLabel(int count)
+        {
+            if (count <= 0) return LblResetSkills;
+            var lang = LanguageDatabase.activeLanguage;
+            if (resetNCache == null || resetNCount != count || !ReferenceEquals(lang, resetNLang))
+            {
+                resetNCount = count; resetNLang = lang;
+                resetNCache = "PS_ResetSkillsN".Translate(count);
+            }
+            return resetNCache;
+        }
+
         static void Postfix(ITab_Pawn_Psycasts __instance)
         {
             var pawn = Find.Selector.SingleSelectedThing as Pawn;
@@ -29,12 +85,18 @@ namespace PsycastSynergies
             // yield the panel to it while that view is open.
             if (ModernUIBridge.PsysetPanelOpen) return;
 
-            int learnedPsycasts = 0;
-            var comp0 = pawn.GetComp<CompAbilities>();
-            if (comp0 != null)
-                foreach (var a in comp0.LearnedAbilities)
-                    if (a?.def?.GetModExtension<AbilityExtension_Psycast>() != null) learnedPsycasts++;
-            int tier = EnlightenmentTier.TierOf(pawn);
+            if (snapPawn != pawn || snapFrame != Time.frameCount)
+            {
+                snapPawn = pawn; snapFrame = Time.frameCount;
+                snapLearned = 0;
+                var comp0 = pawn.GetComp<CompAbilities>();
+                if (comp0 != null)
+                    foreach (var a in comp0.LearnedAbilities)
+                        if (a?.def != null && PsycastInfo.PsyExtOf(a.def) != null) snapLearned++;
+                snapTier = EnlightenmentTier.TierOf(pawn);
+            }
+            int learnedPsycasts = snapLearned;
+            int tier = snapTier;
 
             Vector2 size = __instance.Size;
             var prevF = Text.Font; var prevA = Text.Anchor; var prevC = GUI.color;
@@ -64,6 +126,8 @@ namespace PsycastSynergies
             bool ours = pawn.Faction != null && pawn.Faction.IsPlayer;
             bool pilgrimRow = ours && tier >= 1;              // pilgrimage routing dropdown (awakened only)
             bool focusRow = ours && !ModernUIBridge.Wired;    // fallback when the focus tiles aren't clickable
+            // One MeditationData resolve shared by both rows (was one per row per frame).
+            var med = (pilgrimRow || focusRow) ? GameComponent_PsycastSynergies.Instance?.GetMed(pawn, true) : null;
             float cursor = y;
             if (pilgrimRow) cursor -= h + 6f;
             float yPilgrim = cursor;
@@ -90,23 +154,23 @@ namespace PsycastSynergies
             if (pilgrimRow)
             {
                 bool canFight = !pawn.WorkTagIsDisabled(WorkTags.Violent);
-                var med = GameComponent_PsycastSynergies.Instance?.GetMed(pawn, true);
                 int pstyle = canFight ? (med != null ? med.pilgrimStyle : 0) : 2;
-                string[] pl = { "PS_PilgrimUnbound".Translate(), "PS_PilgrimTrialAltar".Translate(), "PS_PilgrimWayAnima".Translate() };
                 var rp = new Rect(rowX, yPilgrim, rowW, h);
-                TooltipHandler.TipRegion(rp, "PS_PilgrimPathTip".Translate());
-                if (MXStyle.Button(rp, "PS_PilgrimPathBtn".Translate(pl[pstyle])))
+                if (Mouse.IsOver(rp)) TooltipHandler.TipRegion(rp, (string)LblPilgrimTip);
+                if (MXStyle.Button(rp, PilgrimBtnLabel(pstyle)))
                 {
                     if (!canFight)
                         Messages.Message("PS_MsgNoViolencePilgrim".Translate(pawn.LabelShortCap),
                             MessageTypeDefOf.RejectInput, false);
                     else if (med != null)
                     {
+                        var medRef = med;   // stable capture for the option lambdas
+                        string[] pl = PilgrimStyleLabels();   // click-time build; allocation is fine here
                         var opts = new System.Collections.Generic.List<FloatMenuOption>();
                         for (int i = 0; i < pl.Length; i++)
                         {
                             int style = i;
-                            opts.Add(new FloatMenuOption(pl[style], () => med.pilgrimStyle = style,
+                            opts.Add(new FloatMenuOption(pl[style], () => medRef.pilgrimStyle = style,
                                 CompSchoolFocus.PilgrimIcon(style), Color.white));
                         }
                         Find.WindowStack.Add(new FloatMenu(opts));
@@ -116,21 +180,27 @@ namespace PsycastSynergies
 
             // Default meditation focus (was a pawn gizmo). With Modern Psycasts UI the focus-type
             // tiles above are the picker (via PawnFocusHooks); this dropdown is the fallback.
-            if (focusRow)
+            if (focusRow && med != null)
             {
-                var medF = GameComponent_PsycastSynergies.Instance?.GetMed(pawn, true);
-                if (medF != null)
+                MeditationFocusDef cur = null;
+                if (!string.IsNullOrEmpty(med.defaultFocus))
                 {
-                    MeditationFocusDef cur = string.IsNullOrEmpty(medF.defaultFocus) ? null
-                        : DefDatabase<MeditationFocusDef>.GetNamedSilentFail(medF.defaultFocus);
-                    var rf = new Rect(rowX, yFocus, rowW, h);
-                    TooltipHandler.TipRegion(rf, "PS_DefaultFocusTip".Translate());
-                    if (MXStyle.Button(rf, "PS_DefaultFocusBtn".Translate(cur != null ? cur.LabelCap.ToString() : "PS_FocusAny".Translate().ToString())))
-                        CompSchoolFocus.OpenMenuFor(f => medF.defaultFocus = f?.defName, "PS_FocusAnyDefer".Translate());
+                    // Last-value cache on the def resolve (a DefDatabase probe per frame otherwise).
+                    if (focusDefCacheName != med.defaultFocus)
+                    {
+                        focusDefCacheName = med.defaultFocus;
+                        focusDefCache = DefDatabase<MeditationFocusDef>.GetNamedSilentFail(med.defaultFocus);
+                    }
+                    cur = focusDefCache;
                 }
+                var rf = new Rect(rowX, yFocus, rowW, h);
+                if (Mouse.IsOver(rf)) TooltipHandler.TipRegion(rf, (string)LblFocusTip);
+                var medRef = med;
+                if (MXStyle.Button(rf, FocusBtnLabel(cur != null ? cur.LabelCap.ToString() : "PS_FocusAny".Translate().ToString())))
+                    CompSchoolFocus.OpenMenuFor(f => medRef.defaultFocus = f?.defName, "PS_FocusAnyDefer".Translate());
             }
 
-            if (showSkillReset && MXStyle.Button(r1, learnedPsycasts > 0 ? "PS_ResetSkillsN".Translate(learnedPsycasts).ToString() : "PS_ResetSkills".Translate().ToString()))
+            if (showSkillReset && MXStyle.Button(r1, ResetSkillsLabel(learnedPsycasts)))
             {
                 if (learnedPsycasts > 0)
                     Find.WindowStack.Add(new Dialog_Confirm("PS_ResetSkills".Translate(),
@@ -138,7 +208,7 @@ namespace PsycastSynergies
                         () => SkillRespec(pawn, psy)));
                 else Messages.Message("PS_MsgNoPsycastsToReset".Translate(), MessageTypeDefOf.RejectInput, false);
             }
-            if (MXStyle.Button(r2, "PS_ResetPath".Translate()))
+            if (MXStyle.Button(r2, (string)LblResetPath))
             {
                 if (tier >= 1)
                     Find.WindowStack.Add(new Dialog_Confirm("PS_ResetPathTitle".Translate(),

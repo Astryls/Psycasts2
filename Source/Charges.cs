@@ -84,6 +84,10 @@ namespace PsycastSynergies
         // (a slow leak AND wasted regen work over a long session).
         private static readonly List<Pawn> deadSweep = new List<Pawn>();
 
+        // Cross-game hygiene (FinalizeInit): the store is static, so pawns from a previous session
+        // would survive quit-to-menu + load and regen forever. Charges are transient by design.
+        public static void ClearAll() => store.Clear();
+
         public static void Tick()
         {
             if (store.Count == 0) return;
@@ -91,7 +95,8 @@ namespace PsycastSynergies
             deadSweep.Clear();
             foreach (var kv in store)
             {
-                if (kv.Key == null || kv.Key.Dead || kv.Key.Destroyed) { deadSweep.Add(kv.Key); continue; }
+                if (kv.Key == null) continue;   // impossible for a dict key; never hand null to Remove
+                if (kv.Key.Dead || kv.Key.Destroyed) { deadSweep.Add(kv.Key); continue; }
                 foreach (var inner in kv.Value)
                 {
                     var def = inner.Key; var e = inner.Value;
