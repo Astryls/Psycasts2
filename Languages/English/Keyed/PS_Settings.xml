@@ -88,7 +88,7 @@
   <PS_SetLockPaths>Lock paths to Enlightenment</PS_SetLockPaths>
   <PS_SetLockPathsTip>Paths unlock ONLY through the awakening cards; the tab's normal Unlock buttons are disabled. Dev mode still bypasses this.</PS_SetLockPathsTip>
   <PS_SetHidePaths>Hide unlearned paths</PS_SetHidePaths>
-  <PS_SetHidePathsTip>The psycast tab lists only the paths a pawn has unlocked; locked paths are hidden entirely instead of drawn as darkened tiles. Active while "Lock paths to Enlightenment" is on, since paths unlock through the awakening cards anyway. The tab's dev mode always shows every path. Modern Psycasts UI users: its own tree filter controls this in its view. On by default.</PS_SetHidePathsTip>
+  <PS_SetHidePathsTip>The psycast tab lists only the paths a pawn has unlocked; locked paths are hidden entirely instead of drawn as darkened tiles. Applies to both the VPE tab and Modern Psycasts UI (where it overrides the tree filter to invested-only). Active while "Lock paths to Enlightenment" is on, since paths unlock through the awakening cards anyway. The tab's dev mode always shows every path. On by default.</PS_SetHidePathsTip>
   <PS_SetH_SynergyGraph>Synergy graph</PS_SetH_SynergyGraph>
   <PS_SetSynDisabledNote>The synergy and empower system is currently disabled (Skills tab). These settings still edit the stored graph, but it has no effect in-game until you re-enable synergies.</PS_SetSynDisabledNote>
   <PS_SetSynFrozen>Synergies are frozen the first time they are generated and never change afterward, even if you add psycast addons later.</PS_SetSynFrozen>

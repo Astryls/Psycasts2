@@ -19,9 +19,16 @@ namespace PsycastSynergies
     // quantum (and per language). A draw exception disables the whole block once, with a warning.
     public static class MeditationBars
     {
-        private const float CaptionH = 14f, BarH = 7f, RowGap = 6f;
-        private const float RowH = CaptionH + BarH + RowGap;   // 27
+        private const float BarH = 7f, RowGap = 6f;
         private static readonly Color Violet = new Color(0.72f, 0.5f, 0.95f);
+
+        // Tiny text is silently coerced to Small by Text.Font's setter (accessibility "disable tiny
+        // text", Steam Deck, languages without a tiny face). The caption line - and every height that
+        // reserves space for it - MUST size off the font that will actually render, or Small glyphs
+        // clip in a Tiny-sized row.
+        private static GameFont BarFont => Text.TinyFontSupported ? GameFont.Tiny : GameFont.Small;
+        private static float CaptionH => Mathf.Ceil(Text.LineHeightOf(Text.TinyFontSupported ? GameFont.Tiny : GameFont.Small));
+        private static float RowH => CaptionH + 1f + BarH + RowGap;
 
         private static readonly PerfCache.LangCache LblComa = new PerfCache.LangCache("PS_BarComa");
         private static readonly PerfCache.LangCache LblLevel = new PerfCache.LangCache("PS_BarLevel");
@@ -86,7 +93,7 @@ namespace PsycastSynergies
             EnsureModel(p, s, med, psy);
 
             float y = r.y + 2f;
-            Text.Font = GameFont.Tiny;
+            Text.Font = BarFont;
 
             if (s.enlightenmentEnabled)
             {

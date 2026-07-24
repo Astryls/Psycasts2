@@ -1,6 +1,7 @@
 #nullable disable
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using HarmonyLib;
 using UnityEngine;
 using VanillaPsycastsExpanded;
@@ -91,6 +92,74 @@ namespace PsycastSynergies
             Widgets.Label(new Rect(inRect.x, inRect.y + 10f, inRect.width, 42f), LblNoPaths.Value);
             GUI.color = Color.white;
             Text.Anchor = anchor; Text.Font = font;
+        }
+
+        // ---- Modern Psycasts UI (soft, reflection only) ----------------------------------------
+        // Modern UI's tree list is built from DefDatabase inside DrawTreesPanel (no field to swap),
+        // but it already has its own visibility filter: S.treeFilter == 2 draws invested trees only.
+        // While hideUnlearnedPaths (+ lockPathsToEnlightenment, same gates as the VPE tab) is on, we
+        // force that filter to 2 for the duration of DrawTreesPanel and restore it in a finalizer -
+        // the user's own saved filter value is untouched (the funnel button writes outside our
+        // window, and any click it registers while forced is simply overridden next pass).
+
+        private static Func<object> muiSettings;                    // () => ModernPsycastsUIMod.Settings
+        private static AccessTools.FieldRef<object, int> muiTreeFilter;
+        private static AccessTools.FieldRef<bool> muiDevMode;       // drawer's static devMode
+        private static int muiPrevFilter; private static bool muiForced;
+
+        public static void TryWireModernUI(Harmony harmony)
+        {
+            try
+            {
+                var drawer = AccessTools.TypeByName("ModernPsycastsUI.ModernPsycastsDrawer");
+                if (drawer == null) return;
+                var modT = AccessTools.TypeByName("ModernPsycastsUI.ModernPsycastsUIMod");
+                var drawTrees = AccessTools.Method(drawer, "DrawTreesPanel");
+                var devF = AccessTools.Field(drawer, "devMode");
+                var settingsGetter = modT == null ? null : AccessTools.PropertyGetter(modT, "Settings");
+                var settingsField = modT == null ? null : AccessTools.Field(modT, "Settings");
+                var settingsType = AccessTools.TypeByName("ModernPsycastsUI.ModernPsycastsUISettings");
+                var filterF = settingsType == null ? null : AccessTools.Field(settingsType, "treeFilter");
+                if (drawTrees == null || filterF == null || (settingsGetter == null && settingsField == null))
+                {
+                    Log.Warning("[Psycasts²] Hide unlearned paths: Modern Psycasts UI shape unexpected; its tree list is not filtered.");
+                    return;
+                }
+                muiSettings = settingsGetter != null
+                    ? (Func<object>)(() => settingsGetter.Invoke(null, null))
+                    : () => settingsField.GetValue(null);
+                muiTreeFilter = AccessTools.FieldRefAccess<object, int>(filterF);
+                muiDevMode = devF != null && devF.IsStatic ? AccessTools.StaticFieldRefAccess<bool>(devF) : null;
+                harmony.Patch(drawTrees,
+                    prefix: new HarmonyMethod(typeof(Patch_HideUnlearnedPaths), nameof(ModernTreesPrefix)),
+                    finalizer: new HarmonyMethod(typeof(Patch_HideUnlearnedPaths), nameof(ModernTreesFinalizer)));
+            }
+            catch (Exception e)
+            {
+                Log.Warning("[Psycasts²] Hide unlearned paths: could not wire Modern Psycasts UI: " + e.Message);
+            }
+        }
+
+        public static void ModernTreesPrefix()
+        {
+            muiForced = false;
+            var s = PsycastSynergiesMod.Settings;
+            if (s == null || !s.hideUnlearnedPaths || !s.lockPathsToEnlightenment) return;
+            if (muiDevMode != null && muiDevMode()) return;   // dev mode shows everything, as on the VPE tab
+            var cfg = muiSettings();
+            if (cfg == null) return;
+            muiPrevFilter = muiTreeFilter(cfg);
+            if (muiPrevFilter == 2) return;                    // already invested-only
+            muiTreeFilter(cfg) = 2;
+            muiForced = true;
+        }
+
+        public static void ModernTreesFinalizer()
+        {
+            if (!muiForced) return;
+            muiForced = false;
+            var cfg = muiSettings();
+            if (cfg != null) muiTreeFilter(cfg) = muiPrevFilter;
         }
     }
 }
