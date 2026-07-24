@@ -72,6 +72,7 @@
   <PS_SpecLockedApo>Locked - you already chose another Apotheosis path</PS_SpecLockedApo>
   <PS_SpecLockedExcl>Locked - you already picked one of this exclusive set</PS_SpecLockedExcl>
   <PS_SpecLockedPrereq>Locked - prerequisites not met</PS_SpecLockedPrereq>
+  <PS_NoUnlockedPaths>No unlocked paths yet. New paths are unlocked through the awakening cards.</PS_NoUnlockedPaths>
   <PS_SpecNeedPoints>Need more points</PS_SpecNeedPoints>
   <PS_SpecClickStage>Click node to stage</PS_SpecClickStage>
   <PS_MsgOneApo>You can pursue only one Apotheosis path (Tranquil Mind, Transcendence or Umbral Sovereign).</PS_MsgOneApo>

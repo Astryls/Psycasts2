@@ -79,6 +79,7 @@ namespace PsycastSynergies
         public bool disableGeneRequirements = true;
         public bool enableLockedMechTrees = true;
         public bool lockPathsToEnlightenment = true;   // paths unlock only via the awakening cards (or dev mode)
+        public bool hideUnlearnedPaths = true;         // VPE-native tab: list only unlocked paths (active while lockPaths is on; tab dev mode bypasses)
 
         // XP system. Casting (tier-scaled) is the primary source; meditation is a reduced trickle;
         // meditating pawns can randomly break through ("Enlightenment") for a big burst.
@@ -170,6 +171,7 @@ namespace PsycastSynergies
             Scribe_Values.Look(ref disableGeneRequirements, "disableGeneRequirements", true);
             Scribe_Values.Look(ref enableLockedMechTrees, "enableLockedMechTrees", true);
             Scribe_Values.Look(ref lockPathsToEnlightenment, "lockPathsToEnlightenment", true);
+            Scribe_Values.Look(ref hideUnlearnedPaths, "hideUnlearnedPaths", true);
             Scribe_Values.Look(ref meditationXpMult, "meditationXpMult", 0.35f);
             Scribe_Values.Look(ref castXpPerTier, "castXpPerTier", 20f);
             Scribe_Values.Look(ref noPsyfocusDecay, "noPsyfocusDecay", true);
@@ -400,6 +402,7 @@ namespace PsycastSynergies
             CB(l, "PS_SetNoGeneReq".Translate(), ref s.disableGeneRequirements, "PS_SetNoGeneReqTip".Translate());
             CB(l, "PS_SetMechTrees".Translate(), ref s.enableLockedMechTrees, "PS_SetMechTreesTip".Translate());
             CB(l, "PS_SetLockPaths".Translate(), ref s.lockPathsToEnlightenment, "PS_SetLockPathsTip".Translate());
+            CB(l, "PS_SetHidePaths".Translate(), ref s.hideUnlearnedPaths, "PS_SetHidePathsTip".Translate());
 
             Head(l, "PS_SetH_SynergyGraph".Translate());
             if (s.disableSynergies)
