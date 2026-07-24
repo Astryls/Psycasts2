@@ -11,6 +11,11 @@ namespace PsycastSynergies
     // effect of its own - the real bonuses live in SkillSystem/SpecEffects; this just reports them.
     public class Hediff_PsychicResonance : HediffWithComps
     {
+        // Hidden from the health tab: the spec/synergy readout lives in the psycast tab now, so
+        // this row was clutter. Override (not XML becomeVisible) because Hediff.visible latches
+        // true in existing saves and would keep the row shown there.
+        public override bool Visible => false;
+
         public override string LabelInBrackets
         {
             get
