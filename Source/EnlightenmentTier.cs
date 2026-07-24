@@ -66,7 +66,7 @@ namespace PsycastSynergies
 
             var gc = GameComponent_PsycastSynergies.Instance;
             var med = gc?.GetMed(p, true);
-            if (med != null) med.tier = tier;
+            if (med != null) { med.tier = tier; med.pilgrimTicks = 0; }   // any tier change starts a fresh pilgrimage climb
 
             if (grantRewards && tier > cur) GrantTierPoints(gc, p, tier);
         }

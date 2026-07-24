@@ -23,6 +23,9 @@ namespace PsycastSynergies
             // its focus-type tiles become the per-pawn default-focus picker.
             ModernUIBridge.TryWire();
 
+            // Meditation bars in Modern Psycasts UI's left panel (reflection-only; no-op when absent).
+            Patch_MeditationBars.TryWireModernUI(harmony);
+
             // Dynamically wrap every Ability.Cast override so def-field scaling reaches custom
             // ability classes that read def.radius/power/durationTime directly (addon paths).
             CastScaling.Install(harmony);

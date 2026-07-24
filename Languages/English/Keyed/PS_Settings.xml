@@ -76,6 +76,10 @@
   <PS_SetTier3PointsTip>Specialization points granted the moment a pawn reaches Enlightenment Tier III.</PS_SetTier3PointsTip>
   <PS_SetNoSpecReset>Disable specialization resets</PS_SetNoSpecReset>
   <PS_SetNoSpecResetTip>Hide the "Reset specializations" refund button in the constellation window, so committed specialization points can never be reclaimed. For hardcore or no-take-backs runs. Off by default.</PS_SetNoSpecResetTip>
+  <PS_SetPilgrimPity>Pilgrimage guarantee: {0}h of meditation</PS_SetPilgrimPity>
+  <PS_SetPilgrimPityTip>An Awakened pawn's cumulative meditation guarantees a tier-up pilgrimage offer after this many hours. The climb to Tier III takes half again as long, and the storyteller can still offer one earlier on its own. 0 disables the guarantee (storyteller only).</PS_SetPilgrimPityTip>
+  <PS_SetMedBars>Meditation progress bars</PS_SetMedBars>
+  <PS_SetMedBarsTip>Show compact bars in the psycast tab for coma risk, progress to the next psycaster level, and the pilgrimage or Transcendence climb.</PS_SetMedBarsTip>
   <PS_SetH_PathAccess>Path access</PS_SetH_PathAccess>
   <PS_SetNoGeneReq>Disable gene requirements</PS_SetNoGeneReq>
   <PS_SetNoGeneReqTip>Paths that require a specific gene, such as Archon, unlock without needing the gene.</PS_SetNoGeneReqTip>

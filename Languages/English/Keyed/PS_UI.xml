@@ -73,6 +73,21 @@
   <PS_SpecLockedExcl>Locked - you already picked one of this exclusive set</PS_SpecLockedExcl>
   <PS_SpecLockedPrereq>Locked - prerequisites not met</PS_SpecLockedPrereq>
   <PS_NoUnlockedPaths>No unlocked paths yet. New paths are unlocked through the awakening cards.</PS_NoUnlockedPaths>
+  <PS_BarComa>Coma risk</PS_BarComa>
+  <PS_BarComaTip>Meditation today: {0}h of a {1}h safe window. Past the window, every further hour of meditation risks a psychic coma (current risk: {2} per hour, streak {3}h). Long unbroken streaks and deferred card rerolls raise the risk. Meditation at a pilgrimage site is always safe.</PS_BarComaTip>
+  <PS_BarLevel>Next level</PS_BarLevel>
+  <PS_BarLevelTip>Psycaster experience toward the next level. Meditation trickles experience, casting earns more, and a flow of ancient knowledge grants a large burst.</PS_BarLevelTip>
+  <PS_BarMax>Max</PS_BarMax>
+  <PS_BarPilgrim>Pilgrimage</PS_BarPilgrim>
+  <PS_BarPilgrimTip>Cumulative meditation toward a guaranteed tier-up pilgrimage offer. The storyteller may offer one sooner on its own, and progress is kept if a pilgrimage fails. The climb to Tier III takes half again as long.</PS_BarPilgrimTip>
+  <PS_BarPilgrimUnderway>Underway</PS_BarPilgrimUnderway>
+  <PS_BarPilgrimUnderwayTip>A pilgrimage is already offered or underway for this tier. Send the pilgrim to the marked site to meditate.</PS_BarPilgrimUnderwayTip>
+  <PS_BarPilgrimStoryteller>Storyteller only</PS_BarPilgrimStoryteller>
+  <PS_BarPilgrimStorytellerTip>The guaranteed pilgrimage offer is disabled (the "Pilgrimage guarantee" setting is 0). Pilgrimages arrive only when the storyteller rolls one.</PS_BarPilgrimStorytellerTip>
+  <PS_BarTranscend>Transcendence</PS_BarTranscend>
+  <PS_BarTranscendTip>Meditation toward the next Transcendent tier. Each tier costs more than the last.</PS_BarTranscendTip>
+  <PS_BarHoursFmt>{0} / {1}h</PS_BarHoursFmt>
+  <PS_BarXpFmt>{0} / {1} XP</PS_BarXpFmt>
   <PS_SpecNeedPoints>Need more points</PS_SpecNeedPoints>
   <PS_SpecClickStage>Click node to stage</PS_SpecClickStage>
   <PS_MsgOneApo>You can pursue only one Apotheosis path (Tranquil Mind, Transcendence or Umbral Sovereign).</PS_MsgOneApo>

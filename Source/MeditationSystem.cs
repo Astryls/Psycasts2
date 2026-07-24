@@ -34,6 +34,7 @@ namespace PsycastSynergies
         public string defaultFocus;      // pawn's personal default focus type - used when meditating at an unattuned building
         public bool forcedMeditation;    // "meditate your ass off": keep meditating continuously (forces time assignment)
         public int pilgrimStyle;         // tier-up pilgrimage routing: 0 = Either, 1 = Combat (altar), 2 = Pacifist (anima)
+        public int pilgrimTicks;         // cumulative tier 1-2 meditation toward a GUARANTEED pilgrimage offer (pity)
         public float medSaturation;      // anti-farming: builds with daily meditation, shrinks breakthrough chance
         public int awakenMeditationTicks; // cumulative meditation toward Awakening (non-psycasters) - feeds the ramp + pity
         public int transcendTicks;        // cumulative post-Illuminated meditation toward the next Transcendent tier (resets on tier-up)
@@ -60,6 +61,7 @@ namespace PsycastSynergies
             Scribe_Values.Look(ref defaultFocus, "defaultFocus");
             Scribe_Values.Look(ref forcedMeditation, "forcedMeditation", false);
             Scribe_Values.Look(ref pilgrimStyle, "pilgrimStyle", 0);
+            Scribe_Values.Look(ref pilgrimTicks, "pilgrimTicks", 0);
             Scribe_Values.Look(ref medSaturation, "medSaturation", 0f);
             Scribe_Values.Look(ref awakenMeditationTicks, "awakenMeditationTicks", 0);
             Scribe_Values.Look(ref transcendTicks, "transcendTicks", 0);
@@ -225,6 +227,7 @@ namespace PsycastSynergies
                     med.lastMedTick = t;
                     if (p.Psycasts() == null) med.awakenMeditationTicks += 60;   // cumulative meditation toward Awakening
                     else if (med.tier >= 3) med.transcendTicks += 60;             // Illuminated+ psycasters climb toward Transcendence
+                    else if (med.tier >= 1) med.pilgrimTicks += 60;               // tier 1-2 climb toward the guaranteed pilgrimage offer
                     if (med.awakenThreshold == 0) med.awakenThreshold = Rand.RangeInclusive(5, 10);
                     // The meditate job stores the FOCUS object in targetC and the SPOT/seat in targetA
                     // (targetB is null). Priority chain: building's gizmo > pawn's personal default >
@@ -296,6 +299,11 @@ namespace PsycastSynergies
                         Transcend(p, med, med.tier + 1);
                         continue;
                     }
+
+                    // Pilgrimage pity: an Awakened (tier 1-2) psycaster's cumulative meditation builds toward a
+                    // GUARANTEED tier-up pilgrimage offer, so the storyteller's random rolls can never stall the
+                    // climb. The storyteller may still offer one earlier on its own.
+                    if ((med.tier == 1 || med.tier == 2) && TryFirePilgrimPity(p, med, s)) continue;
 
                     // Non-psycasters are on the AWAKENING ramp: the chance climbs with CUMULATIVE meditation so a
                     // dedicated colonist reaches Tier I within ~a week, with a hard guarantee at the end of the
@@ -424,9 +432,80 @@ namespace PsycastSynergies
         private struct PickRequest { public Pawn pawn; public int tier; }
         private static readonly Queue<PickRequest> pickQueue = new Queue<PickRequest>();
 
+        // Pity threshold (ticks) for the guaranteed pilgrimage offer. 0 = the guarantee is disabled.
+        // The tier 2 -> 3 climb runs half again longer than tier 1 -> 2 (mirrors the rarer T3 quests).
+        internal static float PilgrimPityThresholdTicks(int curTier, PsycastSynergiesSettings s)
+        {
+            float h = s?.pilgrimGuaranteeHours ?? 60f;
+            if (h <= 0f) return 0f;
+            return h * 2500f * (curTier >= 2 ? 1.5f : 1f);
+        }
+
+        // True while any pilgrimage quest targeting `targetTier` is offered or underway (all four chains).
+        internal static bool PilgrimQuestOngoing(int targetTier)
+        {
+            var quests = Find.QuestManager?.QuestsListForReading;
+            if (quests == null) return false;
+            for (int i = 0; i < quests.Count; i++)
+            {
+                var q = quests[i];
+                if (q.State != QuestState.Ongoing && q.State != QuestState.NotYetAccepted) continue;
+                if (QuestTargetTier(q.root) == targetTier) return true;
+            }
+            return false;
+        }
+
+        internal static int QuestTargetTier(QuestScriptDef def)
+        {
+            switch (def?.defName)
+            {
+                case "PS_TierIIPilgrimage": case "PS_T2AnimaPilgrimage": return 2;
+                case "PS_TierIIIPilgrimage": case "PS_T3AnimaPilgrimage": return 3;
+                default: return 0;
+            }
+        }
+
+        // Fire the guaranteed pilgrimage offer once the pity threshold is met. Chain choice honors the
+        // pawn's pilgrim style (Either picks randomly); if the chosen chain can't run right now (e.g. no
+        // site tile), the other allowed chain is tried once, else we retry next hour. Progress is kept
+        // when a pilgrimage fails - the offer simply re-fires. Reset on any tier change (SetTier).
+        private static bool TryFirePilgrimPity(Pawn p, MeditationData med, PsycastSynergiesSettings s)
+        {
+            if (TieringControl.PilgrimagesDisabled) return false;
+            float need = PilgrimPityThresholdTicks(med.tier, s);
+            if (need <= 0f || med.pilgrimTicks < need) return false;
+            int targetTier = med.tier + 1;
+            if (PilgrimQuestOngoing(targetTier)) return false;   // one offer at a time; pity resumes after fail
+
+            bool combat = PilgrimRouting.AllowsCombat(p), anima = PilgrimRouting.AllowsAnima(p);
+            if (!combat && !anima) return false;
+            bool useCombat = combat && (!anima || Rand.Bool);
+            var target = (IIncidentTarget)p.Map ?? Find.World;
+            float points = StorytellerUtility.DefaultThreatPointsNow(target);
+
+            var def = PityQuestDef(targetTier, useCombat);
+            if (def == null || !def.CanRun(points, target))
+            {
+                // Alternate chain, if the style allows both.
+                def = combat && anima ? PityQuestDef(targetTier, !useCombat) : null;
+                if (def == null || !def.CanRun(points, target)) return false;
+            }
+
+            var quest = QuestUtility.GenerateQuestAndMakeAvailable(def, points);
+            if (quest == null) return false;
+            QuestUtility.SendLetterQuestAvailable(quest);   // Patch_AutoAcceptPilgrimage accepts + announces
+            med.pilgrimTicks = 0;
+            return true;
+        }
+
+        private static QuestScriptDef PityQuestDef(int targetTier, bool combat)
+            => DefDatabase<QuestScriptDef>.GetNamedSilentFail(
+                targetTier == 2 ? (combat ? "PS_TierIIPilgrimage" : "PS_T2AnimaPilgrimage")
+                                : (combat ? "PS_TierIIIPilgrimage" : "PS_T3AnimaPilgrimage"));
+
         // Geometric meditation cost (in ticks) to reach a given Transcendent tier (>=4). Diminishing returns:
         // each tier costs growth-x more than the last, so the climb beyond Illuminated slows dramatically.
-        private static float TranscendThreshold(int nextTier, PsycastSynergiesSettings s)
+        internal static float TranscendThreshold(int nextTier, PsycastSynergiesSettings s)
         {
             float baseTicks = Mathf.Max(1f, s?.transcendBaseHours ?? 48f) * 2500f;
             float growth = Mathf.Max(1.05f, s?.transcendGrowth ?? 1.6f);
