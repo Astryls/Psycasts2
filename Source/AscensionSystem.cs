@@ -61,8 +61,12 @@ namespace PsycastSynergies
         });
 
         public static bool HasCapstone(Pawn pawn, string key)
+            => HasCapstone(GameComponent_PsycastSynergies.Instance?.GetSpec(pawn), key);
+
+        // Overload for callers that already resolved the SpecData (e.g. a prefix probing several
+        // capstones - one dictionary resolve instead of three).
+        public static bool HasCapstone(SpecData sp, string key)
         {
-            var sp = GameComponent_PsycastSynergies.Instance?.GetSpec(pawn);
             if (sp == null) return false;
             foreach (var c in Clusters) if (c.key == key) return sp.Owns(c.capstone);
             return false;

@@ -125,6 +125,15 @@ namespace PsycastSynergies
 
         // ---- drawing ----
 
+        // Zero-allocation fast path for per-icon draw loops: the string key is only built when a
+        // burst is actually live somewhere (rare) - the common case exits on a count check before
+        // any concatenation happens.
+        public static void Draw(Rect r, Pawn p, AbilityDef d)
+        {
+            if (active.Count == 0) return;
+            Draw(r, KeySkill(p, d));
+        }
+
         public static void Draw(Rect r, string key)
         {
             if (active.Count == 0 || key == null) return;

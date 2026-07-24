@@ -15,22 +15,24 @@ namespace PsycastSynergies
         static bool Prefix(MentalStateDef stateDef, bool forced, bool causedByPsycast, Pawn ___pawn, ref bool __result)
         {
             if (___pawn == null || forced || stateDef == null) return true;
-            if (GameComponent_PsycastSynergies.Instance == null) return true;
+            // One SpecData resolve for all three capstone probes (was three Instance+GetSpec chains).
+            var sp = GameComponent_PsycastSynergies.Instance?.GetSpec(___pawn);
+            if (sp == null || sp.owned.Count == 0) return true;
 
-            if (AscensionSystem.HasCapstone(___pawn, "tranquil"))
+            if (AscensionSystem.HasCapstone(sp, "tranquil"))
             {
                 __result = false;
                 return false;   // tranquil: no mental breaks at all
             }
 
-            if (AscensionSystem.HasCapstone(___pawn, "umbral")
+            if (AscensionSystem.HasCapstone(sp, "umbral")
                 && (causedByPsycast || stateDef == MentalStateDefOf.Berserk))
             {
                 __result = false;
                 return false;   // umbral: immune to berserk + mind control
             }
 
-            if (AscensionSystem.HasCapstone(___pawn, "pandemonium") && causedByPsycast)
+            if (AscensionSystem.HasCapstone(sp, "pandemonium") && causedByPsycast)
             {
                 __result = false;
                 return false;   // pandemonium: no will commands the storm (mind-control immune)

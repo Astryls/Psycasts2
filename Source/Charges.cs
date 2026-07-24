@@ -25,19 +25,26 @@ namespace PsycastSynergies
 
         // Charges come ONLY from synergy (never from a skill's own level allocation): each
         // Charges-type synergy source gives 0.5 charge/level (×synergy factor), floored, capped.
+        // Memoized per (pawn, def) within the tick/frame: the gizmo asks every frame, and the
+        // regen tick asks per stored entry.
         public static int Max(Pawn pawn, AbilityDef def)
         {
             var gc = GameComponent_PsycastSynergies.Instance;
             if (pawn == null || def == null || gc == null) return 0;
+            if (PerfCache.TryChargeMax(pawn, def, out int cached)) return cached;
             float c = 0f;
-            float synF = SpecEffects.SynergyFactor(pawn);
-            foreach (var src in PsycastInfo.SynergySources(def))
+            float synF = SpecEffects.SynergyFactor(gc.GetSpec(pawn));
+            var sources = PsycastInfo.SynergySources(def);
+            for (int i = 0; i < sources.Count; i++)
             {
+                var src = sources[i];
                 if (PsycastInfo.EdgeStat(src, def) != SynStat.Charges) continue;
                 int lvl = gc.GetLevel(pawn, src);
                 if (lvl > 0) c += SourceCharges(lvl) * synF * PsycastInfo.EdgeStrength(src, def);   // hand-tuned edge strength
             }
-            return Mathf.Clamp(Mathf.FloorToInt(c), 0, Cap);
+            int v = Mathf.Clamp(Mathf.FloorToInt(c), 0, Cap);
+            PerfCache.PutChargeMax(pawn, def, v);
+            return v;
         }
 
         private static Entry GetOrInit(Pawn pawn, AbilityDef def, int max)
@@ -47,9 +54,12 @@ namespace PsycastSynergies
             return e;
         }
 
-        public static int Current(Pawn pawn, AbilityDef def)
+        public static int Current(Pawn pawn, AbilityDef def) => Current(pawn, def, Max(pawn, def));
+
+        // Overload taking a pre-computed max so per-frame callers (the gizmo chip) walk the
+        // synergy sources once, not twice.
+        public static int Current(Pawn pawn, AbilityDef def, int max)
         {
-            int max = Max(pawn, def);
             if (max <= 0) return 0;
             return Mathf.Min(GetOrInit(pawn, def, max).charges, max);
         }
@@ -70,13 +80,18 @@ namespace PsycastSynergies
             return false;
         }
 
+        // Reused sweep buffer: dead/destroyed pawns would otherwise sit in the store forever
+        // (a slow leak AND wasted regen work over a long session).
+        private static readonly List<Pawn> deadSweep = new List<Pawn>();
+
         public static void Tick()
         {
             if (store.Count == 0) return;
             int now = Find.TickManager.TicksGame;
+            deadSweep.Clear();
             foreach (var kv in store)
             {
-                if (kv.Key == null) continue;
+                if (kv.Key == null || kv.Key.Dead || kv.Key.Destroyed) { deadSweep.Add(kv.Key); continue; }
                 foreach (var inner in kv.Value)
                 {
                     var def = inner.Key; var e = inner.Value;
@@ -86,6 +101,7 @@ namespace PsycastSynergies
                     if (now - e.regenTick >= cd) { e.charges = Mathf.Min(e.charges + 1, max); e.regenTick = now; }
                 }
             }
+            for (int i = 0; i < deadSweep.Count; i++) store.Remove(deadSweep[i]);
         }
     }
 
@@ -102,7 +118,7 @@ namespace PsycastSynergies
                 if (pawn == null || def == null) return;
                 int max = ChargeStore.Max(pawn, def);
                 if (max <= 0) return;
-                int cur = ChargeStore.Current(pawn, def);
+                int cur = ChargeStore.Current(pawn, def, max);   // reuse max: one synergy walk per frame, not two
 
                 Rect chip = new Rect(butRect.x + 3f, butRect.yMax - 23f, 26f, 20f);
                 GUI.color = new Color(0.04f, 0.06f, 0.09f, 0.92f);
@@ -112,7 +128,8 @@ namespace PsycastSynergies
                 Text.Font = GameFont.Small; Text.Anchor = TextAnchor.MiddleCenter;
                 GUI.color = cur > 0 ? new Color(0.6f, 0.9f, 1f) : new Color(0.6f, 0.6f, 0.6f);
                 Widgets.Label(chip, cur.ToString());
-                TooltipHandler.TipRegion(chip, "PS_ChargesTip".Translate(cur, max));
+                // Register the tip only while hovered - Translate() allocates per call and this runs per gizmo per frame.
+                if (Mouse.IsOver(chip)) TooltipHandler.TipRegion(chip, "PS_ChargesTip".Translate(cur, max));
                 Text.Anchor = TextAnchor.UpperLeft; GUI.color = Color.white;
             }
             catch { }

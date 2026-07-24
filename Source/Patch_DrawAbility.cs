@@ -114,7 +114,8 @@ namespace PsycastSynergies
                 GUI.color = pc;
 
                 // Level-up / mastery celebration burst (SkillFx) - drawn last so sparks sit on top.
-                SkillFx.Draw(inRect, SkillFx.KeySkill(pawn, ability));
+                // Overload builds the key string only while a burst is live (per icon per frame otherwise).
+                SkillFx.Draw(inRect, pawn, ability);
             }
 
             // Fog cover: paint over the un-learned icon so its identity stays hidden. Drawn on Repaint

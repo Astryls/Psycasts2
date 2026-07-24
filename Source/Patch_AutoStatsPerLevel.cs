@@ -71,12 +71,16 @@ namespace PsycastSynergies
             return t == null ? null : AccessTools.Method(t, "Button", new[] { typeof(Rect), typeof(string), typeof(bool) });
         }
 
+        // This prefix runs for EVERY UIStyle.Button call, every frame - resolve the matched label
+        // once per language instead of a Translate() dictionary lookup + TaggedString per call.
+        private static readonly PerfCache.LangCache PsycasterStatsLabel = new PerfCache.LangCache("VPE.PsycasterStats");
+
         static bool Prefix(Rect r, string label, ref bool __result)
         {
             if (PsycastSynergiesMod.Settings == null || !PsycastSynergiesMod.Settings.autoPsycasterStats) return true;
             // Match on the "Psycaster Stats" portion only - the separator (em-dash vs hyphen) varies, and only
             // this one button's label contains it, so Contains is both robust and unambiguous.
-            string ps = "VPE.PsycasterStats".Translate();
+            string ps = PsycasterStatsLabel;
             if (string.IsNullOrEmpty(label) || !label.Contains(ps)) return true;
             var pf = Text.Font; var pa = Text.Anchor; var pc = GUI.color;
             Text.Font = GameFont.Tiny; Text.Anchor = TextAnchor.MiddleCenter; GUI.color = new Color(0.62f, 0.65f, 0.7f);

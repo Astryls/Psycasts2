@@ -123,8 +123,10 @@ namespace PsycastSynergies
             Widgets.Label(new Rect(c.x, y, c.width - 2f, 26f), "(" + AutoStats.ValStr(stat, total) + ")");
             Text.Font = pf; Text.Anchor = pa; GUI.color = pc;
             // Mouseover breakdown of the per-level gains and the running total (stacks under the stat's own tip).
-            string tip = AutoStats.Tooltip(p, stat, lvl);
-            if (tip != null) TooltipHandler.TipRegion(new Rect(c.x, y, c.width, 26f), () => tip, (int)stat.shortHash + 0x5132A);
+            // DEFERRED: the StringBuilder body runs only when the tip actually shows, not per row per frame.
+            // (BaseFor > 0 was checked above, so Tooltip can only be null defensively.)
+            TooltipHandler.TipRegion(new Rect(c.x, y, c.width, 26f),
+                () => AutoStats.Tooltip(p, stat, lvl) ?? "", (int)stat.shortHash + 0x5132A);
         }
     }
 }

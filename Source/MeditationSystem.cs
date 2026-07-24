@@ -81,10 +81,10 @@ namespace PsycastSynergies
         // postfix doesn't mistake our own meditation awakening for an Empire/anima grant.
         internal static bool internalPsylinkChange;
 
-        public static void Tick(int t)
+        // The owning GameComponent passes itself in - no per-tick Instance resolve.
+        public static void Tick(int t, GameComponent_PsycastSynergies gc)
         {
             var s = PsycastSynergiesMod.Settings;
-            var gc = GameComponent_PsycastSynergies.Instance;
             if (s == null || gc == null) return;
 
             if (t % 60000 == 0)

@@ -83,7 +83,13 @@ namespace PsycastSynergies
         // Per-pawn meditation / awakening tracking.
         private Dictionary<Pawn, MeditationData> medData = new Dictionary<Pawn, MeditationData>();
 
-        public GameComponent_PsycastSynergies(Game game) { }
+        public GameComponent_PsycastSynergies(Game game)
+        {
+            // Seed the game-keyed Instance cache immediately (the Game auto-constructs us in its
+            // own ctor, so this is valid for the whole life of that Game object).
+            cachedInstance = this;
+            cachedGame = game;
+        }
 
         public SpecData GetSpec(Pawn pawn, bool create = false)
         {
@@ -112,6 +118,7 @@ namespace PsycastSynergies
             levels.Remove(pawn);
             specs.Remove(pawn);
             medData.Remove(pawn);
+            PerfCache.Bump();
         }
 
         public IEnumerable<MeditationData> MedDataValues => medData.Values;
@@ -132,8 +139,8 @@ namespace PsycastSynergies
             foreach (var kv in d)
             {
                 if (kv.Value <= 0 || kv.Key == excludeDef) continue;
-                var ext = kv.Key.GetModExtension<AbilityExtension_Psycast>();
-                if (ext?.path != null && ext.path != excludePath) result.Add(kv);
+                var path = PsycastInfo.PathOf(kv.Key);   // cached; GetModExtension walks a list per call
+                if (path != null && path != excludePath) result.Add(kv);
             }
             return result;
         }
@@ -160,6 +167,7 @@ namespace PsycastSynergies
             if (t % 120 == 0)
             {
                 ChargeStore.Tick();
+                CastScaling.SweepExpired(t);   // drop stale post-cast amplification windows (dead pawns etc.)
                 foreach (var kv in specs)
                 {
                     var pawn = kv.Key;
@@ -169,7 +177,7 @@ namespace PsycastSynergies
                 }
             }
 
-            MeditationSystem.Tick(t);   // meditation tracking + Enlightenment + coma risk (gates internally)
+            MeditationSystem.Tick(t, this);   // meditation tracking + Enlightenment + coma risk (gates internally)
             if (t % 250 == 0) SyncPsycastHediffs();
         }
 
@@ -182,11 +190,13 @@ namespace PsycastSynergies
         }
 
         // Keep the informational + ascension hediffs in sync with each pawn's specs/levels.
+        // The de-dupe set is reused across runs (cleared, never reallocated) - this runs every 250 ticks.
+        private static readonly HashSet<Pawn> syncSeen = new HashSet<Pawn>();
         private void SyncPsycastHediffs()
         {
-            var done = new HashSet<Pawn>();
-            foreach (var p in specs.Keys) HandleHediffs(p, done);
-            foreach (var p in levels.Keys) HandleHediffs(p, done);
+            syncSeen.Clear();
+            foreach (var p in specs.Keys) HandleHediffs(p, syncSeen);
+            foreach (var p in levels.Keys) HandleHediffs(p, syncSeen);
         }
 
         private void HandleHediffs(Pawn p, HashSet<Pawn> done)
@@ -209,8 +219,27 @@ namespace PsycastSynergies
             if (hd == null) p.health.AddHediff(def, brain);
         }
 
-        public static GameComponent_PsycastSynergies Instance =>
-            Current.Game?.GetComponent<GameComponent_PsycastSynergies>();
+        // Game.GetComponent<T>() is a LINEAR scan of the components list on every call, and this
+        // property rides per-frame UI, per-stat patches and per-tick paths (~60 call sites). Cache
+        // the resolved component per Game object; a null result is never latched (re-resolves next
+        // access), and a new/loaded Game naturally invalidates via the reference compare.
+        private static GameComponent_PsycastSynergies cachedInstance;
+        private static Game cachedGame;
+
+        public static GameComponent_PsycastSynergies Instance
+        {
+            get
+            {
+                var g = Current.Game;
+                if (g == null) return null;
+                if (!ReferenceEquals(g, cachedGame) || cachedInstance == null)
+                {
+                    cachedInstance = g.GetComponent<GameComponent_PsycastSynergies>();
+                    cachedGame = g;
+                }
+                return cachedInstance;
+            }
+        }
 
         public int GetLevel(Pawn pawn, AbilityDef def)
         {
@@ -230,6 +259,7 @@ namespace PsycastSynergies
             }
             if (level <= 0) d.Remove(def);
             else d[def] = level;
+            PerfCache.Bump();   // multiplier/cap memos must not survive a level write within this frame
         }
 
         public int AddLevel(Pawn pawn, AbilityDef def, int delta)
@@ -253,10 +283,7 @@ namespace PsycastSynergies
             if (!levels.TryGetValue(pawn, out var d)) return 0;
             int sum = 0;
             foreach (var kv in d)
-            {
-                var ext = kv.Key.GetModExtension<AbilityExtension_Psycast>();
-                if (ext != null && ext.path == path) sum += kv.Value;
-            }
+                if (PsycastInfo.PathOf(kv.Key) == path) sum += kv.Value;
             return sum;
         }
 
@@ -270,8 +297,7 @@ namespace PsycastSynergies
             foreach (var kv in d)
             {
                 if (kv.Value <= 0 || kv.Key == exclude) continue;
-                var ext = kv.Key.GetModExtension<AbilityExtension_Psycast>();
-                if (ext != null && ext.path == path) result.Add(kv);
+                if (PsycastInfo.PathOf(kv.Key) == path) result.Add(kv);
             }
             result.Sort((a, b) => b.Value.CompareTo(a.Value));
             return result;
@@ -279,7 +305,7 @@ namespace PsycastSynergies
 
         public void ClearPawn(Pawn pawn)
         {
-            if (pawn != null) levels.Remove(pawn);
+            if (pawn != null && levels.Remove(pawn)) PerfCache.Bump();
         }
 
         public override void ExposeData()

@@ -26,8 +26,44 @@ namespace PsycastSynergies
             public Effect(string l, string v, SynStat? st, bool sc = true) { label = l; value = v; stat = st; scaled = sc; }
         }
 
-        // ── Role classification ───────────────────────────────────────────────
+        // ── Def-stable metadata caches ────────────────────────────────────────
+        // Everything below is a pure function of the def (never changes at runtime), yet the raw
+        // computations walk modExtensions lists and run dozens of case-insensitive substring scans.
+        // They are consulted from StatMultiplier, tooltips and per-icon draw paths, so each layer
+        // memoizes into a dictionary. Layering avoids recursion: archetype flags (L0) feed RoleOf
+        // (L1), which feeds IsSingleStrike (L2), which feeds the HasStat mask (L3). Each layer's
+        // compute only ever calls LOWER layers' cached accessors (or the raw Uncached body).
+        private static readonly Dictionary<AbilityDef, AbilityExtension_Psycast> psyExtCache = new Dictionary<AbilityDef, AbilityExtension_Psycast>();
+        private static readonly Dictionary<AbilityDef, Role> roleCache = new Dictionary<AbilityDef, Role>();
+        private static readonly Dictionary<AbilityDef, int> archFlagsCache = new Dictionary<AbilityDef, int>();   // 1=beam 2=volley 4=summon
+        private static readonly Dictionary<AbilityDef, bool> strikeCache = new Dictionary<AbilityDef, bool>();
+        private static readonly Dictionary<AbilityDef, int> hasStatCache = new Dictionary<AbilityDef, int>();     // bit i = HasStat((SynStat)i)
+
+        // The VPE psycast extension of a def (or null), cached. GetModExtension type-scans the
+        // modExtensions list on every call - lethal when a per-frame loop asks per ability.
+        public static AbilityExtension_Psycast PsyExtOf(AbilityDef def)
+        {
+            if (def == null) return null;
+            if (psyExtCache.TryGetValue(def, out var e)) return e;
+            e = def.GetModExtension<AbilityExtension_Psycast>();
+            psyExtCache[def] = e;
+            return e;
+        }
+
+        // The path an ability belongs to (or null), via the cached extension.
+        public static PsycasterPathDef PathOf(AbilityDef def) => PsyExtOf(def)?.path;
+
+        // ── Role classification (L1) ──────────────────────────────────────────
         public static Role RoleOf(AbilityDef def)
+        {
+            if (def == null) return Role.Neutral;
+            if (roleCache.TryGetValue(def, out var r)) return r;
+            r = ComputeRole(def);
+            roleCache[def] = r;
+            return r;
+        }
+
+        private static Role ComputeRole(AbilityDef def)
         {
             var hed = def.GetModExtension<AbilityExtension_Hediff>();
             if (hed?.hediff != null)
@@ -38,8 +74,9 @@ namespace PsycastSynergies
             // No explicit signal - infer from the stats it actually has so stat-bearing utility
             // casts (e.g. Aeromancer's Cyclone: a radius AoE with no damage/hediff/isPositive)
             // still get a primary stat (own-scaling) and participate in synergies.
-            if (HasStat(def, SynStat.Radius)) return Role.Control;          // area battlefield effect
-            if (HasStat(def, SynStat.Duration) || HasStat(def, SynStat.Strength)) return Role.Boon;
+            // Uses the RAW HasStat probes (these three never consult IsSingleStrike, so no cycle).
+            if (HasStatUncached(def, SynStat.Radius)) return Role.Control;  // area battlefield effect
+            if (HasStatUncached(def, SynStat.Duration) || HasStatUncached(def, SynStat.Strength)) return Role.Boon;
             return Role.Neutral;                                            // pure mobility / teleport
         }
 
@@ -64,14 +101,34 @@ namespace PsycastSynergies
             "VPE_Gravmancer.Ability_SpawnShipChunk",
         };
 
-        public static bool IsBeam(AbilityDef def)
+        // Archetype flags (L0): each Is* ran up to ~40 IndexOf substring scans per call. Computed
+        // once per def, cached as a bitmask.
+        private static int ArchFlags(AbilityDef def)
+        {
+            if (def == null) return 0;
+            if (archFlagsCache.TryGetValue(def, out int f)) return f;
+            bool beam = ComputeBeam(def);
+            bool volley = ComputeVolley(def);
+            bool summon = !volley && def.abilityClass != null
+                          && !NameHas(def, "Puppet", "Subjugat", "Marionette")
+                          && NameHas(def, "Summon", "Conjure", "Raise", "Animate", "Golem", "Fleshbeast",
+                              "Skeleton", "Shambler", "Zombie", "Undead", "Familiar", "Elemental", "Hive");
+            f = (beam ? 1 : 0) | (volley ? 2 : 0) | (summon ? 4 : 0);
+            archFlagsCache[def] = f;
+            return f;
+        }
+
+        public static bool IsBeam(AbilityDef def) => (ArchFlags(def) & 1) != 0;
+        public static bool IsProjectileVolley(AbilityDef def) => (ArchFlags(def) & 2) != 0;
+
+        private static bool ComputeBeam(AbilityDef def)
         {
             if (def?.abilityClass == null) return false;
             if (BeamClasses.Contains(def.abilityClass.FullName)) return true;
             return NameHas(def, "Beam", "Laser");
         }
 
-        public static bool IsProjectileVolley(AbilityDef def)
+        private static bool ComputeVolley(AbilityDef def)
         {
             if (def?.abilityClass == null) return false;
             if (VolleyClasses.Contains(def.abilityClass.FullName)) return true;
@@ -94,14 +151,8 @@ namespace PsycastSynergies
         // Creates NEW creatures/constructs from nothing (golems, fleshbeasts, undead, animals…).
         // Excludes Puppeteer-style abilities, which subjugate EXISTING pawns rather than summon, and
         // projectile volleys (meteorite/skyfaller spawns), which are their own archetype.
-        public static bool IsSummon(AbilityDef def)
-        {
-            if (def?.abilityClass == null) return false;
-            if (NameHas(def, "Puppet", "Subjugat", "Marionette")) return false;
-            if (IsProjectileVolley(def)) return false;
-            return NameHas(def, "Summon", "Conjure", "Raise", "Animate", "Golem", "Fleshbeast",
-                "Skeleton", "Shambler", "Zombie", "Undead", "Familiar", "Elemental", "Hive");
-        }
+        // (Computed inside ArchFlags; this is the cached accessor.)
+        public static bool IsSummon(AbilityDef def) => (ArchFlags(def) & 4) != 0;
 
         // Strength tier of a synergy type, used to balance each skill's received mix (S=0 … C=3).
         public static int Tier(SynStat s)
@@ -115,10 +166,19 @@ namespace PsycastSynergies
             }
         }
 
-        // Single-target offensive strike (eligible for the "pick extra targets" multi-strike synergy).
+        // Single-target offensive strike (L2), eligible for the "pick extra targets" multi-strike synergy.
         public static bool IsSingleStrike(AbilityDef def)
         {
-            if (def == null || def.targetCount > 1 || def.hasAoE) return false;
+            if (def == null) return false;
+            if (strikeCache.TryGetValue(def, out bool s)) return s;
+            s = ComputeSingleStrike(def);
+            strikeCache[def] = s;
+            return s;
+        }
+
+        private static bool ComputeSingleStrike(AbilityDef def)
+        {
+            if (def.targetCount > 1 || def.hasAoE) return false;
             if (RoleOf(def) != Role.Offensive) return false;
             var modes = def.targetModes;
             if (modes != null && modes.Count > 0 && modes[0] == AbilityTargetingMode.Self) return false;
@@ -127,7 +187,19 @@ namespace PsycastSynergies
 
         // True if this ability has any multi-target ("multi-strike") benefit - Targets primary or a
         // received Targets edge - so it should always allow selecting at least 2 targets.
+        // Depends on the EFFECTIVE graph, so its cache is dropped in ClearCaches with the rest.
+        private static readonly Dictionary<AbilityDef, bool> grantsMultiCache = new Dictionary<AbilityDef, bool>();
+
         public static bool GrantsMultiTarget(AbilityDef def)
+        {
+            if (def == null) return false;
+            if (grantsMultiCache.TryGetValue(def, out bool g)) return g;
+            g = ComputeGrantsMultiTarget(def);
+            grantsMultiCache[def] = g;
+            return g;
+        }
+
+        private static bool ComputeGrantsMultiTarget(AbilityDef def)
         {
             if (PrimaryStat(def) == SynStat.Targets) return true;
             foreach (var src in SynergySources(def))
@@ -135,7 +207,23 @@ namespace PsycastSynergies
             return false;
         }
 
+        // HasStat (L3): full per-def bitmask computed once. The raw probes read def fields that
+        // CastScaling temporarily mutates during a cast - caching at first-touch (unscaled) makes
+        // the answers stable and deterministic instead of cast-window-dependent.
         public static bool HasStat(AbilityDef def, SynStat stat)
+        {
+            if (def == null) return false;
+            if (!hasStatCache.TryGetValue(def, out int mask))
+            {
+                mask = 0;
+                for (int i = 0; i <= (int)SynStat.SummonCount; i++)
+                    if (HasStatUncached(def, (SynStat)i)) mask |= 1 << i;
+                hasStatCache[def] = mask;
+            }
+            return (mask & (1 << (int)stat)) != 0;
+        }
+
+        private static bool HasStatUncached(AbilityDef def, SynStat stat)
         {
             var expl = def.GetModExtension<AbilityExtension_Explosion>();
             switch (stat)
@@ -180,12 +268,25 @@ namespace PsycastSynergies
         // Deterministic per defName + cached.
         private static readonly Dictionary<AbilityDef, SynStat?> primCache = new Dictionary<AbilityDef, SynStat?>();
 
+        // Effective-value caches: the layered resolution (PlayerTuning > ManualBalance > frozen >
+        // computed) costs 2-3 string-keyed dictionary probes per call - and the EDGE lookups build
+        // a concat key string PER CALL. Resolve once, cache by def reference; every editor mutation
+        // invalidates via ClearCaches (PlayerTuning.Dirty already routes there).
+        private static readonly Dictionary<AbilityDef, SynStat?> effPrimCache = new Dictionary<AbilityDef, SynStat?>();
+        private static readonly Dictionary<AbilityDef, float> effPrimStrCache = new Dictionary<AbilityDef, float>();
+        private static readonly Dictionary<(AbilityDef, AbilityDef), SynStat?> effEdgeCache = new Dictionary<(AbilityDef, AbilityDef), SynStat?>();
+        private static readonly Dictionary<(AbilityDef, AbilityDef), float> effEdgeStrCache = new Dictionary<(AbilityDef, AbilityDef), float>();
+
         public static SynStat? PrimaryStat(AbilityDef def)
         {
             if (def == null) return null;
+            if (effPrimCache.TryGetValue(def, out var c)) return c;
             // Player tuning (in-game balance editor) wins over everything.
-            if (PlayerTuning.TryPrim(def.defName, out int pv)) return pv < 0 ? (SynStat?)null : (SynStat)pv;
-            return BasePrimary(def);
+            SynStat? v = PlayerTuning.TryPrim(def.defName, out int pv)
+                ? (pv < 0 ? (SynStat?)null : (SynStat)pv)
+                : BasePrimary(def);
+            effPrimCache[def] = v;
+            return v;
         }
 
         // Baseline (pre-player-tuning) primary: baked ManualBalance overlay -> frozen graph -> computed.
@@ -250,9 +351,13 @@ namespace PsycastSynergies
         // Per-skill primary scaling strength (hand-tuned multiplier; 1 = auto). Scales a skill's OWN
         // per-level contribution to its primary stat. Player tuning > baked ManualBalance.
         public static float PrimaryStrength(AbilityDef def)
-            => def == null ? 1f
-             : PlayerTuning.TryPrimStr(def.defName, out float pf) ? pf
-             : ManualBalance.PrimStrength(def.defName);
+        {
+            if (def == null) return 1f;
+            if (effPrimStrCache.TryGetValue(def, out float c)) return c;
+            float v = PlayerTuning.TryPrimStr(def.defName, out float pf) ? pf : ManualBalance.PrimStrength(def.defName);
+            effPrimStrCache[def] = v;
+            return v;
+        }
 
         public static float BasePrimaryStrength(AbilityDef def)
             => def == null ? 1f : ManualBalance.PrimStrength(def.defName);
@@ -260,9 +365,15 @@ namespace PsycastSynergies
         // Per-edge synergy strength (hand-tuned multiplier; 1 = auto). Scales how much a source feeds
         // a target. Player tuning > baked ManualBalance.
         public static float EdgeStrength(AbilityDef source, AbilityDef target)
-            => (source == null || target == null) ? 1f
-             : PlayerTuning.TryEdgeStr(source.defName, target.defName, out float ef) ? ef
-             : ManualBalance.EdgeStrength(source.defName, target.defName);
+        {
+            if (source == null || target == null) return 1f;
+            var key = (source, target);
+            if (effEdgeStrCache.TryGetValue(key, out float c)) return c;
+            float v = PlayerTuning.TryEdgeStr(source.defName, target.defName, out float ef)
+                ? ef : ManualBalance.EdgeStrength(source.defName, target.defName);
+            effEdgeStrCache[key] = v;
+            return v;
+        }
 
         public static float BaseEdgeStrength(AbilityDef source, AbilityDef target)
             => (source == null || target == null) ? 1f : ManualBalance.EdgeStrength(source.defName, target.defName);
@@ -270,9 +381,14 @@ namespace PsycastSynergies
         public static SynStat? EdgeStat(AbilityDef source, AbilityDef target)
         {
             if (source == null || target == null) return null;
+            var key = (source, target);
+            if (effEdgeCache.TryGetValue(key, out var c)) return c;
             // Player tuning (in-game balance editor) wins over everything.
-            if (PlayerTuning.TryEdge(source.defName, target.defName, out int pv)) return pv < 0 ? (SynStat?)null : (SynStat)pv;
-            return BaseEdgeStat(source, target);
+            SynStat? v = PlayerTuning.TryEdge(source.defName, target.defName, out int pv)
+                ? (pv < 0 ? (SynStat?)null : (SynStat)pv)
+                : BaseEdgeStat(source, target);
+            effEdgeCache[key] = v;
+            return v;
         }
 
         // Baseline (pre-player-tuning) edge type: baked ManualBalance overlay -> frozen graph -> computed.
@@ -537,6 +653,12 @@ namespace PsycastSynergies
         public static void ClearCaches()
         {
             primCache.Clear(); edgeCache.Clear(); sourceCache.Clear();
+            effPrimCache.Clear(); effPrimStrCache.Clear(); effEdgeCache.Clear(); effEdgeStrCache.Clear();
+            grantsMultiCache.Clear();
+            // Def-stable caches (role/archetype/hasStat/psyExt/tokens) survive - they never depend
+            // on the tuning layers. The tick-scoped memos must not, though: a balance edit changes
+            // multipliers mid-frame.
+            PerfCache.Bump();
         }
 
         // Pre-populate the runtime caches (primary stat, synergy sources, edge types) at startup so the
@@ -546,10 +668,15 @@ namespace PsycastSynergies
         {
             foreach (var def in DefDatabase<AbilityDef>.AllDefs)
             {
-                if (def?.GetModExtension<AbilityExtension_Psycast>() == null) continue;
+                if (def == null || PsyExtOf(def) == null) continue;
+                RoleOf(def);                      // also warms ArchFlags via ComputeRole's probes
+                IsSingleStrike(def);
+                HasStat(def, SynStat.Power);      // builds the full per-def mask
                 PrimaryStat(def);
+                PrimaryStrength(def);
+                GrantsMultiTarget(def);
                 var srcs = SynergySources(def);
-                for (int i = 0; i < srcs.Count; i++) EdgeStat(srcs[i], def);
+                for (int i = 0; i < srcs.Count; i++) { EdgeStat(srcs[i], def); EdgeStrength(srcs[i], def); }
             }
         }
 

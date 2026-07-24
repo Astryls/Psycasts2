@@ -62,6 +62,18 @@ namespace PsycastSynergies
             return 1f;
         }
 
+        // Periodic cleanup (GameComponentTick, every 120 ticks): AmplifyFactor only evicts an
+        // expired entry when that pawn's sensitivity is read again - a pawn that dies (or never
+        // gets probed) would park its entry forever.
+        private static readonly List<Pawn> ampSweep = new List<Pawn>();
+        public static void SweepExpired(int now)
+        {
+            if (ampWindows.Count == 0) return;
+            ampSweep.Clear();
+            foreach (var kv in ampWindows) if (now > kv.Value.expireTick) ampSweep.Add(kv.Key);
+            for (int i = 0; i < ampSweep.Count; i++) ampWindows.Remove(ampSweep[i]);
+        }
+
         private static void Begin(Ability ab)
         {
             depth++;

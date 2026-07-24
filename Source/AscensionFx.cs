@@ -21,6 +21,11 @@ namespace PsycastSynergies
         private Thing glower;
         private IntVec3 glowCell = IntVec3.Invalid;
         private int lastTick = -1;
+        // The per-pawn "Psychic aura" toggle is read on a 15-tick cadence instead of every tick
+        // (a dictionary probe per aura pawn per tick adds up); a 0.25s latency on a cosmetic
+        // toggle is imperceptible.
+        private bool aurasOff;
+        private int aurasCheckAt = -1;
 
         // 1.6 ticks comps through CompPostTickInterval; CompPostTick is legacy and not forwarded.
         // Override both, guarded so the body runs exactly once per game tick.
@@ -36,8 +41,12 @@ namespace PsycastSynergies
             var pawn = parent.pawn;
             if (pawn == null || !pawn.Spawned || pawn.Map == null) { ClearGlower(); return; }
 
-            bool off = GameComponent_PsycastSynergies.Instance?.GetSpec(pawn)?.aurasDisabled == true;
-            if (off) { ClearGlower(); return; }
+            if (now >= aurasCheckAt)
+            {
+                aurasCheckAt = now + 15;
+                aurasOff = GameComponent_PsycastSynergies.Instance?.GetSpec(pawn)?.aurasDisabled == true;
+            }
+            if (aurasOff) { ClearGlower(); return; }
 
             float max = parent.def.maxSeverity > 0f ? parent.def.maxSeverity : 1f;
             float frac = Mathf.Clamp01(parent.Severity / max);

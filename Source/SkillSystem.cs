@@ -63,9 +63,11 @@ namespace PsycastSynergies
             => MaxLevel(pawn, def, pawn?.Psycasts()?.level ?? 0);
 
         // Overload taking a pre-fetched psy level so a per-icon UI loop can read the level once per
-        // frame instead of doing a Psycasts() hediff lookup for every icon.
+        // frame instead of doing a Psycasts() hediff lookup for every icon. Memoized per (pawn, def,
+        // psy) within the current tick/frame - the tab asks for every icon on every IMGUI pass.
         public static int MaxLevel(Pawn pawn, AbilityDef def, int psy)
         {
+            if (PerfCache.TryMaxLevel(pawn, def, psy, out int cached)) return cached;
             var s = PsycastSynergiesMod.Settings;
             int cap = s.maxSkillLevel + SpecEffects.LevelCapBonus(pawn);
             int per = Mathf.Max(1, s.psyLevelsPerSkillLevel);
@@ -79,6 +81,7 @@ namespace PsycastSynergies
                 if (tierBase + (m - 1) * per + ((m - 1) * (m - 2) / 2) > psy) break;
                 n++;
             }
+            PerfCache.PutMaxLevel(pawn, def, psy, n);
             return n;
         }
 
@@ -102,7 +105,7 @@ namespace PsycastSynergies
         {
             if (def == null) return 1;
             if (tierCache.TryGetValue(def, out int v)) return v;
-            v = def.GetModExtension<AbilityExtension_Psycast>()?.level ?? 1;
+            v = PsycastInfo.PsyExtOf(def)?.level ?? 1;
             tierCache[def] = v;
             return v;
         }
@@ -113,12 +116,23 @@ namespace PsycastSynergies
         // Per-stat multiplier (>= 1): own primary scaling + directed synergies + specialization bonuses.
         // A skill scales only its ONE primary type. Leveled same-path mates feed that primary type
         // (so to empower a skill you level its neighbours). Plus specialization bonuses.
+        // Memoized per (pawn, target, stat) within the current tick/frame (PerfCache): the psycast
+        // tab, gizmos, targeting UI and the VEF getter patches all re-ask per frame/cast.
         public static float StatMultiplier(Pawn pawn, AbilityDef target, SynStat stat)
         {
             if (pawn == null || target == null) return 1f;
+            if (PerfCache.TryMult(pawn, target, (int)stat, out float cached)) return cached;
+            float v = ComputeStatMultiplier(pawn, target, stat);
+            PerfCache.PutMult(pawn, target, (int)stat, v);
+            return v;
+        }
+
+        private static float ComputeStatMultiplier(Pawn pawn, AbilityDef target, SynStat stat)
+        {
             var gc = GameComponent_PsycastSynergies.Instance;
             var s = PsycastSynergiesMod.Settings;
             if (gc == null || s == null) return 1f;
+            var sp = gc.GetSpec(pawn);   // resolved ONCE; SpecEffects overloads reuse it below
 
             SynStat? prim = PsycastInfo.PrimaryStat(target);
             Role role = PsycastInfo.RoleOf(target);
@@ -128,7 +142,7 @@ namespace PsycastSynergies
             if (prim.HasValue && prim.Value == stat)
             {
                 float perLevelMult = 1f, extraLevels = 0f;
-                SpecEffects.OwnAdjust(pawn, target, ref perLevelMult, ref extraLevels);
+                SpecEffects.OwnAdjust(sp, target, ref perLevelMult, ref extraLevels);
                 bonus += (gc.GetLevel(pawn, target) + extraLevels + ExternalBonus(pawn, target)) * s.perLevelPct * perLevelMult * CountBoost(stat)
                          * PsycastInfo.PrimaryStrength(target);   // hand-tuned primary strength
             }
@@ -139,10 +153,12 @@ namespace PsycastSynergies
             // player disables the synergy system (own-level scaling above still applies).
             if (!s.disableSynergies && s.synergyPct > 0f)
             {
-                float synFactor = SpecEffects.SynergyFactor(pawn);
-                bool offDouble = SpecEffects.OffensiveSourceDoubled(pawn);
-                foreach (var src in PsycastInfo.SynergySources(target))
+                float synFactor = SpecEffects.SynergyFactor(sp);
+                bool offDouble = sp != null && sp.Owns("onslaught");
+                var sources = PsycastInfo.SynergySources(target);
+                for (int i = 0; i < sources.Count; i++)
                 {
+                    var src = sources[i];
                     if (PsycastInfo.EdgeStat(src, target) != stat) continue;
                     int lvl = gc.GetLevel(pawn, src);
                     if (lvl <= 0) continue;
@@ -152,7 +168,7 @@ namespace PsycastSynergies
                 }
             }
 
-            bonus += SpecEffects.StatBonus(pawn, target, stat, role, prim);
+            bonus += SpecEffects.StatBonus(sp, pawn, target, stat, role, prim);
             return 1f + bonus;
         }
 
@@ -163,12 +179,12 @@ namespace PsycastSynergies
         {
             if (pawn == null || def == null) return 1f;
             var prim = PsycastInfo.PrimaryStat(def);
-            if (prim.HasValue) return StatMultiplier(pawn, def, prim.Value);
+            if (prim.HasValue) return StatMultiplier(pawn, def, prim.Value);   // already memoized
             var gc = GameComponent_PsycastSynergies.Instance;
             var s = PsycastSynergiesMod.Settings;
             if (gc == null || s == null) return 1f;
             float perLevelMult = 1f, extraLevels = 0f;
-            SpecEffects.OwnAdjust(pawn, def, ref perLevelMult, ref extraLevels);
+            SpecEffects.OwnAdjust(gc.GetSpec(pawn), def, ref perLevelMult, ref extraLevels);
             return 1f + (gc.GetLevel(pawn, def) + extraLevels + ExternalBonus(pawn, def)) * s.perLevelPct * perLevelMult;
         }
 
@@ -192,15 +208,26 @@ namespace PsycastSynergies
             return Mathf.Clamp(Mathf.Max(min, leveled), 0, 3);
         }
 
-        // Cost multiplier (>= depends on specs) for psyfocus + entropy.
+        // Cost multiplier (>= depends on specs) for psyfocus + entropy. Memoized like StatMultiplier
+        // (slot 200 - outside the SynStat range) because the cost getters run per gizmo per frame.
+        private const int CostSlot = 200;
+
         public static float CostMultiplier(Pawn pawn, AbilityDef def)
         {
             if (pawn == null || def == null) return 1f;
+            if (PerfCache.TryMult(pawn, def, CostSlot, out float cached)) return cached;
+            float v = ComputeCostMultiplier(pawn, def);
+            PerfCache.PutMult(pawn, def, CostSlot, v);
+            return v;
+        }
+
+        private static float ComputeCostMultiplier(Pawn pawn, AbilityDef def)
+        {
             var gc = GameComponent_PsycastSynergies.Instance;
             var s = PsycastSynergiesMod.Settings;
             if (gc == null || s == null) return 1f;
             float penalty = s.scaleCost ? gc.GetLevel(pawn, def) * s.costPerLevelPct : 0f;
-            float factor = SpecEffects.CostFactor(pawn, def, penalty);
+            float factor = SpecEffects.CostFactor(gc.GetSpec(pawn), def, penalty);
             // Efficiency synergy type: reduce psyfocus + heat cost.
             float effRed = StatMultiplier(pawn, def, SynStat.Efficiency) - 1f;
             if (effRed > 0f) factor *= 1f - Mathf.Min(effRed, 0.7f);

@@ -28,11 +28,16 @@ namespace PsycastSynergies
             return "PS_TierTranscendent".Translate(RomanNumerals.ToRoman(tier));   // tier 4+ named by the FULL tier (tier 6 -> "Transcendent VI")
         }
 
+        // GetFirstHediffOfDef walks the pawn's hediff list; this is read from cooldown patches,
+        // the psycast tab footer and pilgrim scans, so memoize per pawn within the tick/frame.
         public static int TierOf(Pawn p)
         {
             if (p?.health?.hediffSet == null || PSHediffDefOf.PS_Enlightenment == null) return 0;
+            if (PerfCache.TryTier(p, out int cached)) return cached;
             var h = p.health.hediffSet.GetFirstHediffOfDef(PSHediffDefOf.PS_Enlightenment);
-            return h == null ? 0 : Mathf.RoundToInt(h.Severity);
+            int t = h == null ? 0 : Mathf.RoundToInt(h.Severity);
+            PerfCache.PutTier(p, t);
+            return t;
         }
 
         // Set (or change) a pawn's tier: adds/updates/removes the hediff, mirrors MeditationData, and - when
@@ -56,6 +61,8 @@ namespace PsycastSynergies
                 p.health.AddHediff(h, brain);
             }
             else h.Severity = tier;
+
+            PerfCache.Bump();   // tier memo must not survive this write within the frame
 
             var gc = GameComponent_PsycastSynergies.Instance;
             var med = gc?.GetMed(p, true);

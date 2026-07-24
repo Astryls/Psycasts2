@@ -1,4 +1,5 @@
 #nullable disable
+using System.Collections.Generic;
 using UnityEngine;
 using Verse;
 using VEF.Abilities;
@@ -8,12 +9,17 @@ using AbilityDef = VEF.Abilities.AbilityDef;
 namespace PsycastSynergies
 {
     // Central application of specialization effects. SkillSystem / cost / cast hooks call into here.
+    // Every effect has TWO entry points: the Pawn overload (resolves SpecData itself - convenient
+    // for one-off callers) and a SpecData overload for hot paths that already resolved it, so a
+    // single StatMultiplier call doesn't re-probe the per-pawn dictionary four times.
     public static class SpecEffects
     {
         // Additive stat bonus (multiplier-space) from owned passive specs for (pawn, def, stat).
         public static float StatBonus(Pawn pawn, AbilityDef def, SynStat stat, Role role, SynStat? prim)
+            => StatBonus(GameComponent_PsycastSynergies.Instance?.GetSpec(pawn), pawn, def, stat, role, prim);
+
+        public static float StatBonus(SpecData d, Pawn pawn, AbilityDef def, SynStat stat, Role role, SynStat? prim)
         {
-            var d = GameComponent_PsycastSynergies.Instance?.GetSpec(pawn);
             if (d == null || d.owned.Count == 0) return 0f;
             float b = 0f;
 
@@ -52,16 +58,19 @@ namespace PsycastSynergies
 
         // Own-scaling adjustment from Discipline (chosen path).
         public static void OwnAdjust(Pawn pawn, AbilityDef def, ref float perLevelMult, ref float extraLevels)
+            => OwnAdjust(GameComponent_PsycastSynergies.Instance?.GetSpec(pawn), def, ref perLevelMult, ref extraLevels);
+
+        public static void OwnAdjust(SpecData d, AbilityDef def, ref float perLevelMult, ref float extraLevels)
         {
-            var d = GameComponent_PsycastSynergies.Instance?.GetSpec(pawn);
             if (d == null || !d.Owns("discipline") || d.disciplinePath == null) return;
-            var ext = def.GetModExtension<AbilityExtension_Psycast>();
-            if (ext?.path == d.disciplinePath) { perLevelMult *= 1.5f; extraLevels += 1f; }
+            if (PsycastInfo.PathOf(def) == d.disciplinePath) { perLevelMult *= 1.5f; extraLevels += 1f; }
         }
 
         public static float SynergyFactor(Pawn pawn)
+            => SynergyFactor(GameComponent_PsycastSynergies.Instance?.GetSpec(pawn));
+
+        public static float SynergyFactor(SpecData d)
         {
-            var d = GameComponent_PsycastSynergies.Instance?.GetSpec(pawn);
             float f = 1f;
             if (d != null)
             {
@@ -80,8 +89,10 @@ namespace PsycastSynergies
 
         // Cost multiplier folding Flow / Abandon / Mastery into the level-based penalty.
         public static float CostFactor(Pawn pawn, AbilityDef def, float levelPenalty)
+            => CostFactor(GameComponent_PsycastSynergies.Instance?.GetSpec(pawn), def, levelPenalty);
+
+        public static float CostFactor(SpecData d, AbilityDef def, float levelPenalty)
         {
-            var d = GameComponent_PsycastSynergies.Instance?.GetSpec(pawn);
             if (d == null) return 1f + levelPenalty;
             if (d.Owns("mastery") && d.masteryDef == def) levelPenalty = 0f;
             if (d.Owns("flow")) levelPenalty *= 0.5f;
@@ -101,14 +112,24 @@ namespace PsycastSynergies
             return max <= 0f ? 0f : Mathf.Clamp01(e.EntropyValue / max);
         }
 
-        // The damage-type "element" of a cast, for Attunement matching.
+        // The damage-type "element" of a cast, for Attunement matching. Def-stable, cached - this
+        // rides StatBonus (per StatMultiplier call) whenever Attunement is owned.
+        private static readonly Dictionary<AbilityDef, DamageDef> elementCache = new Dictionary<AbilityDef, DamageDef>();
+
         public static DamageDef ElementOf(AbilityDef def)
         {
+            if (def == null) return null;
+            if (elementCache.TryGetValue(def, out var cached)) return cached;
+            DamageDef v = null;
             var expl = def.GetModExtension<AbilityExtension_Explosion>();
-            if (expl?.explosionDamageDef != null) return expl.explosionDamageDef;
-            var proj = def.GetModExtension<AbilityExtension_Projectile>();
-            if (proj?.projectile?.projectile != null) return proj.projectile.projectile.damageDef;
-            return null;
+            if (expl?.explosionDamageDef != null) v = expl.explosionDamageDef;
+            else
+            {
+                var proj = def.GetModExtension<AbilityExtension_Projectile>();
+                if (proj?.projectile?.projectile != null) v = proj.projectile.projectile.damageDef;
+            }
+            elementCache[def] = v;
+            return v;
         }
     }
 
