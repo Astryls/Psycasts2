@@ -612,14 +612,14 @@ namespace PsycastSynergies
         {
             new[]{ "Morbid",        "necropath","deadlife","hemosage","veincaster","deathmarch","destined death" },
             new[]{ "Flame",         "conflagrator","flameheart","luminis","civilight","shining","meteor" },
-            new[]{ "Void",          "voidweaver","umbra","nightstalker","horaxian","lunacy" },
+            new[]{ "Void",          "voidweaver","umbra","nightstalker","horaxian","lunacy","phase shift" },
             new[]{ "Natural",       "druid","empath","animancer","wildhunter","wildspeaker","bugmancer" },
-            new[]{ "Artistic",      "harmonist","chronopath","fateweaver","tieweaver","skipmaster","phase shift" },
-            new[]{ "VPE_Science",   "technomancer","neurophage","oripathy","biohazard","glitch","staticlord" },
-            new[]{ "VPE_Archotech", "archotechist","archon","enlightened","knowledge","gravcaster","saileach" },
+            new[]{ "Artistic",      "harmonist","chronopath","fateweaver","tieweaver","skipmaster" },
+            new[]{ "VPE_Science",   "technomancer","oripathy","biohazard","glitch","staticlord","biosoother" },
+            new[]{ "VPE_Archotech", "archotechist","archon","enlightened","knowledge","gravcaster","saileach","neurophage" },
             new[]{ "VPE_Group",     "puppeteer","protector","warlord","amiya","kal'tsit","silence" },
             new[]{ "VPE_Wealth",    "geomancer","mudrock","frostshaper","hydromancer","aeromancer","ascalon" },
-            new[]{ "Dignified",     "crownslayer","ines","wis'adel","blader","ranger","biosoother" },
+            new[]{ "Dignified",     "crownslayer","ines","wis'adel","blader","ranger" },
             new[]{ "Minimal",       "mechanitor" },
         };
         private static readonly string[] FocusKeys =
