@@ -80,6 +80,9 @@
   <PS_SetPilgrimPityTip>An Awakened pawn's cumulative meditation guarantees a tier-up pilgrimage offer after this many hours. The climb to Tier III takes half again as long, and the storyteller can still offer one earlier on its own. 0 disables the guarantee (storyteller only).</PS_SetPilgrimPityTip>
   <PS_SetMedBars>Meditation progress bars</PS_SetMedBars>
   <PS_SetMedBarsTip>Show compact bars in the psycast tab for coma risk, progress to the next psycaster level, and the pilgrimage or Transcendence climb.</PS_SetMedBarsTip>
+  <PS_SetAlwaysTab>Psycast tab on every colonist</PS_SetAlwaysTab>
+  <PS_SetAlwaysTabTip>Show the psycast tab on all of your humanlike pawns, not only on psycasters. Colonists who have not awakened yet see a compact card with their progress toward Awakening instead of the psycast trees.</PS_SetAlwaysTabTip>
+
   <PS_SetH_PathAccess>Path access</PS_SetH_PathAccess>
   <PS_SetNoGeneReq>Disable gene requirements</PS_SetNoGeneReq>
   <PS_SetNoGeneReqTip>Paths that require a specific gene, such as Archon, unlock without needing the gene.</PS_SetNoGeneReqTip>

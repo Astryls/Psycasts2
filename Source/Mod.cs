@@ -102,6 +102,7 @@ namespace PsycastSynergies
         public float awakenGuaranteeHours = 36f;          // cumulative meditation hours that GUARANTEE a non-psycaster Awakens (~1 week dedicated)
         public float pilgrimGuaranteeHours = 60f;         // tier 1-2 meditation hours that GUARANTEE a pilgrimage offer (T3 climb x1.5; 0 = storyteller only)
         public bool medBars = true;                       // compact meditation progress bars in the psycast tab
+        public bool alwaysShowPsycastTab = true;          // show the psycast tab on every player humanlike; non-psycasters get the dormant card
         public int balanceVersion = 0;                   // one-time stamp so changed balance defaults override a stale saved config
         public float comaSafeHours = 6f;                 // hours/day of meditation before coma risk starts
         public float comaRiskPerHour = 0.05f;            // psychic-coma chance per hour over the safe window
@@ -193,6 +194,7 @@ namespace PsycastSynergies
             Scribe_Values.Look(ref awakenGuaranteeHours, "awakenGuaranteeHours", 36f);
             Scribe_Values.Look(ref pilgrimGuaranteeHours, "pilgrimGuaranteeHours", 60f);
             Scribe_Values.Look(ref medBars, "medBars", true);
+            Scribe_Values.Look(ref alwaysShowPsycastTab, "alwaysShowPsycastTab", true);
             Scribe_Values.Look(ref comaSafeHours, "comaSafeHours", 6f);
             Scribe_Values.Look(ref comaRiskPerHour, "comaRiskPerHour", 0.05f);
             Scribe_Values.Look(ref tier2SpecPoints, "tier2SpecPoints", 4);
@@ -364,6 +366,7 @@ namespace PsycastSynergies
             CB(l, "PS_SetSkillFx".Translate(), ref s.skillFx, "PS_SetSkillFxTip".Translate());
             CB(l, "PS_SetFogOfWar".Translate(), ref s.fogOfWar, "PS_SetFogOfWarTip".Translate());
             CB(l, "PS_SetMedBars".Translate(), ref s.medBars, "PS_SetMedBarsTip".Translate());
+            CB(l, "PS_SetAlwaysTab".Translate(), ref s.alwaysShowPsycastTab, "PS_SetAlwaysTabTip".Translate());
             CB(l, "PS_SetNoSkillReset".Translate(), ref s.disableSkillReset, "PS_SetNoSkillResetTip".Translate());
 
             Head(l, "PS_SetH_WhatScales".Translate());

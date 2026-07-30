@@ -181,6 +181,10 @@ namespace PsycastSynergies
                         && (!surgeExt.onlyWhileMeditating || MeditationSystem.IsActivelyMeditating(p))
                         && Rand.Chance(PerHour(surgeExt.chancePerDay)))
                         Fire(p, surgeExt, "surge condition");
+                    // Safety net for psycasters who reached us with no path at all (joined before this
+                    // fix, arrived by a route that bypasses SetFaction, or stopped being a quest
+                    // lodger). No-op once they hold a path or have a pick pending.
+                    JoinAwaken.TryOffer(p, "hourly scan");
                     ScanPersistent(p);
                 }
             }

@@ -29,6 +29,13 @@ namespace PsycastSynergies
             // Hide-unlearned-paths filtering of Modern Psycasts UI's tree list (reflection-only).
             Patch_HideUnlearnedPaths.TryWireModernUI(harmony);
 
+            // "Undiscovered" instead of "Locked" on Modern Psycasts UI's locked tree tiles (reflection-only).
+            Patch_LockedNoColon.TryWireModernUI(harmony);
+
+            // Psyset-editor click scope for Modern Psycasts UI's embedded editor (reflection-only), so
+            // clicking a psycast there adds it to the set instead of hitting our invest button.
+            Patch_PsysetScope.TryWireModernUI(harmony);
+
             // Dynamically wrap every Ability.Cast override so def-field scaling reaches custom
             // ability classes that read def.radius/power/durationTime directly (addon paths).
             CastScaling.Install(harmony);

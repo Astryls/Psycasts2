@@ -11,6 +11,8 @@
   <PS_LetterAwakeningLabel>Psychic awakening</PS_LetterAwakeningLabel>
   <PS_LetterAwakenMeditationText>{0} has awakened as a psycaster through deep meditation. Choose the first path to walk.</PS_LetterAwakenMeditationText>
   <PS_LetterAwakenExternalText>{0} has awakened as a psycaster - an outside gift stirred a latent path to the surface. Choose the first path to walk.</PS_LetterAwakenExternalText>
+  <PS_LetterJoinPsycasterLabel>A psycaster without a path</PS_LetterJoinPsycasterLabel>
+  <PS_LetterJoinPsycasterText>{0} carries a psychic link but never walked a path. Now that they stand with the colony, the choice is yours to make for them.</PS_LetterJoinPsycasterText>
   <PS_LetterAwakenSurgeText>{0} has awakened as a psycaster - a surge of psychic power stirred a latent path to the surface. Choose the first path to walk.</PS_LetterAwakenSurgeText>
   <PS_LetterEnlightenment>Enlightenment: {0}</PS_LetterEnlightenment>
   <PS_LetterElevatedSilent>{0} has been elevated to {1}. New psychic paths and power settle into them unbidden.</PS_LetterElevatedSilent>

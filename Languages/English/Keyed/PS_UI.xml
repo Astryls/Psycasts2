@@ -73,6 +73,16 @@
   <PS_SpecLockedExcl>Locked - you already picked one of this exclusive set</PS_SpecLockedExcl>
   <PS_SpecLockedPrereq>Locked - prerequisites not met</PS_SpecLockedPrereq>
   <PS_NoUnlockedPaths>No unlocked paths yet. New paths are unlocked through the awakening cards.</PS_NoUnlockedPaths>
+  <!-- Replaces VPE's "Locked" on trees this pawn has not been offered yet (both UIs) -->
+  <PS_Undiscovered>Undiscovered</PS_Undiscovered>
+
+  <!-- Dormant psycast tab (non-psycasters, when the tab is shown on every colonist) -->
+  <PS_DormantTitle>Psychically dormant</PS_DormantTitle>
+  <PS_DormantDesc>No psychic link has formed yet. Give this colonist meditation time and a focus to sit at, and a latent path may surface on its own.</PS_DormantDesc>
+  <PS_DormantNoMeditation>No psychic link has formed yet, and meditation does not lead to Awakening in this game. Another route (an incident, an artifact, a quest or a ritual) has to open the way.</PS_DormantNoMeditation>
+  <PS_DormantAwakening>Awakening</PS_DormantAwakening>
+  <PS_DormantAwakeningTip>Cumulative hours this colonist has spent meditating, out of the total that GUARANTEES an Awakening. Every hour before that also carries its own rising chance, so most seekers awaken well short of the full count.</PS_DormantAwakeningTip>
+  <PS_DormantChanceOnly>Chance only</PS_DormantChanceOnly>
   <PS_BarComa>Coma risk</PS_BarComa>
   <PS_BarComaTip>Meditation today: {0}h of a {1}h safe window. Past the window, every further hour of meditation risks a psychic coma (current risk: {2} per hour, streak {3}h). Long unbroken streaks and deferred card rerolls raise the risk. Meditation at a pilgrimage site is always safe.</PS_BarComaTip>
   <PS_BarLevel>Next level</PS_BarLevel>

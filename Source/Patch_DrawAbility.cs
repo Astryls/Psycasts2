@@ -41,6 +41,10 @@ namespace PsycastSynergies
             // Fog of war: hide an un-learned skill's identity behind a "?" until it is unlocked.
             bool fog = settings != null && settings.fogOfWar && !owned;
             bool synergiesOn = settings == null || !settings.disableSynergies;
+            // Inside a psyset editor the icon's click belongs to the editor ("add to / remove from
+            // this set"), so we draw overlays only: no invest button, no "+" hint, no tooltip of
+            // ours over the editor's own instructions. See PsysetScope.
+            bool psyset = PsysetScope.Active;
 
             // Synergy highlight: hovering a skill pulses the skills it GAINS power from (its synergy
             // sources); holding Left Ctrl pulses the skills it EMPOWERS instead. Off when the synergy
@@ -98,7 +102,7 @@ namespace PsycastSynergies
                 }
 
                 // Green "+" hint in the top-right corner when a point can be spent.
-                if (!atCap && hasPoints)
+                if (!atCap && hasPoints && !psyset)
                 {
                     Rect plus = new Rect(inRect.xMax - 12f, inRect.y, 12f, 12f);
                     GUI.color = new Color(0.2f, 0.78f, 0.32f, 0.95f);
@@ -136,7 +140,7 @@ namespace PsycastSynergies
 
             // Styled floating breakdown card (True RPG Inventory look) on hover; we also
             // suppress VPE's own plain tooltip for this exact icon (see Patch_SuppressVpeAbilityTip).
-            if (Mouse.IsOver(inRect))
+            if (Mouse.IsOver(inRect) && !psyset)
             {
                 if (fog)
                 {
@@ -154,7 +158,7 @@ namespace PsycastSynergies
 
             // Click an owned, below-cap icon to invest ONE level. Plain click → styled confirm
             // popup; Shift-click → skip the popup (still just one level).
-            if (owned && !atCap && Widgets.ButtonInvisible(inRect, false))
+            if (owned && !atCap && !psyset && Widgets.ButtonInvisible(inRect, false))
             {
                 if (hediff.points < 1)
                 {
